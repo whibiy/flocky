@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/investment/detail/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+    <style>
+        img{
+            width: 100%;
+            height: auto;
+        }
+    </style>
+
+    <link rel="stylesheet" href="//image-se.ycrowdy.com/crowdyCss/custom.min.css?v=20231025_01" />
+
+
+
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
+
+
+</th:block>
+
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+
+    <script>
+        var swiper = new Swiper(".mySwiper", {
+            spaceBetween: 30,    // 슬라이드 사이 여백
+            slidesPerView : 'auto', // 한 슬라이드에 보여줄 갯수
+            centeredSlides: true,    //센터모드
+            autoplay: {     //자동슬라이드 (false-비활성화)
+                delay: 2500, // 시간 설정
+                disableOnInteraction: false, // false-스와이프 후 자동 재생
+            },
+            loop : false,   // 슬라이드 반복 여부
+            loopAdditionalSlides : 1,
+            // 슬라이드 반복 시 마지막 슬라이드에서 다음 슬라이드가 보여지지 않는 현상 수정
+            pagination: { // 호출(pager) 여부
+                el: ".swiper-pagination", //버튼을 담을 태그 설정
+                clickable: true, // 버튼 클릭 여부
+            },
+            navigation: {   // 버튼
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+        });
+        let investContentsSwiperSlide = new Swiper("#investProject .contents-area", {
+            slidesPerView: 3,
+            spaceBetween: 12,
+            navigation: {
+                nextEl: "#investProject .swiper-button-next",
+                prevEl: "#investProject .swiper-button-prev",
+            },
+        });
+    </script>
+
+    <script type="text/javascript">
+        let investmentCode = '[[${investmentInfo.investmentCode}]]';
+        // 썸네일 이미지 경로 지정
+        let thumbNailImageSrc = $('#thumbNailImage').attr('src');
+        $('#thumbNailImage').attr('src', '/summernoteImage/' + '[[${investmentInfo.investmentImage}]]');
+
+
+    </script>
+
+
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <div class="col-lg-12" style="height: 40px"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="swiper mySwiper" style="height: 400px; border-radius: 10px;">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide">
+                            <img id="thumbNailImage"/>
+                        </div>
+
+                    </div>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12" style="height: 20px"></div>
+            <div class="col-lg-12 story-banner-box" style="background: #f9fafb; border-radius: 5px; padding: 10px">
+                <div>
+                    <p style="color: black">증권형 크라우드펀딩에 대한 투자는 투자원금의 손실이 발생할 수 있습니다. 투자에 대한 책임은 전적으로 투자자 본인에게 있으므로, 투자위험에 대한 내용을 꼭 확인해주세요.</p>
+                </div>
+            </div>
+            <div class="col-lg-12" style="height: 40px"></div>
+            <div class="col-lg-12 story-header" style="padding: 0px">
+                <h4 style="color: black; font-weight: bold;">증권 발행 조건</h4>
+            </div>
+            <div class="col-lg-12" style="height: 40px"></div>
+            <div class="col-lg-12 story-body" style="color: black" th:if="${investmentInfo.securitiesClassification} == '주식' and ${securitiesIssuanceStock != null}">
+                <div class="col-lg-12" style="height: 20px"></div>
+                <div class="row" style="font-size: 18px">
+                    <div class="col-lg-6">
+                        <ul class="tight">
+                            <li>
+                                <dl>
+                                    <dd>현재 기업가치</dd>
+                                    <dt th:text="|${#numbers.formatInteger(securitiesIssuanceStock.corpValue,0,'COMMA')}원|"></dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>증권 구분</dd>
+                                    <dt th:text="|${investmentInfo.securitiesClassification}형|"></dt>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-6">
+                        <ul class="tight">
+                            <li>
+                                <dl>
+                                    <dd>주당 가격</dd>
+                                    <dt th:text="|${#numbers.formatInteger(securitiesIssuanceStock.stockPrice,0,'COMMA')}원|"></dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>투자가능 최소 금액</dd>
+                                    <dt th:text="|${#numbers.formatInteger(securitiesIssuanceStock.investMinCost,0,'COMMA')}원(${securitiesIssuanceStock.investMinCost / securitiesIssuanceStock.stockPrice}주)|"></dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>액면가</dd>
+                                    <dt th:text="|${#numbers.formatInteger(securitiesIssuanceStock.faceValue,0,'COMMA')}원|"></dt>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-12" style="height: 40px"></div>
+                <div class="row" style="padding: 0px";>
+                    <div class="col-lg-4">
+                        <ul class="tight">
+                            <li>
+                                <dl>
+                                    <dd>청약배정순위</dd>
+                                    <dt th:text="${securitiesIssuanceStock.subscriptionAllocationRanking}"></dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>주식종류</dd>
+                                    <dt th:text="${securitiesIssuanceStock.stockType}"></dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>청약 시작일</dd>
+                                    <dt th:text="${#temporals.format(securitiesIssuanceStock.subscriptionDate, 'yy.MM.dd')}"></dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>청약 종료일</dd>
+                                    <dt th:text="${#temporals.format(securitiesIssuanceStock.subscriptionDeadline, 'yy.MM.dd')}"></dt>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-4">
+                        <ul class="tight">
+                            <li>
+                                <dl>
+                                    <dd>납입일</dd>
+                                    <dt th:text="${#temporals.format(securitiesIssuanceStock.paymentDate, 'yy.MM.dd')}"></dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>발행예정일</dd>
+                                    <dt th:text="${#temporals.format(securitiesIssuanceStock.estimatedIssueDate, 'yy.MM.dd')}"></dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>배정확정/환불일</dd>
+                                    <dt th:text="${#temporals.format(securitiesIssuanceStock.allocationConfirmationDate, 'yy.MM.dd')}"></dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>증권입고일</dd>
+                                    <dt th:text="${#temporals.format(securitiesIssuanceStock.receivingDateOfSecurities, 'yy.MM.dd')}"></dt>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-4">
+                        <ul class="tight">
+                            <li>
+                                <dl>
+                                    <dd>현재주식수</dd>
+                                    <dt th:text="|${#numbers.formatInteger(securitiesIssuanceStock.stockNumber,0,'COMMA')}주|"></dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>발행 예정주식수</dd>
+                                    <dt th:text="|${#numbers.formatInteger(securitiesIssuanceStock.issueStockNumber,0,'COMMA')}주|"></dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>발행 후
+                                        총 배정지분율</dd>
+                                    <dt th:text="${securitiesIssuanceStock.issueAllotmentShareRatio}">0.579950%</dt>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="height: 20px"></div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <ul class="tight">
+                            <li>
+                                <dl>
+                                    <dd>상환청구기간</dd>
+                                    <dt th:text="|${#temporals.format(securitiesIssuanceStock.redemptionStartDate, 'yy.MM.dd')} - ${#temporals.format(securitiesIssuanceStock.redemptionEndDate, 'yy.MM.dd')}|"></dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>상환금리</dd>
+                                    <dt th:text="|연 복리 ${securitiesIssuanceStock.repaymentRate}%|"></dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>최저배당이율</dd>
+                                    <dt th:text="|연 ${securitiesIssuanceStock.minDividendRate}%|"></dt>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-6">
+                        <ul class="tight">
+                            <li>
+                                <dl>
+                                    <dd>전환청구기간</dd>
+                                    <dt th:text="|${#temporals.format(securitiesIssuanceStock.conversionStartDate, 'yy.MM.dd')} - ${#temporals.format(securitiesIssuanceStock.conversionEndDate, 'yy.MM.dd')}|"></dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>전환조건</dd>
+                                    <dt th:text="${securitiesIssuanceStock.conversionCondition}"></dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>의결권 유무</dd>
+                                    <dt th:text="${securitiesIssuanceStock.votingRight}"></dt>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-lg-12 story-body" style="color: black" th:if="${investmentInfo.securitiesClassification} == '채권' and ${securitiesIssuanceBond != null}">
+                <div class="col-lg-12" style="height: 20px"></div>
+                <div class="row" style="font-size: 18px">
+                    <div class="col-lg-6">
+                        <ul class="tight">
+                            <li>
+                                <dl>
+                                    <dd>이자율</dd>
+                                    <dt th:text="${securitiesIssuanceBond.interestRate}"></dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>증권 구분</dd>
+                                    <dt th:text="|${investmentInfo.securitiesClassification}형|"></dt>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-6">
+                        <ul class="tight">
+                            <li>
+                                <dl>
+                                    <dd>구좌당 가격</dd>
+                                    <dt th:text="|${#numbers.formatInteger(securitiesIssuanceBond.bondPrice,0,'COMMA')}원|"></dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>투자가능 최소 금액</dd>
+                                    <dt th:text="|${#numbers.formatInteger(securitiesIssuanceBond.investMinCost,0,'COMMA')}원|"></dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>만기</dd>
+                                    <dt th:text="|${securitiesIssuanceBond.maturity}개월|"></dt>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-12" style="height: 40px"></div>
+                <div class="row" style="padding: 0px";>
+                    <div class="col-lg-4">
+                        <ul class="tight">
+                            <li>
+                                <dl>
+                                    <dd>청약배정순위</dd>
+                                    <dt th:text="${securitiesIssuanceBond.subscriptionAllocationRanking}"></dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>채권종류</dd>
+                                    <dt th:text="${securitiesIssuanceBond.bondType}"></dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>청약 시작일</dd>
+                                    <dt th:text="${#temporals.format(securitiesIssuanceBond.subscriptionDate, 'yy.MM.dd')}"></dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>청약 종료일</dd>
+                                    <dt th:text="${#temporals.format(securitiesIssuanceBond.subscriptionDeadline, 'yy.MM.dd')}"></dt>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-4">
+                        <ul class="tight">
+                            <li>
+                                <dl>
+                                    <dd>만기일</dd>
+                                    <dt th:text="${#temporals.format(securitiesIssuanceBond.maturityDate, 'yy.MM.dd')}"></dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>발행예정일</dd>
+                                    <dt th:text="${#temporals.format(securitiesIssuanceBond.estimatedIssueDate, 'yy.MM.dd')}"></dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>배정확정/환불일</dd>
+                                    <dt th:text="${#temporals.format(securitiesIssuanceBond.allocationConfirmationDate, 'yy.MM.dd')}"></dt>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-4">
+                        <ul class="tight">
+                            <li>
+                                <dl>
+                                    <dd>납입일</dd>
+                                    <dt th:text="${#temporals.format(securitiesIssuanceBond.paymentDate, 'yy.MM.dd')}"></dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>발행 예정구좌수</dd>
+                                    <dt th:text="|${#numbers.formatInteger(securitiesIssuanceBond.accountToBeIssued,0,'COMMA')}구좌|"></dt>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="height: 20px"></div>
+
+            </div>
+
+            <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%"></div>
+
+            <!--<div class="col-lg-12" style="height: 20px"></div>
+            <div class="col-lg-12 story-header" style="padding: 0px">
+                <h4 style="color: black; font-weight: bold;">기본 정보</h4>
+            </div>
+            <div class="col-lg-12" style="height: 40px"></div>
+            <div class="col-lg-12 story-body" style="color: black">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <ul class="tight">
+                            <li>
+                                <dl>
+                                    <dt>기업명</dt>
+                                    <dd th:text="${investmentInfo.investmentCompany}"></dd>
+                                </dl>
+                            </li><div style="height: 10px"></div>
+                            <li>
+                                <dl>
+                                    <dt>대표명</dt>
+                                    <dd>김덕용,김경오</dd>
+                                </dl>
+                            </li><div style="height: 10px"></div>
+                            <li>
+                                <dl>
+                                    <dt>주요사업</dt>
+                                    <dd>광고제작, 전자상거래</dd>
+                                </dl>
+                            </li><div style="height: 10px"></div>
+                            <li>
+                                <dl>
+                                    <dt>임직원수</dt>
+                                    <dd>8명</dd>
+                                </dl>
+                            </li><div style="height: 10px"></div>
+                        </ul>
+                    </div>
+                    <div class="col-lg-9">
+                        <ul class="tight">
+                            <li>
+                                <dl>
+                                    <dt>설립 일자</dt>
+                                    <dd>2000년 03월 16일</dd>
+                                </dl>
+                            </li><div style="height: 10px"></div>
+                            <li>
+                                <dl>
+                                    <dt>웹 사이트</dt>
+                                    <dd>http://sejongicon.kr</dd>
+                                    &lt;!&ndash;<dd><a href="http://sejongicon.kr" target="_blank" rel="noopener noreferrer">http://sejongicon.kr</a></dd>&ndash;&gt;
+                                </dl>
+                            </li><div style="height: 10px"></div>
+                            <li>
+                                <dl>
+                                    <dt>소재지</dt>
+                                    <dd> 세종특별자치시 조치원읍 세종로 2639 (신안리, 홍익대학교세종캠퍼스) L104 </dd>
+                                </dl>
+                            </li><div style="height: 10px"></div>
+                            <li>
+                                <dl>
+                                    <dt>전화번호</dt>
+                                    <dd>044-865-1357</dd>
+                                </dl>
+                            </li><div style="height: 10px"></div>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%"></div>-->
+
+            <div class="col-lg-12" style="height: 20px"></div>
+
+            <div id="projectIntroduction" class="col-lg-12 story-header" style="padding: 0px">
+                <h4 style="color: black; font-weight: bold;">프로젝트 소개</h4>
+            </div>
+            <div class="col-lg-12" style="height: 40px"></div>
+            <div class="col-lg-12 story-body" style="padding: 0px">
+                <div class="storyBody" th:utext="${investmentInfo.projectIntroduction}" style="color: black; white-space: pre-line"></div>
+            </div>
+
+            <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%"></div>
+
+            <div class="col-lg-12" style="height: 20px"></div>
+            <div id="marketAnalysis" class="col-lg-12 story-header" style="padding: 0px" th:if="${investmentInfo.marketAnalysis != null && !investmentInfo.marketAnalysis.isEmpty()}">
+                <h4 style="color: black; font-weight: bold;">시장 분석</h4>
+            </div>
+            <div class="col-lg-12" style="height: 40px"></div>
+            <div class="col-lg-12 story-body" style="padding: 0px" th:if="${investmentInfo.marketAnalysis != null && !investmentInfo.marketAnalysis.isEmpty()}">
+                <div class="storyBody" th:utext="${investmentInfo.marketAnalysis}" style="color: black; white-space: pre-line"></div>
+            </div>
+
+            <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%"></div>
+
+            <div class="col-lg-12" style="height: 20px"></div>
+            <div class="col-lg-12 story-header" style="padding: 0px" th:if="${investmentInfo.majorFinancialInformation != null && !investmentInfo.majorFinancialInformation.isEmpty()}">
+                <h4 style="color: black; font-weight: bold;">주요 재무 정보</h4>
+            </div>
+            <div class="col-lg-12" style="height: 40px"></div>
+            <div class="col-lg-12 story-body" style="padding: 0px" th:if="${investmentInfo.majorFinancialInformation != null && !investmentInfo.majorFinancialInformation.isEmpty()}">
+                <div class="storyBody" th:utext="${investmentInfo.majorFinancialInformation}" style="color: black; white-space: pre-line"></div>
+            </div>
+
+            <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%" th:if="${investmentInfo.majorFinancialInformation != null && !investmentInfo.majorFinancialInformation.isEmpty()}"></div>
+
+            <div class="col-lg-12" style="height: 20px"></div>
+            <div class="col-lg-12 story-header" style="padding: 0px">
+                <h4 style="color: black; font-weight: bold;">리스크</h4>
+            </div>
+            <div class="col-lg-12" style="height: 40px"></div>
+            <div class="col-lg-12 story-body" style="padding: 0px">
+                <div class="storyBody" th:utext="${investmentInfo.risk}" style="color: black; white-space: pre-line"></div>
+            </div>
+
+            <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%"></div>
+
+            <div class="col-lg-12" style="height: 20px"></div>
+            <div class="col-lg-12 story-header" style="padding: 0px" th:if="${investmentInfo.majorManpower != null && !investmentInfo.majorManpower.isEmpty()}">
+                <h4 style="color: black; font-weight: bold;">주요 인력</h4>
+            </div>
+            <div class="col-lg-12" style="height: 40px"></div>
+            <div class="col-lg-12 story-body" style="padding: 0px">
+                <div class="storyBody" th:utext="${investmentInfo.majorManpower}" style="color: black; white-space: pre-line"></div>
+            </div>
+
+            <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%" th:if="${investmentInfo.majorManpower != null && !investmentInfo.majorManpower.isEmpty()}"></div>
+
+            <div class="col-lg-12" style="height: 20px"></div>
+            <div class="col-lg-12 story-header" style="padding: 0px" th:if="${investmentInfo.patentAwardDetails != null && !investmentInfo.patentAwardDetails.isEmpty()}">
+                <h4 style="color: black; font-weight: bold;">특허/수상 내역</h4>
+            </div>
+            <div class="col-lg-12" style="height: 40px"></div>
+            <div class="col-lg-12 story-body" style="padding: 0px">
+                <div class="storyBody" th:utext="${investmentInfo.patentAwardDetails}" style="color: black; white-space: pre-line"></div>
+            </div>
+
+            <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%" th:if="${investmentInfo.patentAwardDetails != null && !investmentInfo.patentAwardDetails.isEmpty()}"></div>
+
+            <div class="col-lg-12" style="height: 20px"></div>
+            <div class="col-lg-12 story-header" style="padding: 0px" th:if="${investmentInfo.etcInvestContent != null && !investmentInfo.etcInvestContent.isEmpty()}">
+                <h4 style="color: black; font-weight: bold;">기타 투자 내용</h4>
+            </div>
+            <div class="col-lg-12" style="height: 40px"></div>
+            <div class="col-lg-12 story-body" style="padding: 0px">
+                <div class="storyBody" th:utext="${investmentInfo.etcInvestContent}" style="color: black; white-space: pre-line"></div>
+            </div>
+
+            <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%" th:if="${investmentInfo.etcInvestContent != null && !investmentInfo.etcInvestContent.isEmpty()}"></div>
+
+            <!--<div class="col-lg-12" style="height: 20px"></div>
+            <div class="col-lg-12 story-header" style="padding: 0px">
+                <h4 style="color: black; font-weight: bold;">첨부자료</h4>
+            </div>
+            <div class="col-lg-12" style="height: 40px"></div>
+            <div class="col-lg-12 story-body" style="padding: 0px">
+                첨부자료 등록
+            </div>
+
+
+
+
+            <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%"></div>-->
+        </div>
+    </div>
+
+
+</th:block>
+
+</html>

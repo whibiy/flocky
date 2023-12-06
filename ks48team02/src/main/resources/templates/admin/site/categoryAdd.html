@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/default}">
+
+<head>
+    <style>
+        form{
+            width: 1200px;
+            flex-basis: 500px;
+            background-color: #FFFFFF;
+            padding: 30px 25px 25px 30px;
+            border-radius: 16px;
+            box-shadow: 0px 0px 8px rgba(0,0,0,0.16);
+        }
+        .textArea{
+            width: 300px;
+        }
+        .radioBtn{
+            display: inline-block;
+            padding: 0 24px 0 0;
+        }
+        .btnCenter{
+            text-align: center;
+        }
+        .registratioBtn{
+            min-width: 102px;
+            padding: 0 16px;
+            border: 1px solid transparent;
+            font-size: 18px;
+            color: #fff;
+            line-height: 38px;
+            background-color: #3971ff;
+            margin-top: 30px;
+        }
+        .radio-btn-area label {
+            font-weight: 300 !important;
+            font-size: 13px;
+            color: #8c8c8c;
+        }
+        .radio-btn-area input[name="displayStatus"]:checked ~ label {
+            font-weight: 700 !important; /*글자 두께*/
+            color: #191919 !important;
+        }
+        .category-list{
+            font-size: 13px;
+        }
+        .addCateArea{
+            text-align: center;
+        }
+        .category{
+            background-color: #f0f3fc;
+        }
+        .categoryGoods{
+            background-color: #f0f3fc;
+        }
+        .addCateBtn{
+            text-align: center;
+            min-width: 90px;
+            padding: 0 16px;
+            border: 1px solid transparent;
+            font-size: 13px;
+            color: #fff;
+            line-height: 28px;
+            background-color: #3971ff;
+        }
+        .category-list li.active {
+            background: #fff !important;
+            color: var(--maincolor) !important;
+            box-shadow: rgba(96 99 104 / 10%) 0 1px 8px, inset rgba(255, 255, 255, 0.4) 0 1px 0;
+        }
+    </style>
+    <!--    <link rel="stylesheet" href="./css/font/font.css">-->
+    <!-- css -->
+    <!--    <link rel="stylesheet" th:href="@{/admin/css/reset.css}">-->
+    <!--    <link rel="stylesheet" th:href="@{/admin/css/style_adnim.css}">-->
+    <link th:href="@{/admin/css/style_add_goods.css}" rel="stylesheet">
+
+</head>
+
+<body>
+
+<th:block layout:fragment="customContents">
+    <div class="boardMain" style="margin-bottom: 20px;">
+        <h3>카테고리 등록</h3>
+    </div>
+
+    <form th:action="@{/admin/site/categoryAdd}" method="post">
+        <section class="admin-right-area">
+
+            <!-- add goods module-->
+            <section class="admin-right-bt">
+                <section class="admin-addgoods-area">
+                    <h3 class="admin-title">카테고리 등록하기</h3>
+                    <form id="add-goods-frm">
+                        <table class="admin-table">
+                            <caption>카테고리 분류 표시설정</caption>
+                            <colgroup>
+                                <col class="product">
+                                <col style="width: auto; ">
+                            </colgroup>
+                            <thead class="goods-table-caption">
+                            <tr>
+                                <th colspan="2">카테고리 표시설정</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="goods-category">
+                                <input class="code_depth_1" type="hidden" name="c_code_depth_1">
+                                <input class="c_code_depth_2" type="hidden" name="c_code_depth_2">
+                                <th class="categoryGoods">카테고리 분류선택</th>
+                                <td>
+                                    <table class="categoryArea" style="table-layout:fixed">
+                                        <caption class="category">카테고리분류 선택</caption>
+                                        <thead>
+                                        <tr>
+                                            <th class="category_title" colspan="2">
+                                                카테고리 분류를 선택 후 카테고리분류 확인 버튼을 눌러주세요.
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody class="category-list-area">
+                                        <tr>
+                                            <td class="depth-1">
+                                                <div class="category-list">
+                                                    <ul class="category-depth-1" depth="1">
+                                                        <li data-value="nothing">(대분류) 없음</li>
+                                                        <th:block th:each="tc : ${categoryAdd}">
+                                                            <li th:if="${tc.projectPatition == 'reward'}" th:data-value="${tc.projectPatition}">(대분류) 리워드</li>
+                                                            <li th:if="${tc.projectPatition == 'donation'}" th:data-value="${tc.projectPatition}">(대분류) 기부</li>
+                                                            <li th:if="${tc.projectPatition == 'investment'}" th:data-value="${tc.projectPatition}">(대분류) 투자</li>
+                                                        </th:block>
+                                                    </ul>
+
+                                                    <div class="addCateArea">
+                                                        <button class="addCateBtn">추가</button>
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <td class="depth-2">
+                                                <div class="category-list">
+                                                    <ul class="category-depth-2" depth="2">
+
+                                                    </ul>
+                                                </div>
+                                            </td>
+
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                            <tr class="goods-rectrictions">
+                                <th class="category">표시제한</th>
+                                <td>
+                                    <input type="radio" name="g_restrictions" id="restrictions" checked>
+                                    <label for="restrictions" class="restrictions">모두에게 표시</label>
+                                    <input type="radio" name="g_restrictions" id="non-restrictions">
+                                    <label for="non-restrictions" class="non-restrictions">회원에게만 표시</label>
+                                    <input type="radio" name="g_restrictions" id="adminRestrictions">
+                                    <label for="adminRestrictions" class="adminRestriction">관리자에게만 표시</label>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div class="boardTable">
+                            <table border="1">
+<!--                                <tr>-->
+<!--                                    <th class="category">카테고리 코드</th>-->
+<!--                                    <td>-->
+<!--                                        <input type="text" name="categoryCode" id="categoryCode">-->
+<!--                                    </td>-->
+<!--                                </tr>-->
+                                <tr>
+                                    <th class="category">카테고리 이름</th>
+                                    <td>
+                                        <input type="text" id="g_name" name="g_name" placeholder="예시 : 시민 문화"  onclick="this.placeholder=''" maxlength="50" oninput="productNameCount($(this))">
+                                        <span>[<em class="typing-length">0</em>/ 50 ]</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="category" name="categoryComment">카테고리 설명</th>
+                                    <td>
+                                        <textarea class="textArea" placeholder="카테고리 설명을 적어주세요."></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="category">사용 여부</th>
+                                    <td class="radio-btn-area">
+                                        <span>
+                                            <input id="displayStatus" type="radio" name="displayStatus" checked>
+                                            <label for="displayStatus" class="radioBtn">
+                                                1 ( 사용함 )
+                                            </label>
+                                        </span>
+                                        <span>
+                                            <input id="nonDisplayStatus" type="radio" name="displayStatus">
+                                            <label for="nonDisplayStatus" class="radioBtn">
+                                            0 ( 사용 안함 )
+                                        </label>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="category">등록 일시</th>
+                                    <td><input type="date"></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="btnCenter">
+                            <button type="submit" class="registratioBtn">
+                                <span>등록</span>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+            </section>
+        </section>
+</th:block>
+<th:block layout:fragment="customJsCode">
+    <script>
+        $(document).on('click', '.category-depth-1 li', function(e) {
+            let projectPatition = $(e.target).attr('data-value'); // this => e.target
+            let categoryName = $(e.target).text(); // 클릭된 대분류의 이름
+
+            // 카테고리 분류 선택 영역에 클릭된 대분류 이름 표시
+            $('.category_title').text(categoryName);
+
+            // 대분류 목록에서 모든 'active' 클래스 제거
+            $('.category-depth-1 li').removeClass('active');
+            // 클릭된 대분류에 'active' 클래스 추가
+            $(this).addClass('active');
+
+            console.log(projectPatition, '<--projectPatition');
+            ajaxCateAdd(projectPatition, function(list) {
+                $('.category-depth-2 li').remove();
+                $(list).each((idx, tc) => {
+                    $('.category-depth-2').append(`<li data-value="${idx+1}">(중분류) ${tc.categoryName}</li>`);
+                })
+            })
+        })
+        $(document).on('click', '.category-depth-2 li', function(e) {
+            let categoryName = $(e.target).text();
+
+            $('.category_title').text(categoryName);
+
+            $('.category-depth-2 li').removeClass('active');
+            $(this).addClass('active');
+        });
+
+        //        $('.depth-1 ul').on('click', 'li', function(){
+        //            var clickDataTab = $(this).attr('data-tab');
+        //            var clickListValue = $(this).attr('value');
+        //            var categoryName = $(this).text();
+        //
+        //            $('.depth-2 > div').hide();
+        //            $("#" + clickDataTab).show();
+        //
+        //            $(".code_depth_1").val(clickListValue);
+        //            $('.category_title').text('').prepend("<span>" + categoryName + "</span>");
+        //        });
+
+        console.log('aa')
+
+        function ajaxCateAdd(projectPatition, callback){
+            const request = $.ajax({
+                url: '/admin/site/ajaxCategoryAdd', // 요청을 보낼 URL 연결 완료
+                type: 'POST', // HTTP 메소드
+                data: { 'projectPatition': projectPatition }, // 서버에 전송할 데이터
+                dataType: 'json', // 서버에서 받을 데이터의 형식
+            })
+
+            request.done(function (list){
+                console.log('서버로부터 받은 응답:', list); // 서버로부터 받은 응답을 콘솔에 출력
+                callback(list);
+            })
+
+            request.fail(function (err){
+                console.log('서버 요청 실패:', err);
+            })
+        }
+
+
+
+        // 글 쓰면 카운트
+        function productNameCount(e){
+            var count = $(e).val().length;
+            $('.typing-length').text(count);
+        }
+
+        $(document).on('click','.category-depth-1 li', function(e){
+
+            let projectPatition = $(e.target).attr('data-value'); // this => e.target
+            console.log(projectPatition, '<--projectPatition');
+            ajaxCateAdd(projectPatition, function (list){
+                $('.category-depth-2 li').remove();
+
+                $(list).each((idx, tc) => {
+                    $('.category-depth-2').append(`<li data-value="${idx+1}">(중분류) ${tc.categoryName}</li>`);
+                })
+            })
+        })
+        let selectedCategory = ""; // 선택된 카테고리를 저장할 변수
+
+        $(document).on('click', '.category-depth-1 li', function(e) {
+            let categoryName = $(e.target).text();
+
+            // 대분류 선택시 중분류 정보를 초기화합니다.
+            selectedCategory = categoryName;
+
+            $('.category_title').text(selectedCategory);
+
+            $('.category-depth-1 li').removeClass('active').css({'background':'#eee','color':'#bdbdbd'});
+            $(this).addClass('active');
+        })
+
+        $(document).on('click', '.category-depth-2 li', function(e) {
+            let categoryName = $(e.target).text();
+
+            // 중분류를 선택하면 대분류 -> 중분류 형태로 텍스트를 저장합니다.
+            selectedCategory = selectedCategory.split(" -> ")[0] + " -> " + categoryName;
+
+            $('.category_title').text(selectedCategory);
+
+            $('.category-depth-2 li').removeClass('active').css({'background':'#eee','color':'#bdbdbd'});
+            $(this).addClass('active');
+        });
+    </script>
+</th:block>
+</body>
+</html>

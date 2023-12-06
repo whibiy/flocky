@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{seller/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+    <link rel="stylesheet" th:href="@{/admin/css/adminBoard.css}">
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <!--    <script>-->
+    <!--        function popupOpen(){-->
+    <!--            console.log("a");-->
+    <!--            var url= "/admin/board/main";    //팝업창에 출력될 페이지 URL-->
+    <!--            var winWidth = 700;-->
+    <!--            var winHeight = 600;-->
+
+    <!--            var popupX = (document.body.offsetWidth / 2) - (winWidth / 2);-->
+    <!--            // 만들 팝업창 좌우 크기의 1/2 만큼 보정값으로 빼주었음-->
+
+    <!--            var popupY= (window.screen.height / 2) - (winHeight / 2);-->
+    <!--            // 만들 팝업창 상하 크기의 1/2 만큼 보정값으로 빼주었음-->
+    <!--            var popupOption= 'status=no, height='+winWidth+', width='+winHeight+', left='+ popupX + ', top='+ popupY;    //팝업창 옵션(optoin)-->
+
+    <!--            window.open(url,' target="_blank"',popupOption);-->
+    <!--    </script>-->
+
+</th:block>
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+        // 체크박스 전체 선택
+        $('#allCheck').on('click', function (){
+            let isChecked = $(this).prop('checked');
+            $('input[name="admin_board"]').prop('checked', isChecked);
+        });
+    </script>
+</th:block>
+
+<th:block layout:fragment="customContents">
+    <div class="boardMain" style="margin-bottom: 20px;">
+        <h3>1:1 문의 관리</h3>
+    </div>
+    <form>
+
+        <div class="section">
+            <div class="title"><h2>1:1 문의 목록</h2></div>
+
+        </div>
+
+        <div class="boardTable">
+            <table border="1">
+                <thead class="top">
+                <tr>
+                    <th><input type="checkbox" id="allCheck"></th>
+                    <th>문의 코드</th>
+                    <th>문의 제목</th>
+                    <th>문의 등록자 아이디</th>
+                    <th>문의 내용</th>
+                    <th>문의 날짜</th>
+                    <th>관리자 ID</th>
+                    <th>게시물 관리</th>
+                </tr>
+                </thead>
+                <tbody class="center">
+                <tr>
+                    <td>
+                        <input type="checkbox" class="rowCheck" name="admin_board" value="1">
+                    </td>
+                    <td>iq_20230601_001</td>
+                    <td>아이디 이상해요</td>
+                    <td>id005</td>
+                    <td>아이디 수정해주세요</td>
+                    <td>2023.6.1</td>
+                    <td>id001</td>
+                    <td>
+                        <a class="modify" onclick="popupOpen('/admin/inquiry/inquiryModify ')">수정</a>
+                        <a class="delete" th:href="@{#}">삭제</a>
+                    </td>
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </form>
+</th:block>
+</html>

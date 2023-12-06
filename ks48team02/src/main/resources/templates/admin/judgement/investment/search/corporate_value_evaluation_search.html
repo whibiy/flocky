@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="searchFragment">
+    <form th:action="@{/admin/investment/search/corporate-value}" method="get">
+        <div class="admin-content-wrapper form-table">
+            <table class="partition-select">
+                <tbody>
+                <tr>
+                    <td>
+                        기간
+                    </td>
+                    <td>
+                        <input type="date" name="amDateSettStartDate">
+                        <span> - </span>
+                        <input type="date" name="amDateSettEndDate">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        검색 키워드
+                    </td>
+                    <td id="inputContainer">
+                        <select id="searchKey" name="searchKey" onchange="toggleInput()">
+                            <option value="investmentRequestJudgeCode">요청코드명</option>
+                            <option value="investmentRequestSubject">제목</option>
+                            <option value="memberIdSeller">요청아이디</option>
+                            <option value="corporateValueEvaluationCode">평가코드명</option>
+                            <option value="memberId">심사아이디</option>
+                            <option value="corpValueFulfill">평가결과</option>
+                        </select>
+                        <input id="inputSearchValue" type="text" name="searchValue" placeholder="검색어를 입력해주세요."/>
+                        <select id="selectSearchValue" name="searchSelectValue" class="hidden">
+                            <option value="100">===심사 결과를 선택해주세요===</option>
+                            <option value="99">심사 대기</option>
+                            <option value="1">심사 승인</option>
+                            <option value="2">심사 반려</option>
+                        </select>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="btn-area">
+                <button type="submit" class="submitBtn">검색</button>
+            </div>
+        </div>
+    </form>
+</div>
+</html>

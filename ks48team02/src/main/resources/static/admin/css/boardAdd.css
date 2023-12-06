@@ -1,0 +1,45 @@
+@charset "UTF-8";
+.titleArea{
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 30px;
+    border-bottom: 2px solid black;
+}
+.boardForm{
+    width: 900px;
+    margin: 0 auto;
+}
+.formText{
+    margin-top: 20px;
+    width: 500px;
+}
+caption{
+    display: none;
+}
+.RW{
+    padding-left: 20px;
+}
+.boardBtn{
+    width: 900px;
+    margin: 0 auto;
+    text-align: right;
+    margin-top: 50px;
+}
+.cancel{
+    border: 1px solid black;
+    margin-right: 30px;
+    border-radius: 20px 20px 20px 20px;
+    padding: 10px;
+}
+.registration{
+    border: 1px solid black;
+    background-color: black;
+    transition: background-color 0.3s;
+    border-radius: 20px 20px 20px 20px;
+    padding: 10px;
+    color: #EEEEEE;
+}
+.registration:hover{
+    background-color: blue;
+    color: white;
+}

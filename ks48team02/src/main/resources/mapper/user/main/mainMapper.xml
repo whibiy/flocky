@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksmart.ks48team02.user.mapper.main.UserMainMapper">
+
+
+
+    <resultMap id="recomendCtMap" type="RecommendCategory">
+        <result property="categoryCode" column="categoryCode"/>
+    </resultMap>
+
+    <!-- rank list -->
+    <resultMap type="OrderRank" id="orderRankMap">
+        <result property="rankCount" column="rankCount"/>
+        <result property="projectCode" column="projectCode"/>
+        <result property="subject" column="subject"/>
+        <result property="imageUrl" column="imageUrl"/>
+        <result property="projectType" column="projectType"/>
+        <result property="categoryName" column="categoryName"/>
+        <result property="storeName" column="storeName"/>
+        <result property="achievementPercent" column="achievementPercent"/>
+        <result property="likeCount" column="likeCount"/>
+    </resultMap>
+
+    <!-- reward project list map -->
+    <resultMap id="rewardProjectMap" type="RewardProject">
+        <id property="rewardProjectCode" column="reward_project_code"/>
+        <result property="rewardCategoryCode" column="total_cagegory_code"/>
+        <result property="regMemberId" column="member_id"/>
+        <result property="adminMemberId" column="admin_member_id"/>
+        <result property="storeCode" column="store_code"/>
+        <result property="projectSubject" column="project_subject"/>
+        <result property="projectContents" column="project_contents"/>
+        <result property="rewardLike" column="reward_like"/>
+        <result property="projectThumbnailImage" column="project_thumbnail_image"/>
+        <result property="projectAchievementMoney" column="project_achievement_money"/>
+        <result property="projectGoalMoney" column="project_goal_money"/>
+        <result property="projectAchievementPercent" column="project_achievement_percent"/>
+        <result property="regCompany" column="reg_company"/>
+        <result property="projectRegDate" column="project_reg_date"/>
+        <result property="searchCount" column="search_count"/>
+        <result property="projectJudgmentReason" column="project_judgment_reason_detail"/>
+        <result property="projectJudgementDate" column="project_judgment_date"/>
+        <result property="projectStartDate" column="project_start_date"/>
+        <result property="projectEndDate" column="project_end_date"/>
+        <result property="projectCondition" column="project_condition"/>
+        <result property="categoryName" column="category_name"/>
+    </resultMap>
+
+    <!-- donation project list map -->
+    <resultMap id="donationProjectMap" type="DonationRegistration">
+        <id property="donationCode" column="donation_code"/>
+        <result property="donationSubject" column="donation_subject"/>
+        <result property="donationImage" column="donation_image"/>
+        <result property="donationAchievementPercent" column="donation_achievement_percent"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="storeName" column="store_name"/>
+    </resultMap>
+
+    <!-- investment project list map -->
+    <resultMap id="investProjectMap" type="InvestmentInfo">
+        <id property="investmentCode" column="investment_code"/>
+        <result property="investmentSubject" column="investment_subject"/>
+        <result property="investmentImage" column="investment_image"/>
+        <result property="investAchievementPercent" column="invest_achievement_percent"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="investmentCompany" column="investment_company"/>
+    </resultMap>
+
+    <!-- store project list map-->
+    <resultMap id="recommendPrjMap" type="TotalRecommendProject">
+        <id property="projectCode" column="projectCode"/>
+        <result property="categoryCode" column="categoryCode"/>
+        <result property="subject" column="subject"/>
+        <result property="storeCode" column="storeCode"/>
+        <result property="projectType" column="projectType"/>
+        <result property="achievementPercent" column="achievementPercent"/>
+        <result property="storeName" column="store_name"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="projectType" column="projectType"/>
+    </resultMap>
+
+    <!-- 공고 resultset -->
+    <sql id="resultset">
+        /* 진행중인 공고 */
+        WITH resultset AS (
+            SELECT
+                r.reward_project_code AS projectCode,
+                r.total_cagegory_code AS categoryCode,
+                r.project_subject AS subject,
+                r.store_code AS storeCode,
+                r.project_thumbnail_image AS imageUrl,
+                '리워드' AS projectType,
+                r.project_achievement_percent AS achievementPercent,
+                r.reward_like AS likeCount
+            FROM
+                reward_project AS r
+            WHERE
+                r.project_condition = 3
+            UNION ALL
+            SELECT
+                d.donation_code AS projectCode,
+                d.total_category_code AS categoryCode,
+                d.donation_subject AS subject,
+                d.store_code AS storeCode,
+                d.donation_image AS imageUrl,
+                '기부' AS projectType,
+                d.donation_achievement_percent AS achievementPercent,
+                d.donation_like AS likeCount
+            FROM
+                donation AS d
+            WHERE
+                d.donation_condition = 3
+            UNION ALL
+            SELECT
+                i.investment_code AS projectCode,
+                i.total_category_code AS categoryCode,
+                i.investment_subject AS subject,
+                i.store_code AS storeCode,
+                i.investment_image AS imageUrl,
+                '투자' AS projectType,
+                i.invest_achievement_percent AS achievementPercent,
+                i.investment_like AS likeCount
+            FROM
+                investment AS i
+            WHERE
+                i.invest_judge_situation = 3
+            ORDER BY ${rankCategory} DESC
+            LIMIT 5
+        ) -- cte
+    </sql>
+
+    <!-- 추천 프로젝트 리스트 -->
+    <select id="getRecommendPjgList" parameterType="ksmart.ks48team02.user.dto.RecommendCategory" resultMap="recommendPrjMap">
+        WITH resultset AS (
+        SELECT
+        r.reward_project_code AS projectCode,
+        r.total_cagegory_code AS categoryCode,
+        r.project_subject AS subject,
+        r.project_thumbnail_image AS projectImage,
+        r.store_code AS storeCode,
+        '리워드' AS projectType,
+        r.project_achievement_percent AS achievementPercent,
+        r.reward_like AS likeCount
+        FROM
+        reward_project AS r
+        WHERE
+        r.project_condition = 3
+        UNION ALL
+        SELECT
+        d.donation_code AS projectCode,
+        d.total_category_code AS categoryCode,
+        d.donation_subject AS subject,
+        d.donation_image AS projectImage,
+        d.store_code AS storeCode,
+        '기부' AS projectType,
+        d.donation_achievement_percent AS achievementPercent,
+        d.donation_like AS likeCount
+        FROM
+        donation AS d
+        WHERE
+        d.donation_condition = 3
+        UNION ALL
+        SELECT
+        i.investment_code AS projectCode,
+        i.total_category_code AS categoryCode,
+        i.investment_subject AS subject,
+        i.investment_image AS projectImage,
+        i.store_code AS storeCode,
+        '투자' AS projectType,
+        i.invest_achievement_percent AS achievementPercent,
+        i.investment_like AS likeCount
+        FROM
+        investment AS i
+        WHERE
+        i.invest_judge_situation = 3
+        ORDER BY achievementPercent DESC
+        ),
+        order_result AS (
+        SELECT
+        <choose>
+            <when test="categoryCodeList != null and categoryCodeList.size() > 0">
+                (	case
+                when rs.categoryCode IN
+                <foreach collection="categoryCodeList" item="item" open="(" close=")"  separator=",">
+                    #{item.categoryCode}
+                </foreach> then 1
+                ELSE 0
+                END	  ) AS orderNum,
+            </when>
+            <otherwise>
+                1 AS orderNum,
+            </otherwise>
+        </choose>
+        rs.projectCode,
+        rs.subject,
+        rs.projectImage,
+        rs.projectType,
+        rs.achievementPercent,
+        tc.category_name,
+        s.store_name
+        FROM
+        resultset AS rs
+        INNER JOIN
+        total_category AS tc
+        ON rs.categoryCode = tc.total_category_code
+        INNER JOIN
+        store AS s
+        ON rs.storeCode = s.store_code
+
+        <if test="categoryCodeList != null and categoryCodeList.size() > 0">
+            ORDER BY
+            CASE
+            <foreach collection="categoryCodeList" item="item" index="idx">
+                WHEN rs.categoryCode = #{item.categoryCode} THEN ${idx+1}
+            </foreach>
+            ELSE ${categoryCodeList.size()+1}
+            END
+        </if>
+
+        LIMIT 10
+        )
+        SELECT
+        ors.projectCode,
+        ors.subject,
+        ors.projectImage,
+        ors.projectType,
+        ors.achievementPercent,
+        ors.category_name,
+        ors.store_name
+        FROM
+        order_result AS ors
+        ORDER BY orderNum DESC, achievementPercent DESC;
+    </select>
+    <!-- recommend category list -->
+    <select id="getRecommendCtList" parameterType="String" resultMap="recomendCtMap">
+
+        WITH resultset AS (
+            SELECT
+                r.reward_project_code AS projectCode,
+                r.total_cagegory_code AS categoryCode
+            FROM
+                reward_project AS r
+            WHERE
+                r.project_condition = 3
+            UNION ALL
+            SELECT
+                d.donation_code AS projectCode,
+                d.total_category_code AS categoryCode
+            FROM
+                donation AS d
+            WHERE
+                d.donation_condition = 3
+            UNION ALL
+            SELECT
+                i.investment_code AS projectCode,
+                i.total_category_code AS categoryCode
+            FROM
+                investment AS i
+            WHERE
+                i.invest_judge_situation = 3
+        ) , greateset AS (
+            SELECT
+                r.reward_project_code AS projectCode,
+                r.member_id AS memberId
+            FROM
+                reward_great AS r
+            UNION ALL
+            SELECT
+                d.donation_code AS projectCode,
+                d.member_id AS memberId
+            FROM
+                donation_great AS d
+            UNION ALL
+            SELECT
+                i.investment_code AS projectCode,
+                i.member_id AS memberId
+            FROM
+                investment_great AS i
+        ) -- cte
+
+        SELECT DISTINCT
+            rs.categoryCode
+        FROM
+            greateset AS gs
+        INNER JOIN
+            resultset AS rs
+        ON gs.projectCode = rs.projectCode
+        <where>
+            <if test="sid != null">
+                gs.memberId = #{sid}
+            </if>
+        </where>
+    </select>
+
+    <!-- 추천 프로젝트 리스트 -->
+<!--    <select id="getRecommendPjgList" parameterType="ksmart.ks48team02.user.dto.RecommendCategory" resultMap="recommendPrjMap">-->
+<!--        WITH resultset AS (-->
+<!--            SELECT-->
+<!--                r.reward_project_code AS projectCode,-->
+<!--                r.total_cagegory_code AS categoryCode,-->
+<!--                r.project_subject AS subject,-->
+<!--                r.project_thumbnail_image AS projectImage,-->
+<!--                r.store_code AS storeCode,-->
+<!--                '리워드' AS projectType,-->
+<!--                r.project_achievement_percent AS achievementPercent,-->
+<!--                r.reward_like AS likeCount-->
+<!--            FROM-->
+<!--                reward_project AS r-->
+<!--            WHERE-->
+<!--                r.project_condition = 3-->
+<!--            UNION ALL-->
+<!--            SELECT-->
+<!--                d.donation_code AS projectCode,-->
+<!--                d.total_category_code AS categoryCode,-->
+<!--                d.donation_subject AS subject,-->
+<!--                d.donation_image AS projectImage,-->
+<!--                d.store_code AS storeCode,-->
+<!--                '기부' AS projectType,-->
+<!--                d.donation_achievement_percent AS achievementPercent,-->
+<!--                d.donation_like AS likeCount-->
+<!--            FROM-->
+<!--             donation AS d-->
+<!--            WHERE-->
+<!--                d.donation_condition = 3-->
+<!--            UNION ALL-->
+<!--            SELECT-->
+<!--                i.investment_code AS projectCode,-->
+<!--                i.total_category_code AS categoryCode,-->
+<!--                i.investment_subject AS subject,-->
+<!--                i.investment_image AS projectImage,-->
+<!--                i.store_code AS storeCode,-->
+<!--                '투자' AS projectType,-->
+<!--                i.invest_achievement_percent AS achievementPercent,-->
+<!--                i.investment_like AS likeCount-->
+<!--            FROM-->
+<!--                investment AS i-->
+<!--            WHERE-->
+<!--                i.invest_judge_situation = 3-->
+<!--            ORDER BY achievementPercent DESC-->
+<!--        )-->
+
+<!--        SELECT-->
+<!--            rs.projectCode,-->
+<!--            rs.subject,-->
+<!--            rs.projectImage,-->
+<!--            rs.achievementPercent,-->
+<!--            tc.category_name,-->
+<!--            s.store_name-->
+<!--        FROM-->
+<!--            resultset AS rs-->
+<!--            INNER JOIN-->
+<!--            total_category AS tc-->
+<!--            ON rs.categoryCode = tc.total_category_code-->
+<!--            INNER JOIN-->
+<!--            store AS s-->
+<!--            ON rs.storeCode = s.store_code-->
+<!--        <where>-->
+<!--            <if test="categoryCodeList != null and categoryCodeList.size() > 0">-->
+<!--                AND-->
+<!--                rs.categoryCode IN-->
+<!--                <foreach collection="categoryCodeList" item="item" open="(" close=")"  separator=",">-->
+<!--                    #{item.categoryCode}-->
+<!--                </foreach>-->
+<!--            </if>-->
+<!--        </where>-->
+<!--        LIMIT 10;-->
+<!--    </select>-->
+
+    <!-- rank list contents -->
+    <select id="getRankList" parameterType="String" resultMap="orderRankMap">
+       <include refid="resultset"/>
+        SELECT
+            RANK() OVER(ORDER BY ${rankCategory} DESC) AS rankCount,
+            rs.projectCode AS projectCode,
+            rs.subject AS subject,
+            rs.projectType AS projectType,
+            rs.imageUrl,
+            ifnull(tc.category_name, '') AS categoryName,
+            s.store_name AS storeName,
+            rs.achievementPercent AS achievementPercent,
+            rs.likeCount AS likeCount
+        FROM
+            resultset AS rs
+            LEFT OUTER JOIN
+            total_category AS tc
+            ON rs.categoryCode = tc.total_category_code
+            INNER JOIN
+            store AS s
+            ON rs.storeCode = s.store_code;
+    </select>
+
+    <!-- get reward project list for main -->
+    <select id="getRewardPrjList" resultMap="rewardProjectMap">
+        SELECT
+            rp.reward_project_code,
+            rp.project_subject,
+            rp.project_thumbnail_image,
+            rp.project_achievement_percent,
+            tc.category_name,
+            rp.reg_company,
+            rp.total_cagegory_code
+        FROM
+            reward_project AS rp
+            INNER JOIN
+            total_category AS tc
+            ON rp.total_cagegory_code = tc.total_category_code
+        WHERE
+            rp.project_condition = 3
+        ORDER BY rp.project_achievement_percent DESC
+            LIMIT 15;
+    </select>
+
+    <!-- get donation project list for main -->
+    <select id="getDonationPrjList" resultMap="donationProjectMap">
+        SELECT
+            dp.donation_code,
+            dp.donation_subject,
+            dp.donation_achievement_percent,
+            dp.donation_image,
+            s.store_name,
+            tc.category_name
+        FROM
+            donation AS dp
+            INNER JOIN
+            store AS s
+            ON dp.store_code = s.store_code
+            INNER JOIN
+            total_category AS tc
+            ON dp.total_category_code = tc.total_category_code
+        WHERE
+            dp.donation_condition = 3
+        ORDER BY dp.donation_achievement_percent DESC
+        LIMIT 15;
+    </select>
+
+    <!-- get investment list for main -->
+    <select id="getInvestPrjList" resultMap="investProjectMap">
+        SELECT
+            ip.investment_code,
+            ip.investment_subject,
+            ip.investment_image,
+            ip.invest_achievement_percent,
+            tc.category_name,
+            ip.investment_company
+        FROM
+            investment AS ip
+            INNER JOIN
+            total_category AS tc
+            ON ip.total_category_code = tc.total_category_code
+        WHERE
+            ip.invest_judge_situation = 3
+        ORDER BY ip.invest_achievement_percent DESC
+        LIMIT 15;
+    </select>
+
+    <select id="getStorePrjList" resultMap="recommendPrjMap">
+    WITH storeResultset AS (
+        SELECT
+            r.reward_project_code AS projectCode,
+            r.total_cagegory_code AS categoryCode,
+            r.project_thumbnail_image AS projectImage,
+            r.reward_like AS likeCount,
+            r.project_subject AS subject,
+            r.store_code AS storeCode,
+            '리워드' AS projectType,
+            r.project_achievement_percent AS achievementPercent
+        FROM
+            reward_project AS r
+        WHERE
+            r.project_condition = 3
+        UNION ALL
+        SELECT
+            d.donation_code AS projectCode,
+            d.total_category_code AS categoryCode,
+            d.donation_image AS projectImage,
+            d.donation_like AS likeCount,
+            d.donation_subject AS subject,
+            d.store_code AS storeCode,
+            '기부' AS projectType,
+            d.donation_achievement_percent AS achievementPercent
+        FROM
+            donation AS d
+        WHERE
+            d.donation_condition = 3
+        UNION ALL
+        SELECT
+            i.investment_code AS projectCode,
+            i.total_category_code AS categoryCode,
+            i.investment_image AS projectImage,
+            i.investment_like AS likeCount,
+            i.investment_subject AS subject,
+            i.store_code AS storeCode,
+            '투자' AS projectType,
+            i.invest_achievement_percent AS achievementPercent
+        FROM
+            investment AS i
+        WHERE
+            i.invest_judge_situation = 3
+    ) -- cte
+
+    SELECT
+        st.projectCode,
+        st.projectImage,
+        st.subject,
+        st.projectType,
+        st.achievementPercent,
+        st.store_name,
+        st.storeCode,
+        st.category_name
+    FROM
+    (
+        SELECT
+        sr.projectCode,
+        sr.projectImage,
+        sr.subject,
+        sr.projectType,
+        sr.achievementPercent,
+        s.store_name,
+        sr.storeCode,
+        tc.category_name,
+        sr.likeCount,
+        ROW_NUMBER() OVER(PARTITION BY s.store_code ORDER BY sr.likeCount DESC) AS rankNum
+        FROM
+        storeResultset AS sr
+        INNER JOIN
+        store AS s
+        ON sr.storeCode = s.store_code
+        INNER JOIN
+        total_category AS tc
+        ON sr.categoryCode = tc.total_category_code
+        ORDER BY s.like_count DESC
+        ) AS st
+    WHERE
+        st.rankNum IN (1, 2)
+    LIMIT 13;
+
+    </select>
+</mapper>

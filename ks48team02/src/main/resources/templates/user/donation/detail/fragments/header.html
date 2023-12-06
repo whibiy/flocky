@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+
+<th:block layout:fragment="customContents">
+    <nav class=" donation_nav navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar-detail" th:fragment="headerNavFragment" style="height: 50px;">
+        <div class="container">
+            <div class="top-left-conts">
+
+                <div style="margin-left: 350px;"></div>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav-detail" aria-controls="#ftco-nav-detail" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="oi oi-menu"></span> Menu
+                </button>
+
+                <div class="collapse navbar-collapse" id="ftco-nav-detail">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item" id="story">
+                            <a th:href="@{/user/donation/detail(donationCode=${donationCode})}" class="nav-link">스토리</a>
+                        </li>
+                        <li class="nav-item" id="news">
+                            <a th:href="@{/user/donation/detail/news(donationCode=${donationCode})}" class="nav-link">새소식</a>
+                        </li>
+                        <li class="nav-item" id="condition">
+                            <a th:href="@{/user/donation/detail/condition(donationCode=${donationCode})}" class="nav-link">기부금 사용현황</a>
+                        </li>
+                        <li class="nav-item" id="comments">
+                            <a th:href="@{/user/donation/detail/comment(donationCode=${donationCode})}" class="nav-link">응원 댓글</a>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+
+        </div>
+    </nav>
+
+
+</th:block>
+</html>

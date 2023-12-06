@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <style>
+        #removeInvestJudgeBtn {
+            background-color: red;
+        }
+    </style>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+        $('#removeInvestJudgeBtn').click(function () {
+            let deleteConfirm = confirm('정말로 삭제하시겠습니까?');
+            console.log(deleteConfirm);
+            if (deleteConfirm) {
+                alert('삭제되었습니다');
+            } else {
+                alert('취소되었습니다');
+            }
+        });
+    </script>
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+
+    <form id="removeInvestJudgeForm" th:action="@{/admin/investment/delete/judge}" method="post">
+        <div class="container admin-content-wrapper">
+
+            <div class="row g-5" style="justify-content: center;">
+                <div class="col-md-7 col-lg-8">
+                    <div class="row g-3">
+
+                        <input type="hidden" id="investmentRequestJudgeCode" name="investmentRequestJudgeCode"
+                               th:value="${investmentRequestJudgeCode}" readonly="readonly"/>
+
+                        <div class="my-2 col-12">
+                            <label for="memberId" class="form-label fw-bord text-dark">관리자 비밀번호</label>
+                            <input type="text" class="form-control" id="memberId" name="memberId"
+                                   placeholder="관리자 아이디를 재입력해주세요." value="id100">
+                        </div>
+
+                        <div class="my-2 col-12">
+                            <label for="memberPw" class="form-label fw-bord text-dark">관리자 비밀번호</label>
+                            <input type="password" class="form-control" id="memberPw" name="memberPw"
+                                   placeholder="관리자 비밀번호를 재입력해주세요.">
+                        </div>
+                        <br>
+
+                        <hr class="my-4">
+
+                        <button id="removeInvestJudgeBtn" class="my-5 w-100 btn btn-primary btn-lg" type="button">
+                            삭제하기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+</th:block>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/donation/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+    <style>
+        .order-donation-btn {
+            width: 150px;
+            height: 50px;
+
+            /* 상자 디자인 큰틀*/
+            margin-bottom: 30px;
+            border: 0px;
+            background-color: #235FD9;
+            outline-color: #235FD9;
+            outline-width: 1px;
+
+            /* 그림자 */
+            border-radius: 10px;
+            box-shadow:.8rem .5rem 1.4rem  #BEC5D0, -.3rem -.4rem .8rem #FBFBFB;
+            /* box-shadow:-.2rem -.2rem 1.8rem white, .8rem .8rem 1.4rem  #AAB7CB; */
+
+            /* 글씨 */
+            color: whitesmoke;
+            font-size: 15px;
+            font-weight: bold;
+
+            animation-name: keybtn-language;
+            animation-duration: .2s;
+
+        }
+        /*버튼 눌리는 효과*/
+        .order-donation-btn:active {
+            box-shadow: inset -.3rem -.1rem 1.4rem  #FBFBFB, inset .3rem .4rem .8rem #BEC5D0;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <div class="container" style="border: 1px solid lightgrey; margin-top: 50px; padding: 30px">
+        <div class="row">
+            <h3 class="d-flex col-lg-12 justify-content-center" style="color: #235FD9">"감사합니다 기부금을 소중하게 사용하겠습니다."</h3>
+            <div class="d-flex col-lg-12 justify-content-center" style="margin-top: 30px; margin-bottom: 10px">
+                <div style="border-top: 2px solid darkgrey; width: 80%;"></div>
+            </div>
+            <div class="d-flex col-lg-12 justify-content-center" style="margin-top: 10px">
+                <div style="color: black; font-weight: bolder; width: 80%;">기부정보 확인</div>
+            </div>
+            <div class="d-flex col-lg-12 justify-content-center">
+                <div style="background: #f9fafb; border-radius: 5px; padding: 20px; display: inline-block; width: 80%; height: auto; margin-bottom: 10px;">
+                    <p style="font-size: 20px; margin-bottom: 20px">Flover <em style="color: #235FD9" th:text="${floverCount}"></em> 개 기부되었습니다.</p>
+                    <span>모금함명</span>
+                    <span style="color: black; font-weight: bold; margin-left: 10px" th:text="${donationSubject}"></span><br>
+                    <span>단체명</span>
+                    <span style="color: black; margin-left: 10px" th:text="${storeName}"></span>
+                </div>
+            </div>
+            <div class="d-flex col-lg-12 justify-content-center" style="margin-top: 10px;">
+                <button type="button" th:onclick="|location.href='@{/user/donation}'|" class="order-donation-btn" style="color: whitesmoke">기부화면으로 돌아가기</button>
+            </div>
+
+        </div>
+    </div>
+</th:block>
+
+</html>

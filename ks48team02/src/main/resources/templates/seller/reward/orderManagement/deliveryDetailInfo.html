@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{seller/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+    <style>
+        #slSettlementBankInfo input,
+        #slSettlementBankInfo select{
+            border: 1px solid var(--borderColor);
+            height: 25px;
+            padding: 3px;
+        }
+        #slSettlementBankInfo label {
+            margin: 0 6px 0 15px;
+        }
+        #slSettlementBankInfo input:focus,
+        #slSettlementBankInfo select:focus{
+            border: 1px solid var(--maincolor);
+        }
+        #orderBackBtn:hover {
+            border: 1px solid var(--maincolor);
+        }
+    </style>
+    <link rel="stylesheet" th:href="@{/admin/css/order_detail_style.css}">
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <script th:src="@{/common/js/submenuJs.js}"></script>
+    <script th:src="@{/admin/js/settlement/adminCustomJs.js}"></script>
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+
+        console.log(CURRENT_URL,'<-- CURRENT_URL');
+        console.log(document.referrer,'<-- document.referrer');
+
+        $('.project-info-title').css('margin','0 0 20px');
+        $('.admin-content-wrapper').css('margin-top','0');
+
+
+        //  배송 예정일 setting
+        $('input[name="delivedDateInput"]').on('change', function(){
+            let value = $(this).val();
+            $('input[name="delivedDate"]').val(value);
+            $(this).val('');
+        });
+
+
+    </script>
+</th:block>
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <div class="admin-wrapper"> <!-- 수정 -->
+        <!-- contents -->
+            <form id="paymentInfoDetailBt" method="get">
+                <div class="admin-content-wrapper form-table" style="margin-top: 40px;">
+
+                <!-- 배송정보 영역 -->
+                <th:block th:replace="~{common/fragments/deliverInfo :: delriverInfo}">
+
+                </th:block>
+                <div class="btn-area">
+                    <ul>
+                        <li>
+                            <button id="orderBackBtn" class="submitBtn" type="button" onclick="backLocationFn()" style="border:1px solid #191919;">뒤로</button>
+                        </li>
+                        <li>
+                            <button id="deliveryRemoveBtn" onclick="confirmBtnFn(event.target)" class="submitBtn" type="button" >수정</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            </form>
+        <div class="btn-area" style="justify-content: flex-end;">
+            <ul>
+                <li>
+
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</th:block>
+</body>
+</html>

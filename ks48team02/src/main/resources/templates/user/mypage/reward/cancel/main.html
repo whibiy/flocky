@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layout/login_default}">
+<!--로그인 후 볼 수 있는 유저 마이 페이지-->
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
+    <style>
+        .login-logo .user-connection-menu {
+            display: none;
+        }
+
+        .nav-link{
+            font-size: medium;
+        }
+
+        #profileContainer{
+            display: flex;
+            justify-content: center;
+            padding: 35px;
+            flex-direction: column;
+        }
+
+        #img-box{
+            margin: 0 auto;
+        }
+
+        #name-box{
+            display: flex;
+            justify-content: center;
+            flex-direction: row;
+        }
+    </style>
+
+</head>
+<body>
+<!--사용자별 html-->
+<th:block layout:fragment="customContents">
+    <!-- 유저 프로필 영역   -->
+    <div id="profileContainer">
+        <!-- 프로필 이미지 -->
+        <div id="img-box">
+            <img style="width: 90px; height: 90px; border-radius: 50%;" src="https://search.pstatic.net/sunny/?src=https%3A%2F%2Fi.namu.wiki%2Fi%2FDgDM89CJAmUv4KwG-JNwQOWklX6MPKPXip-KQL66igwbwegZ3y6pRdFZ3Ne28Qn7JaxXZzewB3_iHM_uqJ7s8A.webp&type=sc960_832"
+                 id="profile_img" alt="">
+        </div>
+
+        <!-- 사용자 이름 + 설정 아이콘 -->
+        <div id="name-box">
+            <!-- 사용자 이름 -->
+            <h2 th:text="${memberName}">최미미</h2>
+            <!-- 설정 아이콘 클릭시 프로필 설정 페이지로 이동  -->
+            <a th:href="@{/user/mypage/profile}"><i class="bi bi-gear" id="showProfileIcon" ></i></a>
+
+        </div>
+    </div>
+    <!-- tab 메뉴 영역  -->
+    <!-- data-toggle="tab" 속성을 Bootstrap의 <a> 태그에 추가하면 해당 링크가 tab 컴포넌트를 제어하도록 설정 -->
+    <div class="row mb-lg-5" >
+        <div class="col-lg-4"></div>
+
+        <div  id="cancelResult" class="col-lg-4 main_container" style="display: block;">
+            <div class="border border-secondary rounded bg-light mb-lg-3 d-flex justify-content-center row">
+                <h3 class="text-dark my-lg-2">취소 사유를 입력해주세요.</h3>
+            </div>
+
+            <div class="border border-secondary rounded py-lg-3 px-lg-2 row">
+                <div class="col-lg-12">
+
+                    <h5 class="rewardProjectName" th:text="${orderInfo.projectSubject}"></h5>
+                    <hr style="color: #5a6268; size:1px">
+                    <ul id="orderList">
+                        <li th:each="l : ${orderInfo.rewardOrderDetailList}">
+                            <div class="options ml-lg-1 row">
+                            <img th:src="|@{/summernoteImage/}${orderInfo.projectThumbnailImage}|"
+                                 th:onerror="|this.src='@{/user/images/no-image.svg}'|"
+                                 class="rounded-circle ml-lg-2" style="height: 80px; width: 80px; border: #8a8a8a solid 1px;">
+                                <span class="text-dark ml-lg-3">
+                                <p class="rewardOptionName" th:text="${l.optionName}">프로젝트 옵션1 이름</p>
+                                <p class="rewardOrderPrice font-weight-bold" th:text="|${#numbers.formatInteger(l.optionPrice,0,'COMMA')} 원|"></p>
+                                <p class="rewardOrderPrice font-weight-bold" th:text="|주문 수량 : ${#numbers.formatInteger(l.orderOptionAmount,0,'COMMA')}개|"></p>
+                            </span>
+                            </div>
+                            <hr style="color: #5a6268; size:1px">
+                        </li>
+                    </ul>
+                    <div class="text-dark">
+                        <h5>결제 정보</h5>
+                        <span class="ml-2">총 주문 금액 :</span>
+                        <span class="float-right mr-lg-4" th:text="|${#numbers.formatInteger(orderInfo.orderPrice,0,'COMMA')} 원|"></span>
+                        <br>
+                        <span class="ml-2">회원 등급 할인금액 :</span>
+                        <span class="float-right mr-lg-4" th:text="|${#numbers.formatInteger(orderInfo.discountRankPrice,0,'COMMA')} 원|"></span>
+                        <br>
+                        <span class="ml-2">쿠폰 할인 금액 :</span>
+                        <span class="float-right mr-lg-4" th:text="|${#numbers.formatInteger(orderInfo.discountCouponPrice,0,'COMMA')} 원|"></span>
+                        <br>
+                        <span class="ml-2">포인트 사용 금액 :</span>
+                        <span class="float-right mr-lg-4" th:text="|${#numbers.formatInteger(orderInfo.useReservePrice,0,'COMMA')} 원|"></span>
+                        <br>
+                        <span class="ml-2">배송비 :</span>
+                        <span class="float-right mr-lg-4" th:text="|${#numbers.formatInteger(orderInfo.deliveryPrice,0,'COMMA')} 원|"></span>
+                        <br>
+                        <span class="ml-2">결제 방법 :</span>
+                        <span class="float-right mr-lg-4" th:text="${orderInfo.paymentMethod}"></span>
+                        <br>
+                        <span class="mt-lg-2 ml-2 font-weight-bold">총 결제 금액 :</span>
+                        <span class="float-right mr-lg-4" th:text="|${#numbers.formatInteger(orderInfo.paymentScheduledPrice,0,'COMMA')} 원|"></span>
+                    </div>
+                    <hr style="color: #5a6268; size:1px">
+                </div>
+
+                <br>
+                <div class="col-lg-12">
+                    <h5>취소 사유</h5>
+                </div>
+
+                <div class="col-lg-1"></div>
+                <div class="col-lg-5">
+
+                    <div class="form-check text-center mt-lg-2">
+                        <label class="btn btn-light btn-outline-dark w-100" for="result1" style="border-radius: 5px;">
+                            <input type="radio" class="btn-check" name="options" id="result1" value="단순 변심" checked>
+                            단순 변심
+                        </label>
+                        <br>
+
+                        <label class="btn btn-light btn-outline-dark w-100" for="result2" style="border-radius: 5px;">
+                            <input type="radio" class="btn-check" name="options" id="result2" value="주문 실수">
+                            주문 실수
+                        </label>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+
+                    <div class="form-check text-center mt-lg-2">
+                        <label class="btn btn-light btn-outline-dark w-100" for="result3" style="border-radius: 5px;">
+                            <input type="radio" class="btn-check" name="options" id="result3" value="배송 지연">
+                            배송 지연
+                        </label>
+                        <br>
+                        <label class="btn btn-light btn-outline-dark w-100" for="result4" style="border-radius: 5px;">
+                            <input type="radio" class="btn-check" name="options" id="result4" value="서비스 불만족">
+                            서비스 불만족
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-lg-12 text-dark">
+                    <hr style="color: #5a6268;">
+                    <p class="font-weight-bold ml-lg-2">취소 사유 제목 입력</p>
+                    <label for="refundTitle" hidden="hidden">취소 사유 제목</label>
+                    <input class="refundComent w-100" id="refundTitle" type="text">
+
+                    <p class="font-weight-bold ml-lg-2">취소 상세 사유 입력</p>
+                    <label for="cancelReasonDetail" hidden="hidden">취소 상세 사유</label>
+                    <textarea id="cancelReasonDetail" rows="5" class="refundComent w-100 rounded"></textarea>
+
+                    <hr style="color: #5a6268; size:1px">
+
+                    <h4>취소 예정 금액 : <span id="cancelTotalPrice" class="text-primary" th:text="${#numbers.formatInteger(orderInfo.paymentScheduledPrice,0,'COMMA')}"></span> 원</h4>
+
+                    <hr style="color: #5a6268; size:1px">
+
+                    <div class="d-flex justify-content-center my-lg-3">
+
+                        <button class="cancelBtn btn btn-primary w-50 mt-lg-3">취소 신청</button>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="mt-lg-3">
+
+                <strong class="text-danger">◈확인해주세요.</strong>
+
+                <p>주문 취소는 상품이 출고 되기 전에만 가능하며 상품 출고 후에는 반품 및 회수 절차를 따르게 됩니다. </p>
+                <p>주문 취소는 취소 사유를 입력하시면 보다 신속하게 취소 처리 진행됩니다.</p>
+                <p>주 결제수단(카드,계좌,휴대폰 등)과 보조 결제수단(네이버페이 포인트)를 복합결제 후 환불요청 시, 취소 우선순위에 따라 주 결제수단에서 선 취소 처리됩니다.</p>
+                <p>카드사 결제할인 적용 주문에 사용된 포인트는 취소 즉시 자동 회수되므로, <b>취소 후 계정으로 반환되지 않습니다.</b></p>
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+
+</th:block>
+
+<!-- 사용자별 스크립트 파일 -->
+<th:block layout:fragment="customJsFile">
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <!--  다음 주소찾기 api   -->
+
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+
+    <script th:inline="javascript">
+        $(function(){
+
+            //유효성 검사 validationCheck 함수
+            function validationCheck(data) {
+                let isValid =true;
+
+                //1.인수 값이 객체일 경우
+                if(typeof data =='object') {
+
+                    $.each(data, function(){
+                        let checkValue = $(this).val();
+                        if(checkValue === null || checkValue === '' || checkValue === 'undefined') {
+                            isValid = false;
+                            let eleId = $(this).attr('id');
+                            let cate = $(`label[for="${eleId}"]`).text();
+                            alert(`${cate} 필수 입력 항목입니다.`);
+                            $(this).focus();
+                            return isValid;
+                        }
+                    });
+                    //2.인수 값이 객체가 아닐 경우
+                }else{
+                    if(data === null || data === '' || data === 'undefined') {
+                        isValid = false;
+                    }
+                }
+                return isValid;
+            }
+
+            $('.cancelBtn').click(function(){
+                let refundSubejct = $('input[type="radio"]:checked').val();
+                let refundTitle = $('#refundTitle').val();
+                let refundComments = $('#cancelReasonDetail').val();
+                let isValid = true;
+                let validCheck = $('.refundComent');
+
+                isValid =validationCheck(validCheck);
+
+                if(isValid){
+                    if(refundComments.length <= 10) {
+                        alert('열글자 이상 입력해 주세요.');
+                        isValid = false;
+                        return isValid
+                    } else {
+                        const orderInfo = [[${orderInfo}]];
+                        orderInfo.refundTitle = refundTitle;
+                        orderInfo.refundComments = refundComments;
+                        orderInfo.refundSubejct = refundSubejct;
+                        orderInfo.changeCategory = '주문취소';
+                        console.log(orderInfo);
+
+                        const request = $.ajax({
+                            type: 'POST',
+                            traditional: true,
+                            url: '/user/mypage/reward/cancel',
+                            contentType: 'application/json',
+                            data: JSON.stringify(orderInfo),
+                            dataType: 'text'
+                        });
+                        request.done(function(response){
+                            let redirectURI = response;
+                            location.href = redirectURI;
+                        });
+                        request.fail(function(err){
+                            console.log(err);
+                            console.log('ajax 에러');
+                        });
+                    }
+                }
+
+            })
+
+
+        });
+    </script>
+
+
+
+</th:block>
+
+
+</body>
+</html>

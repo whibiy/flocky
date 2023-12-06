@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{seller/layout/default}">
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <script th:src="@{/admin/js/settlement/adminCustomJs.js}"></script>
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+        const chartColor = [
+            '#dbbdf3',
+            '#b3f8eb',
+            '#f6bfd6',
+            '#aedffa',
+            '#fde4a4',
+            '#fdeecc',
+            '#f6bfd6',
+            '#fde4a4'
+        ]
+        // legend  color setting
+        const $labelEls = $('.label-icon');
+        $($labelEls).each((idx, item) => {
+            $(item).css('background-color',chartColor[idx]);
+        });
+
+        // chart code
+        new Chart(document.getElementById("sellerProjectChart"), {
+            type: 'doughnut',
+            data: {
+                labels: ['프로젝트명1 작성','프로젝트명2 작성','프로젝트명3 작성','프로젝트명4 작성','프로젝트명5 작성','프로젝트명6 작성','프로젝트명7 작성','프로젝트명8 작성','프로젝트명9 작성','프로젝트명10 작성'],
+                datasets: [{
+                    data: [40,18,14,5,2],
+                    backgroundColor: chartColor,
+                    // borderWidth: 2,
+                    scaleBeginAtZero: true,
+                }]
+            },
+            options:{
+                plugins:{
+                    legend: {
+                        display: false,
+
+                    },
+                }
+            }
+
+        });
+        const totalChart = {
+
+            label: 'total',
+            type : 'line',         // 'line' type
+            fill : false,         // 채우기 없음
+            lineTension : 0.2,  // 0이면 꺾은선 그래프, 숫자가 높을수록 둥글해짐
+            // pointRadius : 0,    // 각 지점에 포인트 주지 않음
+            // backgroundColor: 'rgb(236,187,116)',
+            borderColor: 'rgb(248,204,139)',
+            data: [22, 19]
+
+        }
+
+        // div Project chart
+        const rewardData = {
+            barThickness: 50,
+            label:'리워드',
+            type:'bar',
+            data:[13,8],
+            backgroundColor: projectPointColor['rewardColor'],
+            borderWidth:0
+        }
+        const donationData = {
+            barThickness: 50,
+            label:'기부',
+            type:'bar',
+            data:[7,10],
+            backgroundColor:projectPointColor['donationColor'],
+            borderWidth:0
+        }
+        const investmentData = {
+            barThickness: 50,
+            label:'투자',
+            type:'bar',
+            data:[2,1],
+            backgroundColor: projectPointColor['investColor'],
+            borderWidth:0
+        }
+
+        const ctx = $('#divProjectChart');
+        const projectDivChart = new Chart(ctx, {
+            type:'bar',
+            data:{
+                labels:['2022', '2023'],
+                datasets:[
+                    totalChart,
+                    rewardData,
+                    donationData,
+                    investmentData
+                ]
+            },
+            options: {
+                maintainAspectRatio :false,
+                scales: {
+                    x: {
+                        stacked: true,
+                    },
+                    y: {
+                        stacked: true,
+                    }
+                }
+            }
+        });
+
+
+
+
+        console.log('a');
+
+        // 3개월 이전 date
+        let projectCalFnDate = new Date(startDate(nowDateSet));
+
+
+        // start value setting
+        const $optionEls = $('select[name="amMonthCulStartM"] option');
+        console.log($optionEls);
+        monthDateSettingFn(projectCalFnDate, $optionEls);
+
+        // start year value setting
+        const $startYearOptionEls = $('select[name="amMonthCulStartY"] option');
+        yearDateSettingFn(projectCalFnDate, $startYearOptionEls);
+
+        // end year value setting
+        const $endYearOptionEls = $('select[name="amMonthCulEndY"] option')
+        yearDateSettingFn(nowDateSet, $endYearOptionEls);
+
+        // end month value setting
+        const $endMonthOptionEls = $('select[name="amMonthCulEndM"] option');
+        monthDateSettingFn(nowDateSet, $endMonthOptionEls);
+
+
+        // 가장 잘 나간 프로젝트 매출 가격 count
+        const $projectCalCountEls = $('.chart-price');
+        let projectMaxValue = $projectCalCountEls.attr('data-value');
+        counterLong($projectCalCountEls, projectMaxValue);
+
+        // 선택 버튼 제어
+
+    </script>
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <div class="admin-content-wrapper" style="min-height:auto; color: var(--maincolor); margin-bottom: 20px;">
+        통계자료는 국세청 및 기타제출용 자료로 사용이 불가능하며, 쇼핑몰 운영의 참고자료로 이용하시기 바랍니다.
+    </div>
+
+    <div class="project-chart-current">
+        <div class="project-chart-area">
+            <div class="title-wrap">
+                <h4 class="admin-content-title">Top5 프로젝트 통계 </h4>
+            </div>
+            <div class="admin-content-wrapper">
+                <div style="width:100%; height: 300px; padding: 20px;">
+                    <canvas id="sellerProjectChart"></canvas>
+                </div>
+                <div class="label-area">
+                    <div class="info-area">
+                       <h5>가장 잘나간 프로젝트 매출</h5>
+                        <p><span class="chart-price price-data" data-value="154039203">0</span>원</p>
+                    </div>
+                    <ul>
+                        <li><i class="label-icon"></i><span>[국내단독]이런 귀여움은 처음이죠? 테디테일즈 레나베어 드디어 한국상륙</span></li>
+                        <li><i class="label-icon"></i><span>[글로벌23억] 보이지 않는 터치패드! 모키보 퓨전키보드 화이트 에디션!</span></li>
+                        <li><i class="label-icon"></i><span>[국내단독]이런 귀여움은 처음이죠? 테디테일즈 레나베어 드디어 한국상륙</span></li>
+                        <li><i class="label-icon"></i><span>[글로벌23억] 보이지 않는 터치패드! 모키보 퓨전키보드 화이트 에디션!</span></li>
+                        <li><i class="label-icon"></i><span>[국내단독]이런 귀여움은 처음이죠? 테디테일즈 레나베어 드디어 한국상륙</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="project-chart-area">
+            <div class="title-wrap">
+                <h4 class="admin-content-title">작년 대비 분류별 성공 프로젝트 수</h4>
+            </div>
+            <div class="admin-content-wrapper">
+                <div style="width:100%; height:300px;">
+                    <canvas id="divProjectChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="title-wrap">
+        <h4 class="admin-content-title">프로젝트 매출순 조회</h4>
+    </div>
+
+    <div class="admin-content-wrapper form-table" >
+        <form id="slProjectChartForm" method="get">
+            <table class="partition-select">
+                <tbody>
+                <tr>
+                    <td>
+                        기간
+                    </td>
+                    <td>
+                        <select name="amMonthCulStartY">
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="2020">2020</option>
+                            <option value="2019">2019</option>
+                            <option value="2018">2018</option>
+                            <option value="2017">2017</option>
+                            <option value="2016">2016</option>
+                            <option value="2015">2015</option>
+                        </select> 년
+                        <select name="amMonthCulStartM">
+                            <option value="1" >1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                        </select> 월
+                        <span> - </span>
+                        <select name="amMonthCulEndY">
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="2020">2020</option>
+                            <option value="2019">2019</option>
+                            <option value="2018">2018</option>
+                            <option value="2017">2017</option>
+                            <option value="2016">2016</option>
+                            <option value="2015">2015</option>
+                        </select> 년
+                        <select name="amMonthCulEndM">
+                            <option value="1" >1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                        </select> 월
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        프로젝트 분류
+                    </td>
+                    <td>
+                        <select id="amProjectSelect" name="amProjectSelect">
+                            <option value="">프로젝트 분류를 선택해주세요</option>
+                            <option value="total">전체 프로젝트</option>
+                            <option value="reward">리워드 프로젝트</option>
+                            <option value="donation">기부 프로젝트</option>
+                            <option value="investment">투자 프로젝트</option>
+                        </select>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="btn-area">
+                <button type="button" class="submitBtn">검색</button>
+            </div>
+        </form>
+    </div>
+
+
+
+    <div class="admin-content-wrapper" style="margin-top: 40px;">
+        <div class="data-info">
+            <div class="list-count-area">
+                <ul>
+                    <li>전체 프로젝트<span class="count-data total-list">0</span>건</li>
+                    <li>선택 항목 총 <span class="count-data select-list-count">0</span>건</li>
+                </ul>
+            </div>
+            <div class="list-count-selector">
+                <div class="btnArea">
+                    <button type="button" class="printBtn" style="padding: 6px 14px 6px 13px;"><span>액셀 다운로드</span></button>
+                </div>
+                <select name="orderby">
+                    <option value="calculate_a">매출 순</option>
+                    <option value="calculate_d">매출 역순</option>
+                    <option>-----------------</option>
+                    <option value="project_name_d">프로젝트명 역순</option>
+                    <option value="project_name_a">프로젝트명 역순</option>
+                    <option>-----------------</option>
+                    <option value="regist_d">등록일 역순</option>
+                    <option value="regist_a">등록일 순</option>
+                </select>
+                <select name="count-select">
+                    <option value="15">15개씩 보기</option>
+                    <option value="20">20개씩 보기</option>
+                    <option value="30">30개씩 보기</option>
+                </select>
+            </div>
+        </div>
+        <table class="date-payment-log settlement-log">
+            <thead>
+                <tr>
+                    <th style="width:5%;"><input type="checkbox" id="allSelectBtn"></th>
+                    <th style="width:5%;">순위</th>
+                    <th style="width:8%;">공고 코드</th>
+                    <th style="width:8%;">프로젝트 분류</th>
+                    <th>프로젝트 명</th>
+                    <th>펀딩 목표 금액</th>
+                    <th>펀딩 달성 금액</th>
+                    <th>총 매출</th>
+                    <th>구매자 수</th>
+                    <th>게시 시작일</th>
+                    <th>공고 마감일</th>
+                    <th>최종 매출 산정일</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 정산 결과 없을 경우-->
+                <tr style="display: none;">
+                    <td colspan="10" style="text-align: center; padding: 30px 0;">검색 결과가 없습니다.</td>
+                </tr>
+                <!-- contents -->
+                <tr>
+                    <td><input type="checkbox" name="selectList"></td>
+                    <td>1</td>
+                    <td class="table-data-center"><a class="detail-link" th:href="@{#}">ORD20231022-000001</a></td>
+                    <td class="table-data-center">리워드</td>
+                    <td>[프로젝트타이틀]프로젝트명 입니다용</td>
+                    <td><span>500,000</span>원</td>
+                    <td><span>19,003,050</span>원</td>
+                    <td><span>18,501,720</span>원</td>
+                    <td><span>1153</span>명</td>
+                    <td>2023-09-01 00:00</td>
+                    <td>2023-09-30 23:59</td>
+                    <td>2023-10-15 14:25</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" name="selectList"></td>
+                    <td>1</td>
+                    <td class="table-data-center"><a class="detail-link" th:href="@{#}">ORD20231022-000001</a></td>
+                    <td class="table-data-center">리워드</td>
+                    <td>[프로젝트타이틀]프로젝트명 입니다용</td>
+                    <td><span>500,000</span>원</td>
+                    <td><span>19,003,050</span>원</td>
+                    <td><span>18,501,720</span>원</td>
+                    <td><span>1153</span>명</td>
+                    <td>2023-09-01 00:00</td>
+                    <td>2023-09-30 23:59</td>
+                    <td>2023-10-15 14:25</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" name="selectList"></td>
+                    <td>1</td>
+                    <td class="table-data-center"><a class="detail-link" th:href="@{#}">ORD20231022-000001</a></td>
+                    <td class="table-data-center">리워드</td>
+                    <td>[프로젝트타이틀]프로젝트명 입니다용</td>
+                    <td><span>500,000</span>원</td>
+                    <td><span>19,003,050</span>원</td>
+                    <td><span>18,501,720</span>원</td>
+                    <td><span>1153</span>명</td>
+                    <td>2023-09-01 00:00</td>
+                    <td>2023-09-30 23:59</td>
+                    <td>2023-10-15 14:25</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" name="selectList"></td>
+                    <td>1</td>
+                    <td class="table-data-center"><a class="detail-link" th:href="@{#}">ORD20231022-000001</a></td>
+                    <td class="table-data-center">리워드</td>
+                    <td>[프로젝트타이틀]프로젝트명 입니다용</td>
+                    <td><span>500,000</span>원</td>
+                    <td><span>19,003,050</span>원</td>
+                    <td><span>18,501,720</span>원</td>
+                    <td><span>1153</span>명</td>
+                    <td>2023-09-01 00:00</td>
+                    <td>2023-09-30 23:59</td>
+                    <td>2023-10-15 14:25</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" name="selectList"></td>
+                    <td>1</td>
+                    <td class="table-data-center"><a class="detail-link" th:href="@{#}">ORD20231022-000001</a></td>
+                    <td class="table-data-center">리워드</td>
+                    <td>[프로젝트타이틀]프로젝트명 입니다용</td>
+                    <td><span>500,000</span>원</td>
+                    <td><span>19,003,050</span>원</td>
+                    <td><span>18,501,720</span>원</td>
+                    <td><span>1153</span>명</td>
+                    <td>2023-09-01 00:00</td>
+                    <td>2023-09-30 23:59</td>
+                    <td>2023-10-15 14:25</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" name="selectList"></td>
+                    <td>1</td>
+                    <td class="table-data-center"><a class="detail-link" th:href="@{#}">ORD20231022-000001</a></td>
+                    <td class="table-data-center">리워드</td>
+                    <td>[프로젝트타이틀]프로젝트명 입니다용</td>
+                    <td><span>500,000</span>원</td>
+                    <td><span>19,003,050</span>원</td>
+                    <td><span>18,501,720</span>원</td>
+                    <td><span>1153</span>명</td>
+                    <td>2023-09-01 00:00</td>
+                    <td>2023-09-30 23:59</td>
+                    <td>2023-10-15 14:25</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" name="selectList"></td>
+                    <td>1</td>
+                    <td class="table-data-center"><a class="detail-link" th:href="@{#}">ORD20231022-000001</a></td>
+                    <td class="table-data-center">리워드</td>
+                    <td>[프로젝트타이틀]프로젝트명 입니다용</td>
+                    <td><span>500,000</span>원</td>
+                    <td><span>19,003,050</span>원</td>
+                    <td><span>18,501,720</span>원</td>
+                    <td><span>1153</span>명</td>
+                    <td>2023-09-01 00:00</td>
+                    <td>2023-09-30 23:59</td>
+                    <td>2023-10-15 14:25</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" name="selectList"></td>
+                    <td>1</td>
+                    <td class="table-data-center"><a class="detail-link" th:href="@{#}">ORD20231022-000001</a></td>
+                    <td class="table-data-center">리워드</td>
+                    <td>[프로젝트타이틀]프로젝트명 입니다용</td>
+                    <td><span>500,000</span>원</td>
+                    <td><span>19,003,050</span>원</td>
+                    <td><span>18,501,720</span>원</td>
+                    <td><span>1153</span>명</td>
+                    <td>2023-09-01 00:00</td>
+                    <td>2023-09-30 23:59</td>
+                    <td>2023-10-15 14:25</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" name="selectList"></td>
+                    <td>1</td>
+                    <td class="table-data-center"><a class="detail-link" th:href="@{#}">ORD20231022-000001</a></td>
+                    <td class="table-data-center">리워드</td>
+                    <td>[프로젝트타이틀]프로젝트명 입니다용</td>
+                    <td><span>500,000</span>원</td>
+                    <td><span>19,003,050</span>원</td>
+                    <td><span>18,501,720</span>원</td>
+                    <td><span>1153</span>명</td>
+                    <td>2023-09-01 00:00</td>
+                    <td>2023-09-30 23:59</td>
+                    <td>2023-10-15 14:25</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" name="selectList"></td>
+                    <td>1</td>
+                    <td class="table-data-center"><a class="detail-link" th:href="@{#}">ORD20231022-000001</a></td>
+                    <td class="table-data-center">리워드</td>
+                    <td>[프로젝트타이틀]프로젝트명 입니다용</td>
+                    <td><span>500,000</span>원</td>
+                    <td><span>19,003,050</span>원</td>
+                    <td><span>18,501,720</span>원</td>
+                    <td><span>1153</span>명</td>
+                    <td>2023-09-01 00:00</td>
+                    <td>2023-09-30 23:59</td>
+                    <td>2023-10-15 14:25</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" name="selectList"></td>
+                    <td>1</td>
+                    <td class="table-data-center"><a class="detail-link" th:href="@{#}">ORD20231022-000001</a></td>
+                    <td class="table-data-center">리워드</td>
+                    <td>[프로젝트타이틀]프로젝트명 입니다용</td>
+                    <td><span>500,000</span>원</td>
+                    <td><span>19,003,050</span>원</td>
+                    <td><span>18,501,720</span>원</td>
+                    <td><span>1153</span>명</td>
+                    <td>2023-09-01 00:00</td>
+                    <td>2023-09-30 23:59</td>
+                    <td>2023-10-15 14:25</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" name="selectList"></td>
+                    <td>1</td>
+                    <td class="table-data-center"><a class="detail-link" th:href="@{#}">ORD20231022-000001</a></td>
+                    <td class="table-data-center">리워드</td>
+                    <td>[프로젝트타이틀]프로젝트명 입니다용</td>
+                    <td><span>500,000</span>원</td>
+                    <td><span>19,003,050</span>원</td>
+                    <td><span>18,501,720</span>원</td>
+                    <td><span>1153</span>명</td>
+                    <td>2023-09-01 00:00</td>
+                    <td>2023-09-30 23:59</td>
+                    <td>2023-10-15 14:25</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" name="selectList"></td>
+                    <td>1</td>
+                    <td class="table-data-center"><a class="detail-link" th:href="@{#}">ORD20231022-000001</a></td>
+                    <td class="table-data-center">리워드</td>
+                    <td>[프로젝트타이틀]프로젝트명 입니다용</td>
+                    <td><span>500,000</span>원</td>
+                    <td><span>19,003,050</span>원</td>
+                    <td><span>18,501,720</span>원</td>
+                    <td><span>1153</span>명</td>
+                    <td>2023-09-01 00:00</td>
+                    <td>2023-09-30 23:59</td>
+                    <td>2023-10-15 14:25</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" name="selectList"></td>
+                    <td>1</td>
+                    <td class="table-data-center"><a class="detail-link" th:href="@{#}">ORD20231022-000001</a></td>
+                    <td class="table-data-center">리워드</td>
+                    <td>[프로젝트타이틀]프로젝트명 입니다용</td>
+                    <td><span>500,000</span>원</td>
+                    <td><span>19,003,050</span>원</td>
+                    <td><span>18,501,720</span>원</td>
+                    <td><span>1153</span>명</td>
+                    <td>2023-09-01 00:00</td>
+                    <td>2023-09-30 23:59</td>
+                    <td>2023-10-15 14:25</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" name="selectList"></td>
+                    <td>1</td>
+                    <td class="table-data-center"><a class="detail-link" th:href="@{#}">ORD20231022-000001</a></td>
+                    <td class="table-data-center">리워드</td>
+                    <td>[프로젝트타이틀]프로젝트명 입니다용</td>
+                    <td><span>500,000</span>원</td>
+                    <td><span>19,003,050</span>원</td>
+                    <td><span>18,501,720</span>원</td>
+                    <td><span>1153</span>명</td>
+                    <td>2023-09-01 00:00</td>
+                    <td>2023-09-30 23:59</td>
+                    <td>2023-10-15 14:25</td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- list pager -->
+        <div class="board-page-area">
+            <div class="list-controller-inner">
+                <ul>
+                    <li class="link-active"><a th:href="@{#}">1</a></li>
+                    <li><a th:href="@{#}">2</a></li>
+                    <li><a th:href="@{#}">3</a></li>
+                    <li><a th:href="@{#}">4</a></li>
+                    <li><a th:href="@{#}">5</a></li>
+                    <li><a th:href="@{#}">6</a></li>
+                </ul>
+                <div class="list-btn-area">
+                    <button class="prev-transfer">
+                        <span>prev</span>
+                    </button>
+                    <button class="next-transfer">
+                        <span>next</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</th:block>
+</body>
+</html>

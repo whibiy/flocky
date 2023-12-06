@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{seller/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+
+    <style>
+        .category-button {
+            border: none;
+            border-radius: 25px; /* 라운드 처리 반경을 조정합니다. */
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .category-li{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-left: 20px;
+        }
+        .selected {
+            font-weight: bold;
+            color: black;
+        }
+        ul.d-flex li:hover {
+            cursor: pointer;
+        }
+        .investment-item-box{
+            width: 350px;
+            height: 350px;
+            margin: 20px;
+        }
+        .investment-item-first-child{
+            background: grey;
+            width: 350px;
+            height: 200px;
+            border-radius: 5px;
+        }
+        .investment-item-first-child img{
+            width: 100%;
+            height: 100%;
+            border-radius: 5px;
+        }
+        .investment-item-second-child{
+            width: 350px;
+            height: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .investment-item-third-child{
+            width: 350px;
+            height: auto;
+            font-weight: bolder;
+            color: black;
+            font-size: 15px;
+        }
+        .investment-item-fourth-child{
+            width: 350px;
+            height: auto;
+        }
+        .investment-item-span-first{
+            font-weight: bold;
+            font-size: 20px;
+            color: #235FD9;
+        }
+        .investment-item-span-second{
+            margin-left: 5px;
+        }
+        .investment-item-span-third{
+            margin-left: auto;
+            color: #235FD9;
+            background: #cce5ff;
+            font-size: 12px;
+            padding: 2px;
+            border-radius: 5px;
+        }
+        .investment-item-third-child a:link{
+            text-decoration: none;
+        }
+        .investment-item-third-child a:visited{
+            color: black;
+            text-decoration: none;
+        }
+        .investment-item-third-child a:hover{
+            color: blue; text-decoration: underline;
+        }
+        .news-add-btn:active, .news-modify-btn:active{
+            box-shadow: inset -.3rem -.1rem 1.4rem  #FBFBFB, inset .3rem .4rem .8rem #BEC5D0;
+            cursor: pointer;
+        }
+        .news-add-btn, .news-modify-btn{
+            /* 상자 디자인 큰틀*/
+            padding: 10px;
+            border: 0px;
+            background-color: #235FD9;
+
+            /* 그림자 */
+            border-radius: 5px;
+            box-shadow:.5rem .3rem 1.4rem  #BEC5D0, -.1rem -.2rem .8rem #FBFBFB;
+            /* box-shadow:-.2rem -.2rem 1.8rem white, .8rem .8rem 1.4rem  #AAB7CB; */
+
+            /* 글씨 */
+            color: whitesmoke;
+            font-weight: bold;
+
+            animation-name: keybtn-language;
+            animation-duration: .2s;
+        }
+        news-del-btn:active{
+            box-shadow: inset -.3rem -.1rem 1.4rem  #FBFBFB, inset .3rem .4rem .8rem #BEC5D0;
+            cursor: pointer;
+        }
+        .news-del-btn{
+            /* 상자 디자인 큰틀*/
+            padding: 10px;
+            border: 0px;
+            background-color: #ff333a;
+
+            /* 그림자 */
+            border-radius: 5px;
+            box-shadow:.5rem .3rem 1.4rem  #BEC5D0, -.1rem -.2rem .8rem #FBFBFB;
+            /* box-shadow:-.2rem -.2rem 1.8rem white, .8rem .8rem 1.4rem  #AAB7CB; */
+
+            /* 글씨 */
+            color: whitesmoke;
+            font-weight: bold;
+
+            animation-name: keybtn-language;
+            animation-duration: .2s;
+        }
+        .item-hover{
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+
+        function sortItemClickedStyle(element) {
+            const listItems = document.querySelectorAll("#sort-item-wrap li");
+
+            for (const listItem of listItems) {
+                listItem.classList.remove("selected");
+            }
+
+            element.classList.add("selected");
+        }
+        function cateItemClickedStyle(element) {
+            const listItems = document.querySelectorAll("#category-wrap li");
+
+            for (const listItem of listItems) {
+                listItem.classList.remove("selected");
+            }
+
+            element.classList.add("selected");
+        }
+
+        $('.investment-item-span-third').each(function (){
+            let currentDate = new Date();
+            // 비교 대상 날짜 설정
+            let targetDate = new Date($(this).text());
+            // 두 날짜 간의 차이 계산 (밀리초 단위)
+            let timeDifference = targetDate - currentDate;
+            // 차이를 일(day) 단위로 변환
+            let daysRemaining = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+            // 남은 일 수
+            $(this).text(daysRemaining + "일 남음");
+        });
+
+        $('.investment-item-span-first').each(function (){
+            let goalMoney = parseInt($(this).next().val());
+            let achievementMoney = parseInt($(this).next().next().text());
+
+            let percent = (achievementMoney / goalMoney) * 100;
+            $(this).text(parseInt(percent) + '%');
+        });
+
+        // 달성 금액 설정
+        $('.investment-item-span-second').each(function (){
+            $(this).text($(this).text().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '원');
+        });
+
+        $('.news-modify-btn').click(function (){
+            let $newsCode = $(this).parent('div').prev().children('option:selected').val();
+            if ($newsCode == 0){
+                alert('새소식을 선택 해주세요!');
+                return false;
+            }
+            $('#newsCode').val($newsCode);
+            $('#newsModifyForm').submit();
+        });
+
+        $('.news-del-btn').click(function (){
+            let $newsCode = $(this).parent('div').prev().children('option:selected').val();
+            if ($newsCode == 0){
+                alert('새소식을 선택 해주세요!');
+                return false;
+            }
+            if (confirm('정말 삭제 하시겠습니까?')){
+                $('#delNewsCode').val($newsCode);
+                $('#newsDeleteForm').submit();
+            }else{
+                return false;
+            }
+
+        });
+
+
+    </script>
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <div class="container">
+        <div class="row">
+            <div class="investment-item-box col-lg-4" th:if="${l.investJudgeSituation == 3 || l.investJudgeSituation == 4 || l.investJudgeSituation == 5}" th:each="l : ${investmentInfo}">
+                <div class="item-hover" th:onclick="|location.href='@{/user/investment/detail(investmentCode=${l.investmentCode})}'|">
+                    <div class="investment-item-first-child">
+                        <img class="investment-item-third-child-image" th:src="|@{/summernoteImage/}${l.investmentImage}|">
+                    </div>
+                    <div class="investment-item-second-child">
+                        <span class="investment-item-span-first"></span>
+                        <input class="investment-item-goalMoney" th:value="${l.investmentAchievementMoney}" hidden="hidden"/>
+                        <span class="investment-item-span-second" th:text="${l.investmentAmount}"></span>
+                        <span class="investment-item-span-third" th:text="${l.investmentDeadline}"></span>
+                    </div>
+                    <div class="investment-item-third-child">
+                        <p th:text="${l.investmentSubject}"></p>
+                    </div>
+                    <div class="investment-item-fourth-child" th:text="${l.investmentCompany}"></div>
+                </div>
+                <select style="width: 100%; margin-top: 10px; margin-bottom: 10px">
+                    <option value="0">수정, 삭제 할 새소식을 선택 해 주세요!</option>
+                    <option th:each="n : ${newsList}" th:text="${n.newsSubject}" th:value="${n.newsCode}"></option>
+                </select>
+                <div class="">
+                    <button class="news-add-btn" th:onclick="|location.href='@{/seller/donation/news/add(donationCode=${l.investmentCode})}'|">새소식 등록</button>
+                    <button class="news-modify-btn" type="button">새소식 수정</button>
+                    <button class="news-del-btn" type="button">새소식 삭제</button>
+                </div>
+            </div>
+
+            <form id="newsModifyForm" th:action="@{/seller/investment/news/modify}" method="get" hidden="hidden">
+                <input id="newsCode" name="newsCode">
+            </form>
+
+            <form id="newsDeleteForm" th:action="@{/seller/investment/news/delete}" method="get" hidden="hidden">
+                <input id="delNewsCode" name="delNewsCode">
+            </form>
+
+        </div>
+    </div>
+</th:block>
+</body>
+</html>

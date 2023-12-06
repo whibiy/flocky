@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{seller/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+        // 현재 URL 가져오기
+        let currentUrl = window.location.href;
+
+        // 특정 키와 값 설정
+        let searchKey = 'searchKey';
+        let searchValue = 'searchValue';
+        let amDateSettStartDate = 'amDateSettStartDate';
+        let amDateSettEndDate = 'amDateSettEndDate';
+        let searchSelectValue = 'searchSelectValue';
+        let currentPage = 'currentPage';
+        let lastPage = 'lastPage';
+        let startPageNum = 'startPageNum';
+        let endPageNum = 'endPageNum';
+
+        // URL 파싱하여 쿼리스트링 맵으로 변환
+        let urlParams = new URLSearchParams(window.location.search);
+
+        // 특정 키와 값 제거
+        urlParams.delete(searchKey);
+        urlParams.delete(searchValue);
+        urlParams.delete(amDateSettStartDate);
+        urlParams.delete(amDateSettEndDate);
+        urlParams.delete(searchSelectValue);
+        urlParams.delete(currentPage);
+        urlParams.delete(lastPage);
+        urlParams.delete(startPageNum);
+        urlParams.delete(endPageNum);
+
+        // 수정된 쿼리스트링을 URL에 반영
+        let newUrl = currentUrl.split('?')[0] + '?' + urlParams.toString();
+
+        if (window.location.href !== newUrl) {
+
+            // history.replaceState를 사용하여 주소창에서 쿼리스트링 숨기기
+            history.replaceState({}, document.title, newUrl);
+        }
+    </script>
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+
+    <div th:include="~{admin/judgement/investment/search/invest_jduge_search :: searchFragment}"></div>
+    <br>
+    <div class="admin-content-wrapper">
+        <table>
+            <thead>
+            <tr>
+                <th>투자 펀딩후 진행정보 코드</th>
+                <th>투자펀딩 공고코드</th>
+                <th>대표자 아이디</th>
+                <th>명의개서 대리계약</th>
+                <th>명의개서 대리계약 확인일</th>
+                <th>신주발행 결의</th>
+                <th>신주발행 결의 확인일</th>
+                <th>납입일 도래 여부</th>
+                <th>주금납입보관서</th>
+                <th>주금납입보관서 확인일</th>
+                <th>유상증자등기</th>
+                <th>유상증자등기 확인일</th>
+                <th>명의개서 대리인 선임</th>
+                <th>명의개서 대리인 선임 확인일</th>
+                <th>증권입고일 도래</th>
+                <th>증권입고 확인</th>
+                <th>수정</th>
+                <th>삭제</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${afterProcessList == null}">
+                <td colspan="18">투자 펀딩후 진행정보 목록이 없습니다.</td>
+            </tr>
+            <tr th:unless="${afterProcessList == null}" th:each="l : ${afterProcessList}">
+                <td>
+                    <a th:href="@{/seller/investment/view/after-process(afterProcessCode=${l.afterProcessCode})}"
+                       th:text="${l.afterFundrevenueCode}"></a>
+                </td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td>
+                    <a th:href="@{/seller/investment/update/after-process(afterProcessCode=${l.afterProcessCode})}">수정</a>
+                </td>
+                <td>
+                    <a th:href="@{/seller/investment/delete/after-process(afterProcessCode=${l.afterProcessCode})}">삭제</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+
+        <button type="button" class="submitBtn"
+                th:onclick="|location.href='@{/seller/investment/insert/after-process}'|">
+            등록하기
+        </button>
+        <button type="button" class="submitBtn"
+                th:onclick="|location.href='@{/seller/investment/update/after-process}'|">
+            수정하기
+        </button>
+
+        <div class="board-page-area">
+            <div class="list-controller-inner">
+                <ul>
+                    <li class="link-active"><a th:href="@{#}">1</a></li>
+                    <li><a th:href="@{#}">2</a></li>
+                    <li><a th:href="@{#}">3</a></li>
+                    <li><a th:href="@{#}">4</a></li>
+                    <li><a th:href="@{#}">5</a></li>
+                    <li><a th:href="@{#}">6</a></li>
+                </ul>
+                <div class="list-btn-area">
+                    <button class="prev-transfer">
+                        <span>prev</span>
+                    </button>
+                    <button class="next-transfer">
+                        <span>next</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</th:block>
+</html>

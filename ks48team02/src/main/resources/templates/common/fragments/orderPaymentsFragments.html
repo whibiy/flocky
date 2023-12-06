@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:fragment="rewardPayments">
+    <div class="project-info-title" style="margin: 0 0 20px;">
+        <h5>결제 코드</h5>
+        <p style="color: var(--maincolor);" th:text="${paymentsInfo.paymentCode}"></p>
+    </div>
+    <table class="settlement-log application-info-detail" style="border:none;">
+        <!-- contents -->
+        <tr>
+            <td>
+                주문자명
+            </td>
+            <td colspan="7" th:text="${OrderInfoById.orderName}"></td>
+        </tr>
+        <tr style="height: auto;">
+            <td colspan="8" style="height: 35px;">
+                상세
+            </td>
+        </tr>
+        <tr class="sub-table-area sub-table sub-table-tr" style="height: auto;">
+            <td style="height: 35px; width: 17%;">주문 금액</td>
+            <td style="height: 35px;">배송비</td>
+            <td style="height: 35px;">총 주문금액</td>
+            <td style="height: 35px;">사용 적립금액</td>
+            <td style="height: 35px;">등급 할인 금액</td>
+            <td style="height: 35px;">쿠폰 할인 금액</td>
+            <td colspan="2" style="height: 35px;">결제 예정금액</td>
+        </tr>
+        <tr>
+            <td style="background: #fff;"><span th:text="${paymentsInfo.orderPrice}"></span> 원</td>
+            <td><span th:text="${paymentsInfo.deliveryPrice}"></span> 원</td>
+            <td><span th:text="${paymentsInfo.orderTotalPrice}"></span> 원</td>
+            <td><span th:text="${paymentsInfo.useReservePrice}"></span> 원</td>
+            <td><span th:text="${paymentsInfo.discountRankPrice}"></span> 원</td>
+            <td><span th:text="${paymentsInfo.discountCouponPrice}"></span> 원</td>
+            <td colspan="2"><span th:text="${paymentsInfo.paymentScheduledPrice}"></span> 원</td>
+        </tr>
+        <tr class="sub-table-area sub-table sub-table-tr" style="height: auto;">
+            <td style="height: 35px; width: 17%;">결제 수단</td>
+            <td style="height: 35px;">입금계좌번호</td>
+            <td style="height: 35px;">입금자명</td>
+            <td style="height: 35px;">환불계좌번호</td>
+            <td style="height: 35px;">결제완료금액</td>
+            <td style="height: 35px;">결제기한</td>
+            <td style="height: 35px;">결제완료일</td>
+            <td style="height: 35px;">결제상태</td>
+        </tr>
+        <tr>
+            <td style="background: #fff;">
+                <!-- 체크 포인트 : 결제 수단 카테고리 미정 -->
+                <select id="paymentMethod" type="text" name="paymentMethod" >
+                    <option value="kb">국민</option>
+                    <option value="ibk" selected>기업</option>
+                    <option value="lh">농협</option>
+                    <option value="woori">우리</option>
+                    <option value="shinhan">신한</option>
+                    <option value="hana">하나</option>
+                    <option value="mg">새마을금고</option>
+                    <option value="kakaobank">카카오뱅크</option>
+                    <option value="tossbank">토스뱅크</option>
+                    <option value="noBank">무통장입금</option>
+                </select>
+            </td>
+            <td><input id="depositAccount" type="text" style="width:150px;"  name="depositAccount" th:value="${paymentsInfo.depositAccount}" th:disabled="${paymentsInfo.depositAccount == null}"></td>
+            <td><input type="text" name="depositName" style="width:100px;" th:value="${paymentsInfo.depositName}" th:disabled="${paymentsInfo.depositName == null}"></td>
+            <td><input id="refundAccount" type="text" style="width:150px;" name="refundAccount" th:value="${paymentsInfo.refundAccount}" th:disabled="${paymentsInfo.refundAccount == null}"></td>
+            <td><span th:text="${paymentsInfo.depositPrice}"></span> 원</td>
+            <td><span th:text="${(paymentsInfo.paymentDeadlineDate == null)? '-':paymentsInfo.paymentDeadlineDate}"></span></td>
+            <td><span th:text="${paymentsInfo.paymentCompletedDate}"></span></td>
+            <td th:text="${paymentsInfo.paymentState}"></td>
+        </tr>
+    </table>
+</th:block>
+
+<th:block th:fragment="donationPayments">
+
+    <div class="project-info-title" style="margin: 0 0 20px;">
+        <h5>결제 코드</h5>
+        <p style="color: var(--maincolor);" th:text="${paymentsInfo.paymentCode}"></p>
+    </div>
+
+    <table class="settlement-log application-info-detail" style="border:none;">
+        <!-- contents -->
+        <tr>
+            <td>
+                주문자명
+            </td>
+            <td colspan="6" >
+                <input name="donationName" th:value="${paymentsInfo.donationName}">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                주민등록번호
+            </td>
+            <td style="height: 35px; background: #fff;" colspan="6" >
+                <input type="text" th:value="${paymentsInfo.donationSecurityNumber}" name="donationSecurityNumber">
+            </td>
+        </tr>
+        <tr class="sub-table-area sub-table sub-table-tr" style="height: auto;">
+            <td rowspan="2" class="title-td" style="height: 35px;">주문 상세</td>
+            <td class="title-td" style="height: 35px; width: 20%">사용 기부 재화</td>
+            <td class="title-td" style="height: 35px;">총 금액</td>
+        </tr>
+        <!-- option contents -->
+        <tr class="option-info-tr">
+            <td style="height: 35px; background: #fff;">
+                <span th:text="${paymentsInfo.donationGoods}"><span>개
+            </td>
+            <td style="height: 35px; "><span th:text="${paymentsInfo.donationPrice}">0</span>원</td>
+        </tr>
+
+        </tr>
+    </table>
+</th:block>
+
+<th:block th:fragment="investPayments">
+
+    <div class="project-info-title" style="margin: 0 0 20px;">
+        <h5>결제 코드</h5>
+        <p style="color: var(--maincolor);" th:text="${paymentsInfo.paymentCode}"></p>
+    </div>
+
+    <table class="settlement-log application-info-detail" style="border:none;">
+        <!-- contents -->
+        <tr>
+            <td>
+                주문자명
+            </td>
+            <td colspan="6" th:text="${OrderInfoById.orderName}">
+                신형만
+            </td>
+        </tr>
+        <tr class="sub-table-area sub-table sub-table-tr" style="height: auto;">
+            <td rowspan="2" class="title-td" style="height: 35px;">주문 상세</td>
+            <td class="title-td" style="height: 35px; width: 20%">단가</td>
+            <td class="title-td" style="height: 35px; width: 8%">주문 수</td>
+            <td colspan="4" class="title-td" style="height: 35px;">총 금액</td>
+        </tr>
+        <!-- option contents -->
+        <tr class="option-info-tr">
+            <td style="height: 35px; background: #fff; "><span th:text="${paymentsInfo.buyStockPrice}">35,500</span>원</td>
+            <td style="height: 35px; ">
+                <span th:text="${paymentsInfo.buyStockCount}">35,500</span>
+            </td>
+            <td colspan="4" style="height: 35px; "><span th:text="${paymentsInfo.orderPrice}">17,500,000</span>원</td>
+        </tr>
+        <tr class="sub-table-area sub-table sub-table-tr" style="height: auto;">
+            <td style="height: 35px; width: 17%;">입금 은행명</td>
+            <td style="height: 35px;">입금 계좌번호</td>
+            <td style="height: 35px;">입금 기한</td>
+            <td style="height: 35px;">환불 은행명</td>
+            <td style="height: 35px;">환불 계좌번호</td>
+            <td style="height: 35px;">결제일자</td>
+            <td style="height: 35px;">결제상태</td>
+        </tr>
+        <tr>
+            <td style="background: #fff;">
+                <select id="investorsBankName" type="text" name="investorsBankName">
+                    <option value="kb">국민</option>
+                    <option value="ibk" selected>기업</option>
+                    <option value="lh">농협</option>
+                    <option value="woori">우리</option>
+                    <option value="shinhan">신한</option>
+                    <option value="hana">하나</option>
+                    <option value="mg">새마을금고</option>
+                    <option value="kakaobank">카카오뱅크</option>
+                    <option value="tossbank">토스뱅크</option>
+                    <option value="noBank">무통장입금</option>
+                </select>
+            </td>
+            <td><input id="investorsAccount" type="text" name="investorsAccount" th:value="${paymentsInfo.investorsAccount}"></td>
+            <td th:text="${paymentsInfo.subscriptionPaymentDate}"></td>
+            <td>
+                <select id="depositBankName" type="text" name="depositBankName">
+                    <option value="kb">국민</option>
+                    <option value="ibk" selected>기업</option>
+                    <option value="lh">농협</option>
+                    <option value="woori">우리</option>
+                    <option value="shinhan">신한</option>
+                    <option value="hana">하나</option>
+                    <option value="mg">새마을금고</option>
+                    <option value="kakaobank">카카오뱅크</option>
+                    <option value="tossbank">토스뱅크</option>
+                    <option value="noBank">무통장입금</option>
+                </select>
+            </td>
+            <td><input id="depositAccount" type="text" name="depositAccount" th:value="${paymentsInfo.depositAccount}"></td>
+            <td th:text="${paymentsInfo.paymentDeadlineDate}"></td>
+            <td th:text="${paymentsInfo.subscriptionState}"></td>
+        </tr>
+
+    </table>
+</th:block>
+
+</html>

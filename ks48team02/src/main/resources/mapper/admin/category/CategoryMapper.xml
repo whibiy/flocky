@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksmart.ks48team02.admin.mapper.category.CategoryMapper">
+
+
+    <resultMap id="categoryResultMap" type="Category">
+        <id property="totalCategoryCode"        column="total_category_code"/>
+        <result property="memberId"             column="member_Id"/>
+        <result property="projectPatition"      column="project_patition"/>
+        <result property="categoryName"         column="category_name"/>
+        <result property="categoryComment"      column="category_comment"/>
+        <result property="categoryUsageStatus"  column="category_usage_status"/>
+        <result property="categoryRegDate"      column="category_reg_date"/>
+    </resultMap>
+
+<!--    카테고리 등록-->
+    <insert id="createCategory" parameterType="Category">
+        insert into
+        total_category
+    (
+        total_category_code,
+        member_id,
+        project_patition,
+        category_name,
+        category_comment,
+        category_usage_status,
+        category_reg_date
+    )
+        select
+        concat('category_code_',LPAD(COUNT(total_category_code) +1,3,'0')),
+        #{memberId},
+        #{project_patition},
+        #{category_name},
+        #{category_comment},
+        #{category_usage_status},
+        #{category_reg_date},
+
+        from
+        total_category;
+    </insert>
+
+<!--    카테고리 수정-->
+    <update id="updateCategory" parameterType="Category">
+        update
+        total_category
+        set
+        member_Id = #{memberId},
+        project_patition = #{projectPatition},
+        category_name = #{categoryName},
+        category_comment = #{categoryComment},
+        category_usage_status = #{categoryUsageStatus},
+        category_reg_date = #{categoryRegDate}
+        where
+        total_category_code = #{totalCategoryCode};
+    </update>
+
+<!--    카테고리 특정 정보 조회-->
+    <select id="getCategoryCodeById" parameterType="String" resultMap="categoryResultMap">
+        /* 카테고리 특정 정보 조회*/
+        select
+        tc.total_category_code,
+        tc.member_id,
+        tc.project_patition,
+        tc.category_name,
+        tc.category_comment,
+        tc.category_usage_status,
+        tc.category_reg_date
+        from
+        total_category as tc
+        where
+        total_category_code = #{totalCategoryCode};
+    </select>
+
+
+<!--    카테고리 목록 조회-->
+    <select id="getCategoryList" parameterType="String" resultMap="categoryResultMap">
+        select
+            tc.total_category_code,
+            tc.member_id,
+            tc.project_patition,
+            tc.category_name,
+            tc.category_comment,
+            tc.category_usage_status,
+            tc.category_reg_date
+        from
+            total_category as tc
+        <if test="cateSelect != 'total'">
+            where
+                tc.project_patition = #{cateSelect};
+        </if>
+
+    </select>
+
+<!--    카테고리 대분류 조회-->
+    <select id="getCategoryAdd" resultMap="categoryResultMap">
+        SELECT
+            tc.project_patition
+        FROM
+            total_category AS tc
+        GROUP BY
+            tc.project_patition;
+    </select>
+
+<!--    카테고리 중분류 조회-->
+    <select id="getCategoryDepth2" parameterType="String" resultMap="categoryResultMap">
+        SELECT
+        tc.category_name
+        FROM
+        total_category AS tc
+        WHERE tc.project_patition = #{projectPatition};
+    </select>
+</mapper>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksmart.ks48team02.seller.mapper.settlement.SelSettlementMapper">
+
+    <!-- resultset map -->
+    <resultMap id="settPrjListMap" type="SettlementPrjList">
+        <result property="projectCode" column="projectCode"/>
+        <result property="subject" column="subject"/>
+        <result property="storeCode" column="storeCode"/>
+        <result property="storeName" column="store_name"/>
+        <result property="projectPartition" column="projectPartition"/>
+        <result property="projectGoalMoney" column="projectGoalMoney"/>
+        <result property="projectAchievementMoney" column="projectAchievementMoney"/>
+        <result property="projectAchievementPercent" column="projectAchievementPercent"/>
+        <result property="projectEndDate" column="projectEndDate"/>
+        <result property="memberId" column="member_id"/>
+    </resultMap>
+
+    <!-- settlement project list map -->
+    <resultMap id="SettListMap" type="projectSettlementApplication">
+        <id property="projectSalesCode" column="project_sales_code"/>
+        <result property="memberId" column="member_id"/>
+        <result property="projectCode" column="project_code"/>
+        <result property="projectPartition" column="project_partition"/>
+        <result property="consumerAmount" column="consumer_amount"/>
+        <result property="totalFundingPrice" column="total_funding_price"/>
+        <result property="chargePercent" column="charge_percent"/>
+        <result property="chargePrice" column="charge_price"/>
+        <result property="netProfit" column="net_profit"/>
+        <result property="projectSalesDate" column="project_sales_date"/>
+        <result property="projectTargetAmount" column="project_target_amount"/>
+        <result property="goodsStartDate" column="goods_start_date"/>
+        <result property="goodsEndDate" column="goods_end_date"/>
+        <result property="processingApproved" column="processing_approved"/>
+        <result property="processingDate" column="processing_date"/>
+        <result property="reason" column="reason"/>
+        <result property="state" column="state"/>
+        <result property="processedDate" column="processed_date"/>
+        <result property="adminId" column="admin_id"/>
+    </resultMap>
+
+    <!-- project list by store code-->
+    <select id="getSettPrjListByCode" parameterType="String" resultMap="settPrjListMap">
+        WITH resultset AS (
+            SELECT
+                r.reward_project_code AS projectCode,
+                r.project_subject AS subject,
+                r.store_code AS storeCode,
+                '리워드' AS projectPartition,
+                r.project_goal_money AS projectGoalMoney,
+                r.project_achievement_money AS projectAchievementMoney,
+                r.project_achievement_percent AS projectAchievementPercent,
+                r.project_end_date AS projectEndDate
+            FROM
+                reward_project AS r
+            WHERE
+                r.project_condition = 4 AND r.store_code = #{sstorecode}
+            UNION ALL
+            SELECT
+                d.donation_code AS projectCode,
+                d.donation_subject AS subject,
+                d.store_code AS storeCode,
+                '기부' AS projectPartition,
+                d.donation_goal_money AS projectGoalMoney,
+                d.donation_achievement_money AS projectAchievementMoney,
+                d.donation_achievement_percent AS projectAchievementPercent,
+                d.donation_end_date AS projectEndDate
+            FROM
+                donation AS d
+            WHERE
+                d.donation_condition = 4 AND d.store_code = #{sstorecode}
+            UNION ALL
+            SELECT
+                i.investment_code AS projectCode,
+                i.investment_subject AS subject,
+                i.store_code AS storeCode,
+                '투자' AS projectPartition,
+                i.investment_amount AS projectGoalMoney,
+                i.investment_achievement_money AS projectAchievementMoney,
+                i.invest_achievement_percent AS projectAchievementPercent,
+                i.investment_deadline AS projectEndDate
+            FROM
+                investment AS i
+            WHERE
+                i.invest_judge_situation = 4 AND i.store_code = #{sstorecode}
+        )
+
+        SELECT
+            rs.projectCode,
+            rs.subject,
+            rs.storeCode,
+            s.store_name,
+            rs.projectPartition,
+            rs.projectGoalMoney,
+            rs.projectAchievementMoney,
+            rs.projectAchievementPercent,
+            rs.projectEndDate,
+            s.member_id
+        FROM
+            resultset AS rs
+            INNER JOIN
+            store AS s
+            ON rs.storeCode = s.store_code
+        LIMIT 15;
+    </select>
+
+    <select id="getSettPrjList" parameterType="String" resultMap="SettListMap">
+
+    </select>
+</mapper>

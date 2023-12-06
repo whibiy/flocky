@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+    <th:block th:fragment="rewardOrderDashboard">
+        <div class="order-total-info">
+            <div class="info-items">
+                <h5 >총 주문 금액</h5>
+                <p class="order-total-price"><span class="price-data" th:data-value="${paymentsInfo.orderTotalPrice}">0</span>원</p>
+            </div>
+            <span class="sign">=</span>
+            <div class="info-items">
+                <h5>주문 금액</h5>
+                <p class="order-total-price"><span class="price-data" th:data-value="${paymentsInfo.orderPrice}">0</span>원</p>
+            </div>
+            <span class="sign">+</span>
+            <div class="info-items">
+                <h5>배송비</h5>
+                <p class="order-total-price"><span class="price-data" th:data-value="${paymentsInfo.deliveryPrice}">0</span>원</p>
+            </div>
+        </div>
+    </th:block>
+
+    <th:block th:fragment="donationOrderDashboard">
+        <div class="order-total-info">
+            <div class="info-items">
+                <h5>환산 금액</h5>
+                <p class="order-total-price"><span class="price-data" th:data-value="${paymentsInfo.donationPrice}">0</span>원</p>
+            </div>
+            <span class="sign">=</span>
+            <div class="info-items">
+                <h5>사용 재화 수</h5>
+                <p class="order-total-price"><span th:data-value="${paymentsInfo.donationGoods}">0</span>개</p>
+            </div>
+        </div>
+    </th:block>
+
+    <th:block th:fragment="investOrderDashboard">
+        <div class="order-total-info">
+            <div class="info-items">
+                <h5>총 주문 금액</h5>
+                <p class="order-total-price"><span class="price-data" th:data-value="${paymentsInfo.orderPrice}">0</span>원</p>
+            </div>
+            <span class="sign">=</span>
+            <div class="info-items">
+                <h5>주당 금액</h5>
+                <p class="order-total-price"><span class="price-data" th:data-value="${paymentsInfo.buyStockPrice}">0</span>원</p>
+            </div>
+            <span class="sign">x</span>
+            <div class="info-items">
+                <h5>구입 갯수</h5>
+                <p class="order-total-price"><span th:data-value="${paymentsInfo.buyStockCount}">0</span>개</p>
+            </div>
+        </div>
+
+    </th:block>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{seller/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+    <style>
+        #slSettlementBankInfo input,
+        #slSettlementBankInfo select{
+            border: 1px solid var(--borderColor);
+            height: 25px;
+            padding: 3px;
+        }
+        #slSettlementBankInfo label {
+            margin: 0 6px 0 15px;
+        }
+        #slSettlementBankInfo input:focus,
+        #slSettlementBankInfo select:focus{
+            border: 1px solid var(--maincolor);
+        }
+    </style>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <script th:src="@{/common/js/submenuJs.js}"></script>
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+
+    </script>
+</th:block>
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <div class="admin-wrapper"> <!-- 수정 -->
+        <div class="admin-content-wrapper form-table">
+            <div class="project-info-title-area">
+                <div class="project-info-title">
+                    <h5>프로젝트 코드</h5>
+                    <p style="color: var(--maincolor);">rwd_20230505_0001</p>
+                </div>
+                <div class="info-more-btn">
+                    <a class="more-btn" style="padding: 7px 10px 9px 19px;">
+                        <span>공고 상세 보기</span>
+                    </a>
+                </div>
+            </div>
+            <form class="projectInfoDetail" method="get">
+                <table class="settlement-log application-info-detail" style="border:none;">
+                    <tbody>
+                        <!-- contents -->
+                        <tr>
+                            <td>
+                                카테고리
+                            </td>
+                            <td colspan="4">
+                                카테고리 내용
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td>
+                               프로젝트 제목
+                            </td>
+                            <td colspan="4">
+                                [글로벌23억] 보이지 않는 터치패드! 모키보 퓨전키보드 화이트 에디션!
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td>
+                                프로젝트 내용
+                            </td>
+                            <td colspan="4">
+                                휴대용 무선 키보드 위에 터치패드 + 스마트 케이스까지! 한층 더 세련된 화이트 에디션으로 돌아왔어요.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                               공고 마감일
+                            </td>
+                            <td colspan="4">
+                                2023-10-23
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="5">
+                                상세
+                            </td>
+                        </tr>
+                        <tr class="sub-table-area sub-table sub-table-tr">
+                            <td>펀딩 목표 금액</td>
+                            <td>총 주문 완료 수</td>
+                            <td>주문 취소 수</td>
+                            <td>펀딩 달성 금액</td>
+                            <td>펀딩 달성률</td>
+                        </tr>
+                        <tr>
+                            <td style="background: #fff;"><span>500,000</span> 원</td>
+                            <td><span>34502</span> 건</td>
+                            <td><span>42</span> 건</td>
+                            <td><span>314,000,000</span> 원</td>
+                            <td><span>628</span> %</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </form>
+
+        </div>
+
+        <!-- contents -->
+        <div class="admin-content-wrapper form-table" style="margin-top: 40px;">
+            <div class="project-info-title">
+                <h5>정산 신청 코드</h5>
+                <p style="color: var(--maincolor);">rwd_20230505_0001</p>
+            </div>
+            <form id="projectInfoDetailBt" method="get">
+                <table class="settlement-log application-info-detail" style="border:none;">
+                    <tbody>
+                    <!-- contents -->
+                    <tr>
+                        <td>
+                            프로젝트 분류
+                        </td>
+                        <td colspan="5">
+                            리워드
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>
+                            프로젝트 제목
+                        </td>
+                        <td colspan="5">
+                            [글로벌23억] 보이지 않는 터치패드! 모키보 퓨전키보드 화이트 에디션!
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            스토어 명
+                        </td>
+                        <td colspan="5">
+                            (주) CJ
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            정산 신청일
+                        </td>
+                        <td colspan="5">
+                            2023-10-20
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            정산 예정일
+                        </td>
+                        <td colspan="5">
+                            2023-10-27
+                        </td>
+                    </tr>
+                    <tr style="height: auto;">
+                        <td colspan="6" style="height: 35px;">
+                            상세
+                        </td>
+                    </tr>
+                    <tr class="sub-table-area sub-table sub-table-tr" style="height: auto;">
+                        <td style="height: 35px; width: 17%;">기본 결제 금액 (a)</td>
+                        <td style="height: 35px;">수수료율 (b)</td>
+                        <td style="height: 35px;">수수료 (a * b)</td>
+                        <td style="height: 35px;">쿠폰 사용 금액 (c)</td>
+                        <td style="height: 35px;">포인트 결제 금액 (d)</td>
+                        <td style="height: 35px;">총 정산 금액 (a - (a * b) - c - d)</td>
+                    </tr>
+                    <tr>
+                        <td style="background: #fff;"><span>150,000,000</span> 원</td>
+                        <td><span>7</span> 원</td>
+                        <td><span>10,500,000</span> %</td>
+                        <td><span>1,540,000</span> 원</td>
+                        <td><span>326,000</span> 원</td>
+                        <td><span>141,366,000</span> 원</td>
+                    </tr>
+                    <tr >
+                        <td colspan="6" style="height: 35px;">
+                            정산 정보
+                        </td>
+                    </tr>
+                    <tr style="height: auto;">
+                        <td>
+                            계좌 정보
+                        </td>
+                        <td id="slSettlementBankInfo" colspan="5" style=" text-align: left !important;">
+                            <label for="settlementBank" style="margin:0; margin-right:6px;">은행선택</label>
+                            <select id="settlementBank" type="text" name="settlementBank">
+                                <option value="">=== 은행을 선택해주세요 ===</option>
+                                <option value="kb">국민</option>
+                                <option value="ibk" selected>기업</option>
+                                <option value="lh">농협</option>
+                                <option value="woori">우리</option>
+                                <option value="shinhan">신한</option>
+                                <option value="hana">하나</option>
+                                <option value="mg">새마을금고</option>
+                                <option value="kakaobank">카카오뱅크</option>
+                                <option value="tossbank">토스뱅크</option>
+                            </select>
+
+                            <label for="settlementBankNumber">계좌번호</label>
+                            <input id="settlementBankNumber" type="text" name="settlementBankNumber" value="50342-13-6453432">
+
+                            <label for="settlementBankName">예금주</label>
+                            <input id="settlementBankName" type="text" name="settlementBankName" value="김플루" style="width:70px">
+
+                            <span class="error-message" style="margin-left:10px;">계좌번호를 정확하게 입력해주세요</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            처리 현황
+                        </td>
+                        <td colspan="5" style="text-align: left !important;">
+                            처리전
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="btn-area">
+                    <ul>
+                        <li>
+                            <button id="settBackBtn" class="submitBtn" type="button" onclick="backLocationFn()">뒤로</button>
+                        </li>
+                        <li>
+                            <button id="settUpdateBtn" class="submitBtn" type="button">수정</button>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</th:block>
+</body>
+</html>

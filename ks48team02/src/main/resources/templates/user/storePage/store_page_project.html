@@ -1,0 +1,158 @@
+<!doctype html>
+
+<html xmlns:th="http://www.thymeleaf.org/" lang="ko">
+
+<body>
+<div th:fragment="project" class="tab-pane fade show active" id="project" role="tabpanel" aria-labelledby="project-tab" style="padding: 20px;">
+    <!--진행 중인 펀딩 -->
+    <h5 style="font-weight: bold;">진행 중인 펀딩</h5>
+
+    <div style="display : flex;flex-direction: column; padding: 30px; align-items: center;">
+        <!--  tab 내부 본문 영역 -->
+        <div class="ingContainer" id="ingProjectTab" style="padding-bottom: 20px;" >
+            <!--  내역 리스트 항목 -->
+            <div class="contentsContainer">
+                <div class="card" style="width: 45rem; " >
+
+
+                    <!-- 내역 내용 -->
+                    <div class="card-body" style="display: flex">
+                        <!-- 이미지  -->
+                        <div>
+                            <img class="card-img-top" style="width: 160px; height: 160px;" src="https://contents.lotteon.com/itemimage/_v150640/LO/19/98/02/00/32/_1/99/80/20/03/3/LO1998020032_1998020033_1.jpg/dims/optimize/dims/resizemc/400x400"
+                                 alt="...">
+                        </div>
+
+                        <!-- 설명 / 버튼 -->
+                        <form action="" method="post" style="display: flex; flex-direction: column; justify-content:space-between; padding-left:30px; width: 1200px;">
+                            <p class="card-text">2023.12.30 마감 예정</p>
+                            <h5 class="card-title">[9만원대 | 가성비 끝판왕] 르젠 모래시계 가열식 가습기</h5>
+                            <div>
+                                <span style="color:var(--maincolor);font-weight: bold; ">99,000</span>
+                                <span style="font-weight: bold;">원~</span>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--진행 중인 펀딩 끝-->
+
+    <!-- 종료된 펀딩 -->
+    <h5 style="font-weight: bold;">종료된 펀딩</h5>
+    <div id="selectContainer" style="display: flex; justify-content: start; width: 250px; height: 50px; gap:20px;">
+        <select name="" class="form-select form-select-lg" id="selectFund" style=" font-size:16px;
+                    padding:10px 70px 10px 10px; color:dimgray;">
+            <option class="fundCategory" value="viewAll" selected>전체</option>
+            <option class="fundCategory" value="reward">리워드</option>
+            <option class="fundCategory" value="investment">투자</option>
+            <option class="fundCategory" value="donation">기부</option>
+        </select>
+    </div>
+    <div style="display : flex;flex-direction: column; padding: 30px; align-items: center;">
+
+        <!--  투자 펀딩 선택시 나타날 페이지  -->
+        <!--  내역 리스트 항목 -->
+        <!--  tab 내부 본문 영역 -->
+        <div class="bodyContainer" id="investmentTab" style="padding-bottom: 20px;">
+
+            <!--  내역 리스트 항목 -->
+            <div class="contentsContainer">
+                <div class="card" style="width: 35rem;">
+
+
+                    <!-- 내역 내용 -->
+                    <div class="card-body" style="display: flex">
+                        <!-- 이미지  -->
+                        <div>
+                            <img class="card-img-top" style="width: 160px; height: 160px;" src="https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMjA2MjdfMjY5%2FMDAxNjU2MzIyNDkxNTAw.MyuSHCloNL5z2mgJhRk1Z4u__TYNKf-OqxW-jKEtDIQg.6WbKNtW5efJE2zbANoWbmq0B-raZae4wKy1_TsyS5WQg.JPEG.bammango0106%2Ffile1_16371338044gozwo2u45.jpg&type=a340"
+                                 alt="...">
+                        </div>
+
+                        <!-- 설명 / 버튼 -->
+                        <form action="" method="post" style="display: flex; flex-direction: column; justify-content:space-between; padding-left:30px; width: 1200px;">
+                            <p class="card-text">펀딩 성공</p>
+                            <h5 class="card-title">고흐 전시회</h5>
+                            <div style="display: flex; justify-content: end; margin:0;">
+                                <h5 style="color: var(--maincolor); font-weight: bold;">322% 달성</h5>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--  기부 펀딩 선택시 나타날 페이지  -->
+        <!--  tab 내부 본문 영역 -->
+        <div class="bodyContainer" id="donationTab" style="padding-bottom: 20px;">
+
+            <!--  내역 리스트 항목 -->
+            <div class="contentsContainer">
+                <div class="card" style="width: 35rem;">
+
+                    <!-- 내역 내용 -->
+                    <div class="card-body" style="display: flex">
+                        <!-- 이미지  -->
+                        <div>
+                            <img class="card-img-top" style="width: 160px; height: 160px;" src="https://contents.lotteon.com/itemimage/_v150640/LO/19/98/02/00/32/_1/99/80/20/03/3/LO1998020032_1998020033_1.jpg/dims/optimize/dims/resizemc/400x400"
+                                 alt="...">
+                        </div>
+
+                        <!-- 설명 / 버튼 -->
+                        <form action="" method="post" style="display: flex; flex-direction: column; justify-content:space-between; padding-left:30px; width: 1200px;">
+                            <p class="card-text">펀딩 성공</p>
+                            <h5 class="card-title">길고양이들을 도와주세요</h5>
+                            <div style="display: flex; justify-content: end; margin:0;">
+                                <h5 style="color: var(--maincolor); font-weight: bold;">390% 달성</h5>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- 종료된 펀딩 끝 -->
+    <script>
+        /* 선택한 select 항목별로 내용 나타나게  */
+        /* 일단 모든 항목을 숨기고 나타나게 해야 할 듯 */
+        $selectFund = document.getElementById('selectFund');
+        $rewardTab = document.getElementById('rewardTab');
+        $investmentTab = document.getElementById('investmentTab');
+        $donationTab = document.getElementById('donationTab');
+
+        $bodyContainer = document.querySelectorAll('.bodyContainer');
+
+        $selectFund.addEventListener('change', function(){
+            $bodyContainer.forEach((element) => {
+                element.style.display = 'none';
+            })
+
+            let selectedValue = $selectFund.value;
+            switch (selectedValue) {
+                case "reward"     : $rewardTab.style.display = 'block';
+                    break;
+                case "investment" : $investmentTab.style.display = 'block';
+                    break;
+                case "donation"   : $donationTab.style.display = 'block';
+                    break;
+                default           :
+                    for(let i=0; i<$bodyContainer.length; i++){
+                        $bodyContainer[i].style.display = 'block';
+                    }
+            }
+        })
+    </script>
+</div>
+
+
+
+
+
+
+</body>
+</html>

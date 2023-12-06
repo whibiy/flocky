@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+
+
+<div class="col-lg-5" th:fragment="asideFragments">
+    <div class="col-lg-12" style="height: 40px"></div>
+    <div class="container" style="position: sticky; top: 45px; scroll-behavior: smooth;">
+        <div>
+            <span style="display: inline-block;">
+                <a id="category" th:href="@{/user/reward(category=${rewardProject.rewardCategoryCode})}" style="text-decoration: none; color: grey" th:text="|# ${rewardProject.categoryName}|"></a>
+            </span>
+
+        </div>
+        <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%"></div>
+        <div>
+            <p style="font-weight: bold; font-size: 20px; color: black" th:text="${rewardProject.projectSubject}"></p>
+            <p id="subContens"></p>
+        </div>
+        <div>
+            <div>
+                <span style="font-size: 20px; color: #235FD9; font-weight: bold" th:text="${rewardProject.totalJoinNumber}">0</span>
+                <span style="color: #235FD9" >명 참여</span>
+                <span id="deadLine" style="margin-left: 5px; background: #daf6fb; color: #235FD9; border-radius: 5px; padding: 2px;"></span>
+                <input id="projectEndDate" th:value="${rewardProject.projectEndDate}" hidden="hidden">
+            </div>
+            <div>
+                <span id="achievementMoney" style="font-size: 20px; color: black; font-weight: bold;">480,200</span>
+                <span style="color: black">원 달성</span>
+                <span style="margin-left: 5px; background: #daf6fb; color: #235FD9; border-radius: 5px; padding: 2px;" th:text="|${rewardProject.projectAchievementPercent}% 달성|"></span>
+
+                    <button id="likeBtn" type="button" class="btn btn-small btn-outline-danger float-lg-right">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="lightGrey" class="bi bi-heart-fill" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+                        </svg> 찜
+                    </button>
+
+            </div>
+
+
+
+        </div>
+        <div style="border: 0.3px solid #f3f4f5; margin: 10px; width: 100%"></div>
+
+        <div style="border: 3px solid #f3f4f5; border-radius: 5px; overflow: auto; overflow-x: hidden; width: 100%; height: 600px; padding: 10px;">
+
+
+                <div class="option mb-2 text-dark" style="border: 3px solid #f3f4f5; border-radius: 5px; cursor: pointer;" th:unless="${rewardProject == null}" th:each="l : ${rewardProject.rewardOptionList}"
+                     th:onclick="|location.href='@{/user/reward/order(rewardProjectCode=${rewardProject.rewardProjectCode}, rewardOptionCode=${l.rewardOptionCode})}'|">
+                    <span class="font-weight-bold ml-2" th:text="|${#numbers.formatInteger(l.optionPrice, 0, 'COMMA')} 원|"></span>
+                    <span style="margin-left: 5px; background: #daf6fb; color: #235FD9; border-radius: 5px; padding: 2px;" class="rewardOptionLeftAmount" th:text="|${#numbers.formatInteger(l.optionLimitQuantity - l.totalOrderQuantity, 3, 'COMMA')} 개 남음|"></span>
+                    <div style="border: 0.3px solid #f3f4f5; margin: 5px; width: 100%"></div>
+
+                    <span class="rewardOptionName ml-2 font-weight-bold" th:text="${l.optionName}"></span>
+                    <div style="border: 0.3px solid #f3f4f5; margin: 5px; width: 100%"></div>
+
+                    <textarea style="width: 90%; height: 20px; overflow: hidden; border: none; resize: none;" readonly="readonly" class="rewardOptionContents ml-2" th:text="${l.optionContents}"></textarea>
+                    <div style="border: 0.3px solid #f3f4f5; margin: 5px; width: 100%"></div>
+
+                    <span class="ml-2">배송비</span>
+                    <span class="rewardDeliverPrice font-weight-bold float-right mr-2" th:if="${l.optionDeliveryPrice} == 0">무료 배송</span>
+                    <span class="rewardDeliverPrice font-weight-bold float-right mr-2" th:unless="${l.optionDeliveryPrice} == 0" th:text="|${#numbers.formatInteger(l.optionDeliveryPrice, 0, 'COMMA')} 원|"></span>
+                    <div style="border: 0.3px solid #f3f4f5; margin: 5px; width: 100%"></div>
+
+                    <span class="ml-2">발송 시작일</span>
+                    <span class="rewardDeliverDate font-weight-bold float-right mr-2" th:text="${#strings.substring(l.optionEstimatedDeliveryDate,0,10)}"></span>
+                    <div style="border: 0.3px solid #f3f4f5; margin: 5px; width: 100%"></div>
+
+                    <span class="ml-2">제한 수량</span>
+                    <span class="rewardLimitQuantity font-weight-bold float-right mr-2 text-danger" th:text="|${#numbers.formatInteger(l.optionLimitQuantity, 0, 'COMMA')} 개|"></span>
+                </div>
+
+        </div>
+
+        <div>
+            <br>
+            <a th:href="@{/user/reward/order(rewardProjectCode=${rewardProject.rewardProjectCode})}">
+                <button id="rewardBtn" type="button"
+                        style="background: #235FD9; width: 100%; height: 80px; font-size: 30px; color: white; border-radius: 15px">펀딩하기
+                </button>
+            </a>
+
+        </div>
+
+        <div style="height: 20px"></div>
+        <div style="border: 3px solid #f3f4f5; border-radius: 30px; padding: 20px; text-align: center">
+            <div>
+                <div>스토어</div>
+                <div class="row justify-content-center">
+                    <div class="ProfileImage"
+                         style="width: 40px; height: 40px; background: #EEE; margin-right: 3%;"></div>
+                    <a th:href="@{/user/storePage/{storeCode}(storeCode=${rewardProject.storeCode})}"><div class="" style="color: black; font-weight: bold; font-size: 20px;" th:text="${rewardProject.regCompany}"></div></a>
+                </div>
+                <div style="color: #002a80; font-weight: bold; font-size: 15px;">2320명이 팔로우 중</div>
+                <div><a th:href="@{#}" class="btn btn-secondary" id="goInquiryBtn">문의하기</a>
+                    <button type="button" class="btn btn-primary" id="followBtn">팔로우</button>
+                </div>
+            </div>
+        </div>
+        <div style="border: 3px solid #f3f4f5; border-radius: 30px; padding: 20px; text-align: center">
+            <div>
+                <div style="color: #002a80; font-weight: bold">총 누적 펀딩액 3억원+</div>
+                <div th:text="|문의 전화 : ${rewardProject.storeMobile}|"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <form id="removeLawSatistifyForm" th:action="@{/admin/investment/delete/law-satistify}" method="post">
+        <div class="container admin-content-wrapper">
+
+                <div class="row g-5" style="justify-content: center;">
+                    <div class="col-md-7 col-lg-8">
+                        <div class="row g-3">
+
+                            <div class="my-2 col-12">
+                                <input type="hidden" id="lawSatistifyCode" name="lawSatistifyCode" th:value="*{lawSatistifyCode}" readonly="readonly"/>
+                                <label for="memberPw" class="form-label fw-bord text-dark">관리자 비밀번호</label>
+                                <input type="password" class="form-control" id="memberPw" name="memberPw" placeholder="관리자 비밀번호를 재입력해주세요.">
+                            </div>
+                            <br>
+
+                        <hr class="my-4">
+
+                        <button class="my-5 w-100 btn btn-primary btn-lg" type="submit" id="removeLawSatistifyBtn">삭제하기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</th:block>
+</html>

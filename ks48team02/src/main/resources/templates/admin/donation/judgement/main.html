@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+    <style>
+        .table-data-center-modify{
+            text-align: center;
+            color: blue;
+            text-decoration: underline;
+        }
+        .judgement-approve-btn:active{
+            box-shadow: inset -.3rem -.1rem 1.4rem  #FBFBFB, inset .3rem .4rem .8rem #BEC5D0;
+            cursor: pointer;
+        }
+        .judgement-approve-btn{
+            /* 상자 디자인 큰틀*/
+            padding: 5px;
+            border: 0px;
+            background-color: #235FD9;
+
+            /* 그림자 */
+            border-radius: 5px;
+            box-shadow:.5rem .3rem 1.4rem  #BEC5D0, -.1rem -.2rem .8rem #FBFBFB;
+            /* box-shadow:-.2rem -.2rem 1.8rem white, .8rem .8rem 1.4rem  #AAB7CB; */
+
+            /* 글씨 */
+            color: whitesmoke;
+            font-weight: bold;
+
+            animation-name: keybtn-language;
+            animation-duration: .2s;
+        }
+        .judgement-reject-btn:active{
+            box-shadow: inset -.3rem -.1rem 1.4rem  #FBFBFB, inset .3rem .4rem .8rem #BEC5D0;
+            cursor: pointer;
+        }
+        .judgement-reject-btn{
+            /* 상자 디자인 큰틀*/
+            padding: 5px;
+            border: 0px;
+            background-color: #ff333a;
+
+            /* 그림자 */
+            border-radius: 5px;
+            box-shadow:.5rem .3rem 1.4rem  #BEC5D0, -.1rem -.2rem .8rem #FBFBFB;
+            /* box-shadow:-.2rem -.2rem 1.8rem white, .8rem .8rem 1.4rem  #AAB7CB; */
+
+            /* 글씨 */
+            color: whitesmoke;
+            font-weight: bold;
+
+            animation-name: keybtn-language;
+            animation-duration: .2s;
+        }
+        #commentBox {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            z-index: 99999;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.2);
+        }
+        .comment-box-content {
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-top: 15px;
+            padding-bottom: 10px;
+            width: 550px;
+            height: 550px;
+            background: #fff;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 20px;
+        }
+    </style>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+
+        function sortItemClickedStyle(element) {
+            const listItems = document.querySelectorAll("#sort-item-wrap li");
+
+            for (const listItem of listItems) {
+                listItem.classList.remove("selected");
+            }
+
+            element.classList.add("selected");
+        }
+        function cateItemClickedStyle(element) {
+            const listItems = document.querySelectorAll("#category-wrap li");
+            for (const listItem of listItems) {
+                listItem.classList.remove("selected");
+            }
+            element.classList.add("selected");
+        }
+
+        if($('.settlement-log tbody tr').length == 1){
+            $('.not-contents').show();
+        }else{
+            $('.not-contents').hide();
+        }
+
+        let donationCode = "none";
+        // 심사 승인,거부 클릭 시 발생 이벤트
+        const $commentBox = $('#commentBox');
+        $("button").click(function() {
+            const $clickedButton = $(this);
+            // 심사 반려 버튼 눌렀을 시
+            if($clickedButton.prop('class') == 'judgement-reject-btn'){
+                donationCode = $clickedButton.parent('td').parent('tr').children('td:eq(0)').text();
+                $commentBox.css('display', 'block'); // 심사 거부 버튼 클릭 시 반려사유 창 열림
+            }
+            // 심사반려사유 완료 버튼 눌렀을 시
+            if($clickedButton.attr('id') == 'commentAddBtn'){
+                let judgeReasonTextLength = $('.comment-text-box').val().length;
+                if(judgeReasonTextLength < 10 || judgeReasonTextLength > 2000){
+                    alert('10글자 이상 2000자 미만으로 작성 해주세요!');
+                    return
+                }else{
+                    alert('심사가 반려 되었습니다.'); // 빈값 수정
+                    let judgeRejectReason = $('#donationJudgementSelect option:selected').val();
+                    let judgeRejectReasonDetail = $('.comment-text-box').val();
+                    let sessionId = $('#sessionId').val();
+                    window.location.href = `http://144.24.83.112/admin/donation/judgement?judgeReject=${donationCode}&judgeRejectReason=${judgeRejectReason}&judgeRejectReasonDetail=${judgeRejectReasonDetail}&adminId=${sessionId}`;
+                }
+            }
+            // 심사 승인 눌렀을 시
+            if($clickedButton.prop('class') == 'judgement-approve-btn'){
+                donationCode = $clickedButton.parent('td').parent('tr').children('td:eq(0)').text();
+                alert('심사가 승인 되었습니다.');
+                window.location.href = `http://144.24.83.112/admin/donation/judgement?judgeApprove=${donationCode}`;
+            }
+
+        });
+
+        const $commentBoxClose = $('#commentBoxClose');
+        $commentBoxClose.click(function (){
+            $commentBox.css('display', 'none'); // 버튼 클릭 시 댓글 창 종료
+        });
+
+        $('.comment-text-box').keyup(function (e){
+            let content = $(this).val();
+            if(content.length > 10){
+                $('#commentCounter').html("("+content.length+" / 최대 2000자 까지만 등록 가능합니다.)");
+            }else{
+                $('#commentCounter').html("("+content.length+" / 최소 10글자 이상만 등록 가능합니다.)");
+            }
+        });
+
+        // 총 프로젝트 개수 띄우기
+        $('.total-list').text($('table.settlement-log tbody tr').length -1);
+
+
+    </script>
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <input id="sessionId" style="display: none" th:value="${session.SID}"></input>
+    <div class="title-wrap">
+        <h4 class="admin-content-title">현재 심사대기 목록</h4>
+    </div>
+    <div class="admin-content-wrapper">
+        <div class="data-info">
+            <div class="list-count-area">
+                <ul>
+                    <li>프로젝트 목록 총 <span class="count-data total-list">0</span>건</li>
+                </ul>
+            </div>
+        </div>
+        <form>
+
+            <table class="settlement-log">
+                <thead>
+                <tr>
+                    <th style="width:8%;">프로젝트코드</th>
+                    <th style="width:8%;">신청 아이디</th>
+                    <th style="width:20%;">프로젝트 명</th>
+                    <th style="width:8%;">
+                        스토어 명
+                    </th>
+                    <th style="width:15%;">
+                        프로젝트 목표 금액
+                    </th>
+                    <th style="width:10%;">공고 등록일자</th>
+                    <th style="width:10%;">공고 마감일자</th>
+                    <th>심사승인</th>
+                    <th>심사반려</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- not contents -->
+                <tr class="not-contents">
+                    <td colspan="11" style="text-align: center; padding: 30px 0;">검색 결과가 없습니다.</td>
+                </tr>
+                <form>
+                    <!-- contents -->
+                    <tr th:unless="${donationList == null}" th:each="l : ${donationList}">
+                        <td class="table-data-center" th:text="${l.donationCode}"></td>
+                        <td class="table-data-center application-id" th:text="${l.memberId}"></td>
+                        <td th:text="${l.donationSubject}"></td>
+                        <td th:text="${l.storeName}"></td>
+                        <td>
+                            <div style="float: left;"><span class="goal-money" th:text="${l.donationGoalMoney}"></span> 원</div>
+                        </td>
+                        <td class="table-data-center" th:text="${l.donationRegDate}"></td>
+                        <td class="table-data-center" th:text="${l.donationEndDate}"></td>
+                        <td class="table-data-center">
+                            <button type="button" class="judgement-approve-btn" >심사승인</button>
+                        </td>
+                        <td class="table-data-center">
+                            <button type="button" class="judgement-reject-btn" >심사거절</button>
+                        </td>
+                    </tr>
+                </form>
+
+
+                </tbody>
+            </table>
+        </form>
+
+
+        <!-- list pager -->
+        <div class="board-page-area">
+            <div class="list-controller-inner">
+                <ul>
+                    <li class="link-active"><a th:href="@{#}">1</a></li>
+                    <li><a th:href="@{#}">2</a></li>
+                    <li><a th:href="@{#}">3</a></li>
+                    <li><a th:href="@{#}">4</a></li>
+                    <li><a th:href="@{#}">5</a></li>
+                    <li><a th:href="@{#}">6</a></li>
+                </ul>
+                <div class="list-btn-area">
+                    <button class="prev-transfer">
+                        <span>prev</span>
+                    </button>
+                    <button class="next-transfer">
+                        <span>next</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- popup -->
+        <div id="commentBox">
+            <div class="comment-box-content">
+                <div style="display: inline-block; font-size: 25px; color: black; font-weight: bold; margin-top: 10px;">심사반려사유</div>
+                <div id="commentBoxClose" style="display: inline-block; float: right; font-size: 30px; cursor: pointer">
+                    ⨉
+                </div>
+                <select id="donationJudgementSelect" style="width: 100%">
+                    <option value="0">반려 사유를 선택해주세요</option>
+                    <option th:if="${donationJudgementReason != null}" th:each="l : ${donationJudgementReason}" th:text="${l.donationJudgementReason}" th:value="${l.donationJudgementReasonCode}"></option>
+                </select>
+                <div style="margin-top: 10px">
+                    <textarea class="comment-text-box" style="width: 100%; height: 200px; resize: none; outline-color: #235FD9; outline-width: 1px; padding: 10px;" minlength="10" maxlength="2000" placeholder="반려 이유를 작성해주세요!!"></textarea>
+                </div>
+                <span id="commentCounter" style="color: black">(0 / 최소 10글자 이상만 등록 가능합니다.)</span>
+                <div style="background: #fff1f1; border-radius: 5px; padding: 10px; font-size: 12px">
+                    <p>
+                        ⚠️ 반려 사유 <br>
+                        영리를목적으로사업을수행하는단체/정치, 종교등의역할을직접적으로수행또는대행·지지하거나사적이윤을추구하는단체
+                        정부및기업이직접출현하고해당예산만으로운영되는단체/학교법인및의료법인
+                        세제혜택이있는기부금영수증발급이불가한단체(지정기부금단체승인증빙불가또는지정기간만료)
+                        서류상설립일기준으로3년을경과하였더라도실제사업운영기간이3년미만인단체
+                        대표자외4대보험에가입되고, 전일(하루8시간이상, 주5회)근무하는상근자가없는단체
+                        주무관청의감사및언론을통해위법사실이드러났거나적발된이력이있는단체
+                        해피빈활동중강제폐쇄이력이있는단체등
+                    </p>
+                </div>
+                <div style="margin-top: 10px">
+                    <button id="commentAddBtn" type="button" style="background: #235FD9; width: 100%; height: 40px; color: white; font-size: 15px; outline-color: #235FD9; outline-width: 1px">완료</button>
+                </div>
+            </div>
+        </div>
+
+
+</th:block>
+
+</body>
+</html>

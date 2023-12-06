@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksmart.ks48team02.common.mapper.delivery.DeliveryMapper">
+
+    <!-- delivery result Map -->
+    <resultMap type="OrderDelivery" id="orderDeliveryMap">
+        <id property="orderDeliveryCode" column="order_delivery_code"/>
+        <result property="orderCode" column="order_code"/>
+        <result property="deliveryCategoryCode" column="delivery_category_code"/>
+        <result property="switchingCode" column="switching_code"/>
+        <result property="rewardRefundCode" column="reward_refund_code"/>
+        <result property="deliveryCategory" column="delivery_category"/>
+        <result property="memberId" column="member_id"/>
+        <result property="deliveryName" column="delivery_name"/>
+        <result property="deliveryPhone" column="delivery_phone"/>
+        <result property="deliveryAddress" column="delivery_address"/>
+        <result property="deliveryMessage" column="delivery_message"/>
+        <result property="deliveryMessageCode" column="delivery_message_code"/>
+        <result property="numberInvoice" column="numberInvoice"/>
+        <result property="deliveryCourier" column="delivery_courier"/>
+        <result property="deliveryState" column="delivery_state"/>
+        <result property="deliveryStartDate" column="delivery_start_date"/>
+        <result property="deliveryEndDate" column="delivery_end_date"/>
+        <result property="dueDateArrival" column="due_date_arrival"/>
+    </resultMap>
+
+    <!-- DeliveryCourierCategory map -->
+    <resultMap id="deliveryCourierCategoryMap" type="DeliveryCourierCategory">
+        <id property="deliveryCategoryCode" column="delivery_category_code"/>
+        <result property="memberId" column="member_id"/>
+        <result property="deliveryCourierName" column="delivery_courier_name"/>
+        <result property="addDate" column="add_date"/>
+        <result property="categoryStatus" column="category_status"/>
+    </resultMap>
+
+
+    <sql id="deliveryListWhere">
+        <where>
+            <!-- 기간 선택 -->
+            <if test="dateSettStartDate != null and dateSettStartDate != ''">
+                DATE_FORMAT(substring(od.order_delivery_code, 6, 8), '%Y-%m-%d') >= #{dateSettStartDate}
+            </if>
+            <if test="dateSettEndDate != null and dateSettEndDate != ''">
+                AND
+                #{dateSettEndDate} >= DATE_FORMAT(substring(od.order_delivery_code, 6, 8), '%Y-%m-%d')
+            </if>
+
+            <!-- 공고 상태 선택 -->
+            <if test="orderby == 'deliveryWait_o'">
+                AND
+                od.delivery_state = 1
+            </if>
+            <if test="orderby == 'delivery_o'">
+                AND
+                od.delivery_state = 2
+            </if>
+            <if test="orderby == 'deliveryCompleted_o'">
+                AND
+                od.delivery_state = 3
+            </if>
+            <if test="orderby == 'swapping_o'">
+                AND
+                od.delivery_category = '교환 배송'
+            </if>
+            <if test="orderby == 'refunding_o'">
+                AND
+                od.delivery_category = '환불 배송'
+            </if>
+
+            <!-- 키워드 선택-->
+            <if test="searchKey != null and searchKey == 'total'">
+                AND
+                (
+                od.order_code LIKE CONCAT('%', #{searchValue}, '%')
+                OR
+                od.member_id LIKE CONCAT('%', #{searchValue}, '%')
+                OR
+                od.delivery_name LIKE CONCAT('%', #{searchValue}, '%')
+                )
+            </if>
+            <if test="searchKey != null and searchKey == 'orderCode'">
+                AND
+                od.order_code LIKE CONCAT('%', #{searchValue}, '%')
+            </if>
+            <if test="searchKey != null and searchKey == 'deliveryName'">
+                AND
+                od.delivery_name LIKE CONCAT('%', #{searchValue}, '%')
+            </if>
+            <if test="searchKey != null and searchKey == 'memberId'">
+                AND
+                od.member_id LIKE CONCAT('%', #{searchValue}, '%')
+            </if>
+
+            <!-- session store code 값과 일치하는 공고 한정 조회 -->
+            <if test="sstorecode != 'empty'">
+                AND
+                rs.storeCode = #{sstorecode}
+            </if>
+        </where>
+
+        <!-- ORDER BY -->
+        <choose>
+            <when test="orderby == 'delived_d'">
+                ORDER BY SUBSTRING(od.order_delivery_code, 6, 8) DESC
+            </when>
+            <when test="orderby == 'delived_a'">
+                ORDER BY SUBSTRING(od.order_delivery_code, 6, 8) ASC
+            </when>
+            <when test="orderby == 'order_name_d'">
+                ORDER BY od.delivery_name DESC
+            </when>
+            <when test="orderby == 'order_name_a'">
+                ORDER BY od.delivery_name ASC
+            </when>
+            <otherwise>
+                ORDER BY SUBSTRING(od.order_delivery_code, 6, 8) DESC
+            </otherwise>
+        </choose>
+    </sql>
+
+    <!-- 리워드 기부 투자 프로젝트 rwsultset -->
+    <sql id="resultset">
+        WITH resultset AS (
+            SELECT
+                r.reward_project_code AS projectCode,
+                r.store_code AS storeCode,
+                '리워드' AS projectType
+            FROM
+                reward_project AS r
+            UNION ALL
+            SELECT
+                d.donation_code AS projectCode,
+                d.store_code AS storeCode,
+                '기부' AS projectType
+            FROM
+                donation AS d
+            UNION ALL
+            SELECT
+                i.investment_code AS projectCode,
+                i.store_code AS storeCode,
+                '투자' AS projectType
+            FROM
+                investment AS i
+        ) -- cte
+    </sql>
+
+    <!-- delivery list  조회 -->
+    <select id="getDeliveryList" parameterType="map" resultMap="orderDeliveryMap">
+        <include refid="resultset"/>
+        SELECT
+            od.order_delivery_code,
+            od.order_code,
+            od.delivery_category_code,
+            od.switching_code,
+            od.reward_refund_code,
+            od.delivery_category,
+            od.member_id,
+            od.delivery_name,
+            od.delivery_phone,
+            od.delivery_address,
+            od.delivery_message,
+            od.numberInvoice,
+            od.delivery_courier,
+            od.delivery_state,
+            od.delivery_start_date,
+            od.delivery_end_date,
+            od.due_date_arrival
+        FROM
+            order_delivery AS od
+            <choose>
+                <when test="sstorecode != 'empty'">
+                    INNER JOIN
+                    order_table AS ot
+                    on od.order_code = ot.order_code
+                    INNER JOIN
+                    resultset AS rs
+                    ON ot.goods_code = rs.projectCode
+                </when>
+            </choose>
+        <include refid="deliveryListWhere"></include>
+
+        <if test="startRowNum > -1">
+            LIMIT ${startRowNum}, ${rowPerPage};
+        </if>
+    </select>
+
+
+    <!-- 전체 행 수 조회 -->
+    <select id="getDeliveryCnt" parameterType="map" resultType="int">
+        <include refid="resultset"/>
+        SELECT
+            COUNT(1)
+        FROM
+            order_delivery AS od
+        <choose>
+            <when test="sstorecode != 'empty'">
+                INNER JOIN
+                order_table AS ot
+                on od.order_code = ot.order_code
+                INNER JOIN
+                resultset AS rs
+                ON ot.goods_code = rs.projectCode
+            </when>
+        </choose>
+        <include refid="deliveryListWhere"></include>
+    </select>
+
+    <!-- 특정 배송 정보 조회 -->
+    <select id="getDeliveryByCode" parameterType="String" resultMap="orderDeliveryMap">
+        SELECT
+            od.order_delivery_code,
+            od.order_code,
+            od.delivery_category_code,
+            od.switching_code,
+            od.reward_refund_code,
+            od.delivery_category,
+            od.member_id,
+            od.delivery_name,
+            od.delivery_phone,
+            od.delivery_address,
+            od.delivery_message,
+            od.numberInvoice,
+            od.delivery_courier,
+            od.delivery_state,
+            od.delivery_start_date,
+            od.delivery_end_date,
+            od.due_date_arrival
+        FROM
+            order_delivery AS od
+        <where>
+            <if test="orderDeliveryCode != null">
+                od.order_delivery_code = #{orderDeliveryCode}
+            </if>
+            <if test="orderCode != null">
+                od.order_code = #{orderCode}
+            </if>
+        </where>
+
+    </select>
+
+    <select id="getDeliveryCourierCategory" resultMap="deliveryCourierCategoryMap">
+        SELECT
+            dcc.delivery_category_code,
+            dcc.member_id,
+            dcc.delivery_courier_name,
+            dcc.add_date,
+            dcc.category_status
+        FROM
+            delivery_courier_category AS dcc;
+    </select>
+</mapper>

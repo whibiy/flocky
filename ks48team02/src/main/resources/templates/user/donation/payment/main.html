@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script th:src="@{/user/js/jquery.min.js}"></script>
+    <script th:src="@{/user/js/jquery-migrate-3.0.1.min.js}"></script>
+    <style>
+        /* Firefox */
+        input[type='number'] {
+            -moz-appearance: textfield;
+        }
+
+        /* Chrome, Safari, Edge */
+        input[type='number']::-webkit-inner-spin-button,
+        input[type='number']::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div>
+                    <p>플로버를 충전 하실 금액을 입력해 주세요!</p>
+                    <p>플로버를 충전 비율은 100:1 입니다.[100단위로만 가능]</p>
+                    <p>예시) 100원 -> 플로버 1개</p>
+                    <p style="color: red">Flover는 충전 시 환불이 불가합니다, 신중하게 결정해 주세요!</p>
+                    <input id="orderAmount" type="number">원<br>
+                    <input id="floverCount" readonly="readonly">개 <- [Flover로 전환 시 개수]
+                </div><br>
+                <input type="button" id="kakaoPayBtn" value="KaKaoPay" style="background-color: yellow; border-radius: 5px; width: 100px; height: 50px">
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    $('#orderAmount').keyup(function (){
+        let orderAmountValue = Math.floor($('#orderAmount').val() / 100) * 100;
+        let flover = orderAmountValue / 100;
+       $('#floverCount').val(flover);
+    });
+    $('#orderAmount').change(function (){
+        let orderAmountValue = Math.floor($('#orderAmount').val() / 100) * 100;
+        $(this).val(orderAmountValue);
+    });
+    $('#kakaoPayBtn').click(function (){
+        if($('#orderAmount').val() < 100){
+            alert('100원 이상부터 충전할 수 있습니다.')
+            return false;
+        }
+       $.ajax({
+           url: '/user/donation/payment/charge',
+           dataType: 'json',
+           data: {orderAmount : $('#orderAmount').val(),
+                  floverCount : $('#floverCount').val(),
+                  memberId : '[[${memberId}]]'},
+           success: function (data){
+               window.location.href=`${data.next_redirect_pc_url}`;
+           },
+           error: function (data){
+               alert(data);
+           }
+       }) ;
+    });
+</script>

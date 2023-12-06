@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksmart.ks48team02.admin.mapper.user.UserManagementMapper">
+
+    <!-- 로그인 로그 resultMap-->
+    <resultMap id="loginLogResultMap" type="UserManagement" >
+        <id property="loginLogCode" column="login_log_code"/>
+        <result property ="memberId" column="member_id"/>
+        <result property="loginTime" column="login_time"/>
+        <result property="logoutTime" column="logout_time"/>
+        <result property="clientNetAddress" column="client_net_address"/>
+        <association property="member" javaType="Member" >
+            <id property="memberId" column="member_id"/>
+            <result property="memberTypeCode" column="member_type_code"/>
+            <result property="memberName" column="member_name"/>
+            <result property="memberPw" column="member_pw"/>
+            <result property="memberRegDate" column="member_reg_date"/>
+            <result property="memberEmail" column="member_email"/>
+            <result property="memberContactInfo" column="contact_info"/>
+            <result property="unRegDate" column="unreg_date"/>
+            <result property="unRegStatus" column="unreg_status"/>
+            <result property="memberType" column="member_type"/>
+            <result property="memberTypeDetail" column="member_type_detail"/>
+        </association>
+    </resultMap>
+
+    <!-- 리워드 등급 resultMap -->
+    <resultMap id="rewardRankResultMap" type="UserManagement">
+        <id property="rewardRankCode" column="reward_rank_code"/>
+        <result property="rewardRankName" column="rank_name"/>
+        <result property="discountRate" column="discount_rate"/>
+        <result property="rewardRankUpgradeAmount" column="rank_upgrade_amount"/>
+        <result property="pointSavingRate" column="point_saving_rate"/>
+    </resultMap>
+
+    <!-- 기부 등급 resultMap-->
+    <resultMap id="donationRankResultMap" type="UserManagement">
+        <id property="donationRankCode" column="donation_rank_code"/>
+        <result property="donationRankName" column="rank_name"/>
+        <result property="donationRankUpgradeAmount" column="rank_upgrade_amount"/>
+        <result property="floverSavingRate" column="flover_saving_rate"/>
+    </resultMap>
+
+
+    <!--  로그인 로그 페이지 로드시 전체 로그인 로그 데이터 조회 -->
+    <select id="getLoginLog" resultMap="loginLogResultMap">
+        SELECT
+            l.login_log_code,
+            l.member_id,
+            l.login_time,
+            l.client_net_address,
+            t.member_type_detail
+        FROM
+            login_log AS l
+            INNER JOIN
+            member AS m
+            ON
+            l.member_id = m.member_id
+            INNER JOIN
+            member_type AS t
+            ON
+            m.member_type_code = t.member_type_code
+    </select>
+
+    <!-- 회원 아이디로 로그인 정보 조회-->
+    <select id="getLoginLogById" parameterType="String" resultMap="loginLogResultMap">
+        SELECT
+            l.login_log_code,
+            l.member_id,
+            l.login_time,
+            l.client_net_address,
+            t.member_type_detail
+        FROM
+            login_log AS l
+            INNER JOIN
+            member AS m
+            ON
+            l.member_id = m.member_id
+            INNER JOIN
+            member_type AS t
+            ON
+            m.member_type_code = t.member_type_code
+        <where>
+            <if test="memberId != null and memberId != ''">
+                l.member_id = #{memberId}
+            </if>
+            <if test="startDate != null and startDate != ''">
+                AND DATE(l.login_time) <![CDATA[>=]]> DATE(#{startDate})
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND DATE(l.login_time) <![CDATA[<=]]> DATE(#{endDate})
+            </if>
+            <if test="memberTypeCode != null and memberTypeCode != ''">
+                AND m.member_type_code = #{memberTypeCode}
+            </if>
+        </where>
+    </select>
+
+    <!-- 리워드 등급 조회  -->
+    <select id="getRewardRank" resultMap="rewardRankResultMap">
+        SELECT
+            rr.reward_rank_code,
+            rr.rank_name,
+            rr.discount_rate,
+            rr.rank_upgrade_amount,
+            rr.point_saving_rate
+        FROM
+            reward_customer_rank AS rr;
+    </select>
+
+    <!--  기부 등급 조회  -->
+    <select id="getDonationRank" resultMap="donationRankResultMap">
+        SELECT
+            dr.donation_rank_code,
+            dr.rank_name,
+            dr.rank_upgrade_amount,
+            dr.flover_saving_rate
+        FROM
+            donation_customer_rank AS dr;
+    </select>
+    <!--  회원 목록 조회 -->
+    <select id="getMemberList" resultMap="loginLogResultMap">
+        SELECT
+        m.member_id,
+        m.member_name,
+        m.contact_info,
+        m.member_reg_date,
+        m.member_email,
+        m.member_reg_date
+        FROM
+        member AS m;
+    </select>
+</mapper>

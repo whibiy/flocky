@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  	  layout:decorate="~{seller/layout/default}">
+  	  
+  	  <head>
+  	  <!--  사용자별 css file 추가 부분 -->
+  	  </head>
+  	  
+  	  
+	 <!-- 사용자 페이지별 javascript file -->
+	 <th:block layout:fragment="customJsFile">
+	
+	</th:block>
+	
+	<!-- 사용자별 스크립트 작성 -->
+	<th:block layout:fragment="customJsCode">
+		
+	</th:block>
+	
+	
+  	<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+	<th:block layout:fragment="customContents">
+		
+	</th:block>
+</html>

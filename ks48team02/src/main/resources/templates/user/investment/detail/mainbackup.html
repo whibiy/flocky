@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/investment/detail/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+    <style>
+        img{
+            width: 100%;
+            height: auto;
+        }
+    </style>
+
+    <link rel="stylesheet" href="//image-se.ycrowdy.com/crowdyCss/custom.min.css?v=20231025_01" />
+
+
+
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
+
+
+</th:block>
+
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+
+    <script>
+        var swiper = new Swiper(".mySwiper", {
+            spaceBetween: 30,    // 슬라이드 사이 여백
+            slidesPerView : 'auto', // 한 슬라이드에 보여줄 갯수
+            centeredSlides: true,    //센터모드
+            autoplay: {     //자동슬라이드 (false-비활성화)
+                delay: 2500, // 시간 설정
+                disableOnInteraction: false, // false-스와이프 후 자동 재생
+            },
+            loop : false,   // 슬라이드 반복 여부
+            loopAdditionalSlides : 1,
+            // 슬라이드 반복 시 마지막 슬라이드에서 다음 슬라이드가 보여지지 않는 현상 수정
+            pagination: { // 호출(pager) 여부
+                el: ".swiper-pagination", //버튼을 담을 태그 설정
+                clickable: true, // 버튼 클릭 여부
+            },
+            navigation: {   // 버튼
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+        });
+        let investContentsSwiperSlide = new Swiper("#investProject .contents-area", {
+            slidesPerView: 3,
+            spaceBetween: 12,
+            navigation: {
+                nextEl: "#investProject .swiper-button-next",
+                prevEl: "#investProject .swiper-button-prev",
+            },
+        });
+    </script>
+    <script type="text/javascript">
+        // 현재 프로젝트코드로 상세페이지 데이터를 가져오기 위한 투자코드
+        let investmentCode = '[[${investmentContentCode}}]]';
+    </script>
+
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <div class="col-lg-12" style="height: 40px"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="swiper mySwiper" style="height: 400px; border-radius: 10px;">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide"><img src="https://ohmycompany.imgix.net/uploads/invest/main/MAIN_202308250201186818d6.jpg?lossless=1&h=450"></div>
+                        <div class="swiper-slide"><img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_20230829090951698e6b.png"></div>
+                        <div class="swiper-slide"><img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_2023082804325777632f.png"></div>
+                    </div>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12" style="height: 20px"></div>
+            <div class="col-lg-12 story-banner-box" style="background: #f9fafb; border-radius: 5px; padding: 10px">
+                <div>
+                    <p style="color: black">증권형 크라우드펀딩에 대한 투자는 투자원금의 손실이 발생할 수 있습니다. 투자에 대한 책임은 전적으로 투자자 본인에게 있으므로, 투자위험에 대한 내용을 꼭 확인해주세요.</p>
+                </div>
+            </div>
+            <div class="col-lg-12" style="height: 40px"></div>
+            <div class="col-lg-12 story-header" style="padding: 0px">
+                <h4 style="color: black; font-weight: bold;">증권 발행 조건</h4>
+            </div>
+            <div class="col-lg-12" style="height: 40px"></div>
+            <div class="col-lg-12 story-body" style="color: black">
+                <div class="col-lg-12" style="height: 20px"></div>
+                <div class="row" style="padding: 0px";>
+                    <div class="col-lg-4">
+                        <ul class="tight">
+                            <li>
+                                <dl>
+                                    <dd>청약배정순위</dd>
+                                    <dt>선착순</dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>주식종류</dd>
+                                    <dt>우선주</dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>청약 시작일</dd>
+                                    <dt>23.11.01</dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>청약 종료일</dd>
+                                    <dt>23.11.16</dt>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-4">
+                        <ul class="tight">
+                            <li>
+                                <dl>
+                                    <dd>납입일</dd>
+                                    <dt>23.11.28</dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>발행예정일</dd>
+                                    <dt>23.11.29</dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>배정확정/환불일</dd>
+                                    <dt>23.11.27</dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>증권입고일</dd>
+                                    <dt>23.12.15</dt>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-4">
+                        <ul class="tight">
+                            <li>
+                                <dl>
+                                    <dd>현재주식수</dd>
+                                    <dt>60,000주</dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>발행 예정주식수</dd>
+                                    <dt>350주</dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>발행 후
+                                        총 배정지분율</dd>
+                                    <dt>0.579950%</dt>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="height: 20px"></div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <ul class="tight">
+                            <li>
+                                <dl>
+                                    <dd>상환청구기간</dd>
+                                    <dt>28.11.29 ~ 33.11.28</dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>상환금리</dd>
+                                    <dt>연 복리 8%</dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>최저배당이율</dd>
+                                    <dt>연 1%(발행가 기준)</dt>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-6">
+                        <ul class="tight">
+                            <li>
+                                <dl>
+                                    <dd>전환청구기간</dd>
+                                    <dt>28.11.29 ~ 33.11.28</dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>전환조건</dd>
+                                    <dt>우선주 1주 당 보통주 1</dt>
+                                </dl>
+                            </li>
+                            <li>
+                                <dl>
+                                    <dd>의결권 유무</dd>
+                                    <dt>없음</dt>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%"></div>
+
+            <div class="col-lg-12" style="height: 20px"></div>
+            <div class="col-lg-12 story-header" style="padding: 0px">
+                <h4 style="color: black; font-weight: bold;">기본 정보</h4>
+            </div>
+            <div class="col-lg-12" style="height: 40px"></div>
+            <div class="col-lg-12 story-body" style="color: black">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <ul class="tight">
+                            <li>
+                                <dl>
+                                    <dt>기업명</dt>
+                                    <dd>세종아이콘</dd>
+                                </dl>
+                            </li><div style="height: 10px"></div>
+                            <li>
+                                <dl>
+                                    <dt>대표명</dt>
+                                    <dd>김덕용,김경오</dd>
+                                </dl>
+                            </li><div style="height: 10px"></div>
+                            <li>
+                                <dl>
+                                    <dt>주요사업</dt>
+                                    <dd>광고제작, 전자상거래</dd>
+                                </dl>
+                            </li><div style="height: 10px"></div>
+                            <li>
+                                <dl>
+                                    <dt>임직원수</dt>
+                                    <dd>8명</dd>
+                                </dl>
+                            </li><div style="height: 10px"></div>
+                        </ul>
+                    </div>
+                    <div class="col-lg-9">
+                        <ul class="tight">
+                            <li>
+                                <dl>
+                                    <dt>설립 일자</dt>
+                                    <dd>2000년 03월 16일</dd>
+                                </dl>
+                            </li><div style="height: 10px"></div>
+                            <li>
+                                <dl>
+                                    <dt>웹 사이트</dt>
+                                    <dd>http://sejongicon.kr</dd>
+                                    <!--<dd><a href="http://sejongicon.kr" target="_blank" rel="noopener noreferrer">http://sejongicon.kr</a></dd>-->
+                                </dl>
+                            </li><div style="height: 10px"></div>
+                            <li>
+                                <dl>
+                                    <dt>소재지</dt>
+                                    <dd> 세종특별자치시 조치원읍 세종로 2639 (신안리, 홍익대학교세종캠퍼스) L104 </dd>
+                                </dl>
+                            </li><div style="height: 10px"></div>
+                            <li>
+                                <dl>
+                                    <dt>전화번호</dt>
+                                    <dd>044-865-1357</dd>
+                                </dl>
+                            </li><div style="height: 10px"></div>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%"></div>
+
+            <div class="col-lg-12" style="height: 20px"></div>
+
+            <div id="projectIntroduction" class="col-lg-12 story-header" style="padding: 0px">
+                <h4 style="color: black; font-weight: bold;">프로젝트 소개</h4>
+            </div>
+            <div class="col-lg-12" style="height: 40px"></div>
+            <div class="col-lg-12 story-body" style="padding: 0px">
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_20230829043213911f94.jpg"><br><br><br>
+
+                <p style="color: black; font-weight: bold; font-size: 18px; white-space: pre-line">마케팅전문기업의 탁월한 전략을 기반으로 만든 온라인 전문 쇼핑 플랫폼 ‘커핑커피’</p>
+                <p style="color: black; white-space: pre-line">세종아이콘(주)는 스페셜티 커피를 전문으로 하는 쇼핑 플랫폼 ‘커핑커피’를 런칭하여 스페셜티 커피 시장에 신규로 진출하였습니다. 브랜딩 및 광고디자인을 기반으로 웹 개발 및 운영 분야로 사업영역을 확대하면서 플랫폼 비즈니스를 본격 추진하기 시작하였습니다. 임산물 전문 온라인 플랫폼 ‘숲살림’을 개발 운영하고 있으며, 소비자의 니즈와 시장 트렌드를 반영한 스페셜티 커피 전문 플랫폼 ‘커핑커피’를 런칭하여 세종아이콘의 주력 수익 사업으로 키워가고 있습니다.
+                    세종아이콘(주) 2000년에 창업한 디자인, 광고, 브랜드 전문회사로서 세종시를 비롯한 여러 공공기관의 과업을 수행해온 사회적 기업으로, 각자대표이사(김덕용, 김경오) 체제로 운영중입니다. 김덕용 대표는 20여년 동안 홍익대학교 광고홍보학부에서 교수로 재직하였으며, 현재 홍익대학교 명예교수입니다. 광고홍보분야 전문기업으로, 전통문양 및 세종시 모티브 문양개발, 게임, 도서 출판 등 자체적으로 개발한 다수의 문화 콘텐츠를 보유하고 있습니다</p><br><br>
+
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_20230829090951698e6b.png"><br><br><br><br>
+
+                <p style="color: black; font-weight: bold; font-size: 18px; white-space: pre-line">투자 핵심 노트</p>
+                <p style="color: black; font-weight: bold; white-space: pre-line">1) 스페셜티 커피 전문 온라인 쇼핑 플랫폼 ‘커핑 커피’ 신규 론칭</p><br>
+                <p style="color: black; white-space: pre-line">소비자의 니즈와 시장 트렌드를 반영한 스페셜티 커피 전문 온라인 쇼핑 플랫폼 ‘커핑커피’는 세종아이콘의 미래 주 수익원이 될 수 있도록 주력하고 있으며, 시장의 추세와 소비 트렌드로 미루어 볼 때 성장 가능성을 확신합니다.</p><br>
+
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_2023082804325777632f.png"><br><br>
+
+                <p style="color: black; font-weight: bold; white-space: pre-line">2) 세계적 명성의 A디자인 어워드를 연속 3건 수상한 23년 업력의 디자인전문기업</p><br>
+                <p style="color: black; white-space: pre-line">㈜세종아이콘은 디자인/광고/마케팅/홍보 등 종합디자인전문회사입니다. 23년간 축적된 노하우와 유무형적 자산은 기업의 튼튼한 기반이자 성장의 중요한 밑거름입니다.</p><br>
+
+                <p style="color: black; font-weight: bold; white-space: pre-line">3) 공공기관 우선구매 대상 기업으로 주요 공공기관 거래처 확보</p><br>
+                <p style="color: black; white-space: pre-line">전문디자인 회사로써 공공구매 우선대상기업 중에서도 인기가 높아 디자인 관련 업무를 꾸준히 진행하고 있으며, 여러가지 수상 경력도 보유하고 있습니다. 세종특별시청, 산림청, 한국치산기술협회, 홍익대학교, 세종시 시설관리공단은 10년 이상 거래해 오고 있으며, 한국언론진흥재단, 한국교직원공제회, 사회보장정보원, 한국임업진흥원, 한국산림복지진흥원, 한국동서발전, 한국중부발전, 아시아산림협력기구, 세종테크노파크, 세종시문화재단, 농림수산식품교육문화정보원 등 다수의 클라이언트를 보유하고 있으며 꾸준히 거래 중에 있습니다.</p><br>
+
+                <p style="color: black; font-weight: bold; white-space: pre-line">4) 벤처기업으로 소득공제 가능</p><br>
+                <p style="color: black; white-space: pre-line">당사는 벤처기업으로 투자자 분들께서는 소득공제 혜택을 받으실 수 있습니다. (조세특례제한법 제16조①항4호)
+
+                    - 투자금 3천만원까지: 100% 소득공제
+                    - 3천만원~5천만원: 70% 소득공제
+                    - 5천만원 초과: 30% 소득공제
+
+                    예를 들어 1억원 투자 시 3천만원에 대해서는 100%, 3천만원~5천만원, 즉 2천만원에 대해서는 70%, 나머지 5천만원에 대해서는 30% 소득공제 혜택을 받으실 수 있습니다. </p><br>
+
+                <p style="color: black; font-weight: bold; white-space: pre-line">5) 투자금액에 따라 커핑커피 플랫폼에서 사용 가능한 온라인 쿠폰 제공 </p><br>
+            </div>
+
+            <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%"></div>
+
+            <div class="col-lg-12" style="height: 20px"></div>
+            <div id="marketAnalysis" class="col-lg-12 story-header" style="padding: 0px">
+                <h4 style="color: black; font-weight: bold;">시장 분석</h4>
+            </div>
+            <div class="col-lg-12" style="height: 40px"></div>
+            <div class="col-lg-12 story-body" style="padding: 0px">
+                <p style="color: black; font-weight: bold; font-size: 18px; white-space: pre-line">주요 사업 </p>
+                <p style="color: black; font-weight: bold; white-space: pre-line">1) 스페셜티 커피 플랫폼 ‘커핑커피’</p><br>
+                <p style="color: black; font-weight: bold; white-space: pre-line">① 로컬 로스터와 커피 애호가들이 만나는 곳</p><br>
+                <p style="color: black; white-space: pre-line">‘스페셜티 커피’는 고급 커피나 프리미엄 커피와는 다릅니다. 스페셜티 커피는 지리, 기후, 생산지 등의 특별한 환경에서 자란 커피 중 '미국 스페셜티 커피 협회(SCAA)'의 평가를 거쳐 기준점수 80점 이상을 받은 우수한 등급의 커피를 말합니다. 스페셜티 커피는 ‘맛’과 ‘향’, ‘품질’, 그리고 ‘원두의 정보’에 대해 까다롭게 정해진 기준과 조건을 충족하는 커피입니다.
+
+                    더 좋은, 특색있는 커피를 즐기고 싶어하는 소비자들의 욕구 증가로 커피시장에서 스페셜티 커피 점유율은 빠르게 확대되고 있으며, 홈 카페 시장, 커피장비의 수요도 크게 늘고, 전문 로스터와 스페셜티 커피숍 역시 늘어나고 있는 추세입니다. 개인의 취향에 따라 취미와 문화생활을 즐기고 자기계발에 투자하는 요즘 소비자들의 특징과 상당히 일치하기 때문입니다.
+
+                    ‘커핑커피’는 실력과 개성이 있는 로컬의 유명 ‘로스터’와 스페셜티 카페를 찾아다니며 내 취향에 맞는 다양한 커피를 찾는 ‘커피 애호가’ 들이 만나는 플랫폼 서비스로, 숨겨진 소규모 업체의 개성 있는 원두를 발굴하여 로컬 로스터들이 쉽게 온라인으로 커피의 맛과 품질을 알릴 수 있도록 하는 것이 목표입니다.
+
+                    아직 사업 초기 단계이지만 최적화된 UI 및 템플릿 시스템을 갖추고 있으며, 입점 판매자에게 브랜딩 및 디자인을 지원하고 있습니다. 또한 소비자와 판매자들이 다양하게 소통할 수 있도록 커뮤니티 공간도 제공하고 있습니다. 사용자가 증가하여 일정 단계에 이르면 판매수수료와 광고비 및 브랜딩을 통한 부가수익 창출 등 다양한 수익모델의 운영이 가능합니다.</p><br>
+
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_20230828040845134920.png"><br><br>
+
+                <p style="color: black; font-weight: bold; white-space: pre-line">② 최적화된 UI 및 템플릿 시스템</p><br>
+
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_202308280409017499f5.png"><br><br>
+
+                <p style="color: black; font-weight: bold; white-space: pre-line">③ 소비자와 판매자를 연결하는 커뮤니티 공간</p><br>
+
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_20230828040913278360.png"><br><br>
+
+                <p style="color: black; font-weight: bold; white-space: pre-line">④ 큐레이션 서비스 제공 예정</p><br>
+
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_2023082804093206560a.png"><br><br>
+
+                <p style="color: black; font-weight: bold; white-space: pre-line">⑤ 수익모델</p><br>
+
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_20230828040941055638.png"><br><br>
+
+                <p style="color: black; font-weight: bold; white-space: pre-line">⑥ 현재 실적</p><br>
+                <p style="color: black; font-weight: bold; white-space: pre-line">- 2023년 3월 오픈 이후 로스터리 50개소, 소비자 회원 300여명 확보</p><br>
+                <p style="color: black; white-space: pre-line">2023년 3월 서비스 오픈 이래 현재 50개소의 판매사와 300여명의 소비자 회원을 모집하여 운영 중에 있으며 점차 증가하고 있는 상황입니다.
+
+                    ‘커핑커피’에는 아무 업체나 입점할 수 있는 것이 아니라, 커피의 품질과 로스터의 실력을 따져보고 엄선하여 실력있는 로스터들만 입점할 수 있습니다. 직접 찾아 다니면서 입점 업체를 모집하거나, 커피전문가 파트너들의 추천이나 의견을 반영하여 업체를 선별합니다. 소비자들에게 단순히 다양성만을 제공하는 것이 아닌 새로운 커피, 모르는 로스터를 처음 시도할 때도 품질에 대한 걱정 없이 안심할 수 있도록 업체 선정에 최선을 다하고 있습니다.
+
+                    현재 입점해 있는 업체들의 유명세와 영향력을 통해 더 많은 업체의 입점을 유도하여 플랫폼의 규모를 키워 나갈 것이며, 이는 소비자 확보로도 이어질 것입니다. 이미 고정고객이나 팬을 확보하고 있는 업체들의 입점도 늘고 있어 ‘커핑커피’의 유입고객 증가 및 인지도도 향상되고 있습니다</p><br>
+                <p style="color: black; font-weight: bold; white-space: pre-line">- SNS 홍보 진행 중</p><br>
+                <p style="color: black; white-space: pre-line">‘커핑커피’는 커피인들이 가장 많이 정보를 얻는 장소가 SNS이기 때문에 SNS를 중점적으로 소비자들이 궁금해하고 많이 찾는 정보들을 고려한 참여형/정보성 콘텐츠를 기획하고 배포 중입니다.
+
+                    특히 가장 주력하는 부분이 입점 파트너들을 활용한 SNS 콘텐츠 활용입니다. 입점 파트너의 커피를 소개하고 또 그 커피를 직접 경험할 수 있는 참여형 이벤트를 진행하고 있습니다. 그 결과 실제로 고객은 자신이 경험한 커피를 SNS를 통해 주변에 홍보하고, 그런 고객의 후기를 파트너가 다시 홍보함으로써 커핑커피는 자연스럽게 파트너의 팬과 또다른 커피 애호가들에게 알려지며 인지도가 상승하고 있습니다.
+
+
+                </p><br>
+
+                <p style="color: black; font-weight: bold; white-space: pre-line">2) 임산물 전용 유통커머스 플랫폼 ‘숲살림’ 등 차별화된 플랫폼 서비스 운영</p><br>
+                <p style="color: black; white-space: pre-line">세종아이콘은 사회적기업으로서 지역사회에 기여하고, 모두가 상생할 수 있는 방법을 도모하기 위해 23년간 축적된 마케팅과 노하우, 전문성을 가지고 새로운 플랫폼 사업을 진행하고 있습니다.
+
+                    2021년에는 온라인 유통에 어려움을 겪는 임업 생산자와 소비자를 연결하는 임산물 전용 온라인 유통 커머스 플랫폼 ‘숲살림’을 개발하여 운영하고 있습니다. ‘숲살림’은 차별화된 콘텐츠 제작 및 소비자 중심의 상세페이지를 제작하여 브랜드 강화에 힘썼으며, 블로그, 인스타그램, 페이스북 등 소셜 마케팅과 지역네트워크 연계 등으로 다각적으로 활용하고 있으며, 산림청, 산림경영인협회, 임업후계자협회 등과 유기적 협력을 통한 지속적 가능성과 성장동력을 확보하고 있습니다.
+
+                    또한 중소벤처기업부의 연구개발지원사업 ‘중소기업 기술혁신 개발사업’을 통하여 미술품 전시거래 전문 플랫폼 ‘아르테논’을 개발완료 하여 사업화 준비 단계에 있습니다.</p><br>
+
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_2023082909130289350d.png">
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_20230828044318286f22.png">
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_20230828044325718116.png"><br><br>
+
+                <p style="color: black; font-weight: bold; white-space: pre-line">3) 23년 업력의 디자인/광고/브랜드 비즈니스 확장</p><br>
+                <p style="color: black; font-weight: bold; white-space: pre-line">① 브랜드/캐릭터/포스터 디자인, 공간 디자인, 홍보영상 제작 분야 비즈니스 강화</p><br>
+                <p style="color: black; white-space: pre-line">세종아이콘은 2000년부터 약 23년간 전문성과 창의성을 가지고 디자인, 광고, 브랜드 분야에서 성장해왔습니다. 브랜드디자인, 캐릭터디자인, 포스터디자인, 인쇄홍보물 제작, 공간디자인, 홍보영상 등 다양한 포트폴리오를 보유하고 있습니다. 특히 세계적 권위의 이탈리아 A디자인어워드에서 2018 ~ 2019년 2년 연속 3건을 수상하였으며, 2018년 문화체육관광부에서 주최한 우리동네캐릭터 대상전에서는 당사가 개발한 산림복지진흥원 캐릭터가 최우수상을 수상하는 등 디자인의 우수성과 수준을 국내외에서 인정받고 있습니다. 이러한 역량을 바탕으로 공공기관 우선구매 대상기업의 기회를 활용하여 기존 비즈니스를 확장해가고 있습니다.</p><br>
+
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_202308310536496572e9.png">
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_20230831053707762762.png"><br><br>
+
+                <p style="color: black; font-weight: bold; white-space: pre-line">② 문화 콘텐츠 비즈니스</p><br>
+                <p style="color: black; white-space: pre-line">한국콘텐츠진흥원의 지원사업으로 백제무령왕릉 출토 유물 관련 디지털 콘텐츠(멀티미디어 E-Book), 3천여종의 문양 및 패턴 개발, 백제디자인 모티브 활용 굿즈 디자인 등을 개발하여 지식재산권을 보유하고 있으며 이를 활용한 공주시 보행로 디자인, 관광상품 개발 등 다양한 문화콘텐츠 사업을 하여 왔으며, 이러한 백제관련 보유 콘텐츠들을 온라인화 하는 사업을 추진 중에 있습니다.
+
+                    그리고 세종시를 모티브로 하는 디자인 소스 및 패턴 콘텐츠를 개발 ∙ 보유하여 사용 중에 있으며, 최근 세종시 버스에 당사의 디자인이 채택되어, 2023년 말부터 디자인이 적용된 버스가 운행될 예정입니다. 또한 세종시에서 당사의 콘텐츠를 활용하는 다양한 사업을 계획 추진 중에 있습니다.</p><br>
+
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_20230831053731855429.png"><br>
+
+                <p style="color: black; font-weight: bold; white-space: pre-line">4) 정부 R&D 과업수행을 통한 지속적인 연구개발 투자</p><br>
+                <p style="color: black; white-space: pre-line">세종아이콘은 2005년부터 약 20여 건의 정부 R&D 과업수행을 통하여 지속적으로 연구개발에 투자하여 왔습니다. 최근에는 중소벤처기업부의 중소기업기술혁신개발사업으로 2020~2022년 2년간 ‘한국미술 대중화 플랫폼기술개발사업’을 주관기관으로 수행하였으며, 산업자원부의 디자인 혁신역량 강화사업의      ‘자원순환성 향상을 위한 환경 배려 화장품 패키징 디자인 기술 고도화 및 상용화 제품개발’에 참여기업으로 2021~2023년 3년째 수행하고 있습니다. 또한 현재 산림과학기술 실용화사업을 수행 중에 있으며, 매년 새로운 아이디어로 연구개발 사업에 참여할 계획입니다.</p><br>
+
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_20230831061341622fd1.png"><br><br><br>
+
+                <p style="color: black; font-weight: bold; font-size: 18px; white-space: pre-line">시장 분석</p>
+                <p style="color: black; font-weight: bold; white-space: pre-line">스페셜티 커피 시장 규모 약 1조 7천억원</p><br>
+                <p style="color: black; white-space: pre-line">2023년 국내 커피시장 규모는 약 8조 6천억원으로 추산되며, 이중 스페셜티 커피 시장규모는 약 1조 7,200억원으로 추산됩니다. 한국은 유럽, 미국, 일본 등에 이은 세계 6위 커피소비국가이며, 최근 스페셜티 커피의 성장, 바이럴 마케팅의 추구, 가격차별화 심화, 홈카페의 확대 등 새로운 트렌드가 목격되고 있습니다. (자료출처 : 현대경제연구원, 커피산업의 5가지 트렌드 변화와 전망, 2019.7.12).</p><br>
+
+                <p style="color: black; font-weight: bold; white-space: pre-line">스페셜티 커피, 홈 카페 확대 트렌드에 주목</p><br>
+                <p style="color: black; white-space: pre-line">현재 우리나라 커피시장은 다수 일반 고객를 위한 사업에 집중하는 대기업과 소수 커피 매니아와 전문가를 타겟으로 하는 커피편집숍으로 양분되어 있습니다.
+
+                    커피애호가들은 이제 집에서도 커피를 취미로서 즐기는 나만의 경험을 원하고 있으며, 다양한 좋은 커피를 즐기고 싶어 합니다. 특히 로스터의 실력과 개성이 그 원두의 특색을 만들어내는 만큼 여러 로스터의 커피를 즐기고 싶어하지만, 로스터들에 대한 정확한 정보와 실력, 원두의 품질, 특성을 파악하기에 어려움이 있으며, 현재 온라인에서는 다양한 로스터와 커피애호가들을 연결해주는 서비스 또한 부족한 현실입니다.
+
+                    특정 동네 혹은 지역에서 유명한 로스터(소상공인)들은 타 지역으로 까지 스스로를 홍보하는데 어려움을 겪습니다. 세종시의 실력있는 로스터를 찾는 사람이 하루에 200명 이상이더라도 서울의 커피 애호가에게는 잘 알려져 있지 않습니다. 이렇듯 로스터(판매자)는 고객을 확보하기 어렵고, 커피애호가(소비자)는 자신의 취향에 맞는 로스터를 찾기 어렵습니다.
+
+                    ‘커핑커피’는 커피애호가의 원트(취향, 까다로운 입맛, 다양한 시도)와 실력과 개성을 모두 갖춘 지역 로스터들의 니즈(인지도향상, 판로확대)를 충족시켜 줄 수 있는 플랫폼으로, 소상공인 로스터와 스페셜티 커피와 홈카페를 즐기는 소비자를 위한 확장성이 높은 서비스를 제공합니다.</p><br>
+
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_202308280412096369b8.png">
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_202308280413037970dd.png">
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_20230828041329713919.png"><br>
+
+                <p style="color: black; font-weight: bold; white-space: pre-line">시각디자인, 디지털/멀티미디어디자인 분야 시장 규모 소폭 성장 중</p><br>
+                <p style="color: black; white-space: pre-line">시각디자인, 디지털/멀티미디어디자인 분야 시장 규모가 여전히 상승하고 있고, 디자인산업규모는 2020년 19.4조원에서 2021년 21.6조원으로 확대되고 있습니다. 디자인활용업체의 2022년, 2023년 디자인 투자금액 전망은 각각 103.56%, 103.48%로 증가할 것으로 전망됩니다. (자료 출처 : 2022디자인산업통계 요약보고서)</p><br>
+
+                <p style="color: black; font-weight: bold; font-size: 18px; white-space: pre-line">사업추진계획</p>
+                <p style="color: black; font-weight: bold; white-space: pre-line">1) ‘커핑커피’ 플랫폼 서비스  </p><br>
+                <p style="color: black; white-space: pre-line">‘커핑커피’는 서비스 원년인 2023년은 수익을 기대하지 않고 사용자 확대에 주력할 예정입니다. 현재 확실한 인지도와 영향력을 갖고 있는 판매자들이 다수 입점 중에 있으며, 이들의 영향력과 네트워크를 활용하여 추가 판매자 모집을 진행하고 있습니다.
+
+                    판매자들이 개성과 실력이 뛰어난 지역의 유명/인기 로스터들이기 때문에 ‘커핑커피’의 고정고객 확보로 이어지고 있습니다.
+
+                    또한 기능추가 등을 통한 편의성 증대와 커피 용어를 몰라도 원하는 커피를 쉽게 검색하고 찾을 수 있도록 필터기능과 검색기능의 고도화를 추진 중에 있으며, 취향을 찾아주고 취향에 맞는 커피를 추천해줄 수 있는 취향분석 시스템 개발과 선물하기 기능도 추가 진행 중에 있습니다.</p><br>
+
+                <p style="color: black; font-weight: bold; white-space: pre-line">2) 숲살림 플랫폼 서비스 </p><br>
+
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_202308280418018810cd.png"><br>
+
+                <p style="color: black; font-weight: bold; white-space: pre-line">3) 아르테논 플랫폼 서비스 </p><br>
+                <p style="color: black; white-space: pre-line">기존 오프라인 갤러리나 미술관에서 진행해오던 거래와 전시, 공모전을 통한 작가 발굴 등 예술 분야 플랫폼 서비스를 기획 중입니다. 통합 온라인 아트 플랫폼을 2024년 사업화를 목표로 개발하고 있습니다.</p><br>
+
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_2023082804192785516e.png">
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_2023082804193639100e.png"><br>
+
+                <p style="color: black; font-weight: bold; font-size: 18px; white-space: pre-line">매출 목표</p>
+                <p style="color: black; font-weight: bold; white-space: pre-line">1) 디자인 사업부문</p><br>
+                <p style="color: black; white-space: pre-line">당사는 종합 브랜딩 디자인 전문회사로 23년간 정부기관이나 대기업부터 지역 소상공인까지 폭넓은 클라이언트의 다양한 니즈를 충족시켜 왔으며, 향후에도 공공기관 및 기업, 새로운 정책과 신제품 등 관련 지속적인 니즈가 있을 것으로 예상하고 있습니다.
+
+                    또한, 공공기관의 경우 사회적기업, 공공기관 우선구매 대상기업과의 거래를 일정 수준 이상 유지하거나 늘리는 법안이 개정되어 정책이 시행 중에 있어, 사회적기업인 당사의 매출은 앞으로 매출이 증가할 것으로 예상하고 있습니다. 공공기관을 대상으로 수주 비즈니스로만 기업을 운영한 당사의 당기순이익은 지난 20년간 평균 매출액의 1%정도였습니다. 외부적인 요인으로 인하여 해마다 약간의 변동은 있으나 기존 수주 비즈니스에서 당기순이익을 1%로 추산할 경우 특별한 사정이 없는 한 2024~26년 기간 중에 매년 약 600~700만원의 순이익이 예상됩니다.</p><br>
+
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_202308280604569362da.png"><br>
+
+                <p style="color: black; font-weight: bold; white-space: pre-line">2) 커핑 커피 플랫폼 부분</p><br>
+                <p style="color: black; white-space: pre-line">2025년 스페셜티 커피 시장을 2조 2백억원으로 추산했을 때 이 중 온라인 시장은 약 13%로 2,626억원 정도 입니다. 스페셜티 커피 시장을 1%정도 점유 시 26억원 매출이 가능하며, 투자 유치 등을 통해 시장을 3%정도 점유한다면 78억원의 매출이 가능할 것으로 예상합니다. </p><br>
+
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_20230828060514069387.png"><br>
+
+                <p style="color: black; white-space: pre-line">‘커핑커피’은 수주 비즈니스가 아니며 수확체증의 법칙이 적용되는 사업 구조이기 때문에 사업이 어느 정도 궤도에 올라 수익이 증가하더라도 추가 인건비 부담이 거의 없거나 매우 적은 비용만 추가하면 됩니다. 때문에 ‘커핑커피’ 사업수익에서 담당자 인건비와 기본적인 경비를 제외한 금액이 대부분 순이익이 됩니다. 사업추진계획에서도 밝혔듯이 2023년 ‘커핑커피’ 사업부문의 경우 사용자 확대를 위해 수익을 기대하지 않고 투자에 주력할 예정입니다. 그러나 2024년부터는 안정적으로 수익이 확대되리라 예상됩니다.</p><br>
+
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_20230829091651820f48.png"><br><br>
+
+                <p style="color: black; font-weight: bold; font-size: 18px; white-space: pre-line">기업가치평가</p>
+                <p style="color: black; white-space: pre-line">본 펀딩에서 제시한 기업가치평가액은 4.8억원(Pre-money)이며, 디자인, 광고, 브랜딩 분야 전문기업으로 스페셜티 커피 시장에 신규 진출한 점으로 고려하여, 당사가 자체적으로 평가하였습니다</p><br>
+
+                <p style="color: black; font-weight: bold; font-size: 18px; white-space: pre-line">EXIT 계획 </p>
+                <p style="color: black; white-space: pre-line">본 펀딩 투자자분들은 상환전환우선주 상환권 행사를 통해 투자자금을 회수하실 수 있습니다. 세종아이콘은 디자인 사업 분야 수주 외에도 온라인 플랫폼 ‘커핑커피’ 활성화를 통해 2024년 본격적인 소비자 회원 확대와 판매량 증가, B2B로의 확장 등을 진행하고, 시장 내 입지를 확실하게 다져나갈 예정입니다. 2025년에는 공격적 마케팅으로 시장안정 및 시장점유율 확장을 도모하고, 2026년에는 실적을 기반으로 기업공개(IPO)도 진행하고자 합니다.</p><br>
+
+                <p style="color: black; font-weight: bold; font-size: 18px; white-space: pre-line">기업소개</p>
+                <p style="color: black; font-weight: bold; white-space: pre-line">23년 업력의 디자인/광고/브랜드 전문기업</p><br>
+                <p style="color: black; white-space: pre-line">세종아이콘은 단순한 디자인회사가 아니라 디자인을 통해 마케팅·커뮤니케이션 전략을 수행하는 브랜딩 디자인 기업입니다. 세종아이콘이 브랜드/캐릭터/포스터 디자인, 공간 디자인, 홍보영상 제작, 문화 콘텐츠 개발 등 수행하는 업무영역이 다소 넓은 이유는 모든 일을 문제해결(problem-solving)과정으로 인식하며 문제해결을 위한 창의적 발상을 통해 과업을 수행하기 때문입니다.​</p><br>
+
+                <img src="https://www.ohmycompany.com/uploads/editorImages/2023/editorImg_202308310542387247f3.png"><br>
+
+
+            </div>
+
+            <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%"></div>
+
+            <div class="col-lg-12" style="height: 20px"></div>
+            <div class="col-lg-12 story-header" style="padding: 0px">
+                <p style="color: black; font-weight: bold; font-size: 20px">첨부자료</p>
+            </div>
+            <div class="col-lg-12" style="height: 40px"></div>
+            <div class="col-lg-12 story-body" style="padding: 0px">
+                <p style="color: black; white-space: pre-line">ㅎㅎ</p>
+            </div>
+
+            <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%"></div>
+
+            <div class="col-lg-12" style="height: 20px"></div>
+            <div class="col-lg-12 story-header" style="padding: 0px">
+                <p style="color: black; font-weight: bold; font-size: 20px">투자위험고지</p>
+            </div>
+            <div class="col-lg-12" style="height: 40px"></div>
+            <div class="col-lg-12 story-body">
+                <p style="color: black; font-weight: bold; white-space: pre-line">본 투자위험고지서는 [자본시장과 금융투자업에 관한 법률(이하 "자본시장법")] 제117조의7 제4항에 의거하여 플로키가 인터넷 홈페이지를 통하여 온라인소액투자중개하는 금융투자상품에 대한 투자에 따르는 위험을 귀하가 사전에 충분히 인지할 수 있도록 귀하에게 교부하는 것입니다.</p><br>
+            </div>
+            <div class="col-lg-12 story-body" style="padding: 0px">
+                <p style="color: black; white-space: pre-line">1. 귀하가 청약하고자 하는 금융투자상품은 자본시장법에 따른 "증권"에 해당하므로 원본손실의 위험성이 있습니다. 또한 발행인이 제시한 예상수익이나, 귀하가 기대하는 수익의 일부 또는 전부를 얻지 못할 수 있습니다.
+
+                    2. 귀하는 플로키의 홈페이지에 게재(정정)된 모집되는 증권의 발행조건, 발행인의 재무상태가 기재된 서류 및 사업계획서의 내용, 증권의 취득에 따른 투자위험요소 등 모집게재사항을 충분히 확인하고, 청약의 주문 시 플로키가 별도로 정한 방법에 의하여 통지한 투자 위험 등의 내용에 대하여 주의 깊게 확인하여야 합니다.
+
+                    3. 플로키는 자본시장법 제117조의11에 따라, 투자자 보호를 위하여 투자 중개에 앞서 발행인 및 그 증권에 관한 주요 정보의 사실 여부를 확인합니다.
+
+                    다만, 게재된 투자모집정보에 관한 사항은 게재정보의 최신성 유지를 위해 수정 혹은 삭제 및 추가될 수 있습니다. 변경사항에 대해서는 당사의 홈페이지에 공지하며, 청약기간의 말일로부터 7일 이내에 수정 혹은 삭제 및 추가사항이 있을 경우에는 투자자가 변경된 정보를 토대로 충분한 의사판단을 할 수 있도록 해당일로부터 7일 후로 청약기간을 연장합니다. 따라서 투자자는 자신이 이미 청약을 완료하였다고 하더라도 모집이 종료되기 전까지는 당사의 홈페이지를 통해 모집정보에 대한 지속적인 확인을 해야 합니다.
+
+                    4. 모집성공 후 "예탁"되어지는 증권의 경우, 귀하의 증권계좌번호와 계좌유효성이 반드시 확인되어야 합니다. 증권계좌번호와 계좌유효성이 확인되어지지 않은 청약자는 모집성공 이후라도 청약이 취소될 수 있습니다. 투자 완료 후 홈페이지의 ‘마이페이지 - 참여프로젝트 - 증권형’ 페이지로 가면 자신의 투자 내역을 확인할 수 있으며, 증권계좌 정보의 수정이 가능합니다.
+
+                    5. 청약의 철회(취소)는 청약기간 중에만 가능(청약기간 종료일 이후에는 청약의 철회 불가)하며, 청약기간의 종료 시 모집금액이 발행인이 목표한 모집예정금액의 80%에 미달하는 경우 모집실패로 간주하여 증권의 발행은 취소됩니다. 청약의 철회(취소) 시 청약증거금은 귀하의 투자예치금계좌에 복원됩니다.
+
+                    6. 모집의 성공 후 발행되는 모든 증권은 비상장 증권이므로 한국거래소 상장을 목적으로 하는 것이 아니며, 증권의 환금성에 큰 제약이 있을 수 있습니다. 귀하는 이로 인해 투자금액에 대한 일부 또는 전부를 회수할 수 없는 위험이 있음을 이해하여야 합니다.
+
+                    7. 귀하는 크라우드펀딩을 통해 발행된 증권이 자본시장법 제117조의10 제7항에 따라, 전문투자자에 대한 매도 등 예외적인 경우를 제외하고는 원칙적으로 6개월간 전매가 제한된다는 점을 이해하여야 합니다.
+
+                    8. 귀하는 아래의 사항에 대해서도 내용을 확인하여야 합니다.
+
+                    - 플로키는 온라인소액증권 청약과 관련하여 투자자로부터 별도의 수수료를 징수하지 않습니다. 다만 청약증거금 용도의 자금을 투자예치금계좌에 이체할 때 이용하는 은행의 정책에 따라 타행이체의 경우 이체수수료가 발생할 수 있습니다.
+
+                    - 발행인이 증권의 발행조건과 관련하여 조기상환조건을 설정하거나, 전환조건을 설정한 경우에는 이에 대한 구체적인 내용을 플로키 홈페이지를 통해 반드시 확인하여야 합니다.
+
+                    - 플로키는 자본시장법상에 따른 "온라인소액투자중개업자"이며, 온라인소액증권발행인과 온라인소액투자중개계약을 체결하여 위 발행인이 발행하는 증권에 대한 청약거래를 중개하는 역할만 수행하며, 직접 증권을 발행하거나 주금을 납입받지 않습니다.
+
+                    - 플로키는 크라우드펀딩을 통한 자금모집을 중개하는 온라인소액투자중개업자로서 거래의 당사자가 아니며, 투자로 인한 손실을 보전하지 않습니다.
+
+                    - 청약의 우대 차별 사유 : 플로키는 발행인의 요청에 따라 법적으로 설정가능한 범위 내에서 합리적이고 명확한 기준(선착순, 청약금액순, 전문투자자순 등)에 따라 투자자의 자격 등을 제한할 수 있습니다. 이 경우 귀하는 위 기준과 조건에 따라 청약거래에 있어 차별을 받게 될 수 있습니다.
+
+                    9. 정부의 방침에 따라 크라우드펀딩 제도의 변경이 있을 수 있습니다. 귀하는 자본시장법 등 관련법규에 근거하여 투자자의 권리에 대해 제한 및 변경이 있는 경우 이를 준수하여야 합니다.
+
+                    위 사항들은 플로키를 통한 온라인소액증권 청약의 제도∙위험 및 청약의 주문 거래와 관련하여 귀하가 알아야 할 사항을 간략하게 서술한 것으로 거래와 관련하여 발생될 수 있는 모든 위험과 중요 사항을 전부 기술한 것은 아닙니다. 따라서 상세한 내용은 플로키 및 자본시장법상의 관계법규를 통하여 확인하시기 바랍니다.</p>
+            </div>
+
+            <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%"></div>
+        </div>
+    </div>
+
+
+</th:block>
+
+</html>

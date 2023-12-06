@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layout/default}">
+
+<head>
+  <!--  사용자별 css file 추가 부분 -->
+  <!-- Link Swiper's CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+  <link rel="stylesheet" th:href="@{/user/css/swiper-event-css.css}" />
+  <link rel="stylesheet" th:href="@{/user/css/main_style.css}" />
+<style>
+  #ftco-navbar {
+    z-index: 10000;
+  }
+</style>
+
+
+
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+  <!-- Swiper JS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+  <!-- 	  	<script th:src="@{user/js/swiper-slide-event.js}"></script> -->
+
+
+</th:block>
+
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+  <script>
+
+    let mainSwiper = new Swiper("#main-swiper-slide", {
+      spaceBetween: 30,    // 슬라이드 사이 여백
+      slidesPerView : 'auto', // 한 슬라이드에 보여줄 갯수
+      centeredSlides: true,    //센터모드
+      autoplay: {     //자동슬라이드 (false-비활성화)
+        delay: 2500, // 시간 설정
+        disableOnInteraction: false, // false-스와이프 후 자동 재생
+      },
+      loop : false,   // 슬라이드 반복 여부
+      loopAdditionalSlides : 1,
+      // 슬라이드 반복 시 마지막 슬라이드에서 다음 슬라이드가 보여지지 않는 현상 수정
+      pagination: { // 호출(pager) 여부
+        el: ".swiper-pagination", //버튼을 담을 태그 설정
+        clickable: true, // 버튼 클릭 여부
+      },
+      navigation: {
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev",
+      },
+    });
+
+    // md join swiper slide
+    let mdJoinSwiper = new Swiper("#mdJoinProject .mySwiper", {
+      slidesPerView: 3,
+      grid: {
+        rows: 2,
+      },
+      // spaceBetween: 20,
+      pagination: {
+        el: ".swiper-pagination",
+        clickable: true,
+      },
+    });
+
+    // rank tab function
+    $('.tab-menu-btn li').on('click',function(){
+      $('.tab-menu-btn li').removeClass('active');
+      $(this).addClass('active');
+      let tabData = $(this).attr('data-tab');
+      $('.main-rank-area').hide();
+      $('#'+tabData).show();
+    });
+
+    // contents swiper slide
+    let contentsSwiperSlide = new Swiper(".contents-area", {
+      slidesPerView: 4,
+      spaceBetween: 20,
+      navigation: {
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev",
+      },
+    });
+
+    // header menu slidedown
+    $('.user-connection-menu li').hover(function(){
+      $(this).find('.header-menu-submenu').stop().slideDown(300);
+    }, function(){
+      $(this).find('.header-menu-submenu').stop().slideUp(300);
+    })
+
+
+
+  </script>
+
+
+
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+  <!-- main swiper slide start -->
+
+
+  <section id="storeInnerGroup" class="content-wrap">
+    <div class="main-section container">
+    <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
+      <figure class="text-center">
+        <blockquote class="blockquote">
+          <h3>누구나 쉽고 빠르게 프로젝트를 시작할 수 있습니다.</h3>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+          <cite title="Source Title">지금 바로 플로키에서! </cite>
+        </figcaption>
+      </figure>
+
+    </div>
+
+    <div class="row text-center" style="justify-content:center;">
+
+      <div class="col-lg-3">
+        <div class="card border-primary mb-4 shadow-sm">
+          <div class="card-header " >
+            <h4 class="my-0 fw-normal">리워드 프로젝트</h4>
+          </div>
+          <div class="card-body">
+            <p class="text-dark">제품/서비스를 리워드로 제공하여 수익을 얻습니다.</p><br>
+            <a th:href="@{/user/projectRegistration/reward}">
+              <button type="button" class="w-70 btn btn-lg btn-primary">시작하기</button>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="card border-primary mb-4 shadow-sm">
+          <div class="card-header" >
+            <h4 class="my-0 fw-normal">투자 프로젝트</h4>
+          </div>
+          <div class="card-body">
+            <p class="text-dark">스타트업의 주식/채권을 발행하여 자금을 조달합니다.</p><br>
+            <div class="card-bottom">
+              <a th:href="@{/user/projectRegistration/investment/judge}">
+                <button type="button" class="w-70 btn btn-lg btn-primary">시작하기</button>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="card border-primary mb-4 shadow-sm">
+          <div class="card-header " >
+            <h4 class="my-0 fw-normal">기부 프로젝트</h4>
+          </div>
+          <div class="card-body">
+            <p class="text-dark">기부금을 후원받아 기부처에 전달하고 기부금 사용 현황을 제공합니다.</p><br>
+            <a th:href="@{/user/projectRegistration/donation}">
+              <button type="button" class="w-70 btn btn-lg btn-primary">시작하기</button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <div class="main-section container mt-lg-5">
+      <h3 class="main-title">성공 사례</h3>
+      <!-- Swiper -->
+      <div class="swiper contents-area">
+        <div class="swiper-wrapper">
+
+          <div class="swiper-slide" th:each="l : ${recommendProjectList}"
+               th:onclick="|location.href='@{/user/reward/detail(rewardProjectCode=${l.rewardProjectCode},searchCnt='true')}'|">
+            <img class="slide-thumb" th:src="|@{/summernoteImage/}${l.projectThumbnailImage}|"
+                 th:onerror="|this.src='@{/user/images/no-image.svg}'|"/>
+            <div class="description">
+              <div class="product-main-title" th:text="${l.projectSubject}"></div>
+              <div class="product-detail-info">
+                <span class="funding-percent" th:text="|${l.projectAchievementPercent}%|"></span>
+                <span class="category" th:text="${l.categoryName}"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+    </div>
+
+  </section>
+
+
+</th:block>
+</html>

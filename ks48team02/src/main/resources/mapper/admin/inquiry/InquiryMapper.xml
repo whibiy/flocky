@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksmart.ks48team02.admin.mapper.inquiry.InquiryMapper">
+
+    <resultMap id="inquiryResultMap" type="Inquiry">
+        <id property="contactAnswerCode" column="contact_answer_code" />
+        <result property="inquireCode" column="inquire_code" />
+        <result property="memberId" column="member_id" />
+        <result property="iqSubject" column="iq_subject" />
+        <result property="iqContent" column="iq_content" />
+        <result property="iqDatetime" column="iq_datetime" />
+
+        <association property="inquiryPage" javaType="InquiryPage">
+            <id property="inquireCode"                  column="inquire_code" />
+            <result property="memberId"                 column="member_id" />
+            <result property="contactCategoryNumber"    column="contact_category_number"/>
+            <result property="iqSubject"                column="iq_subject"/>
+            <result property="moreInformation"          column="more_Information"/>
+            <result property="inquiryProjectCode"       column="inquiry_project_code"/>
+            <result property="replyEmailAddress"        column="reply_email_address"/>
+            <result property="replyContact"             column="reply_contact"/>
+            <result property="inquiryStatus"            column="inquiry_status"/>
+            <result property="inquiryDate"              column="inquiry_date"/>
+            <result property="answerCompletionDate"     column="answer_completion_date"/>
+        </association>
+    </resultMap>
+
+<!--    1:1 문의 관리 목록-->
+    <select id="getInquiryPage" resultMap="inquiryResultMap">
+        select
+        hg.inquire_code,
+        hg.member_id,
+        hg.contact_category_number,
+        hg.iq_subject,
+        hg.more_Information,
+        hg.inquiry_project_code,
+        hg.reply_email_address,
+        hg.reply_contact,
+        hg.inquiry_status,
+        hg.inquiry_date,
+        hg.answer_completion_date
+        from
+        home_pageinquiry_management as hg
+    </select>
+
+<!--    문의 관리 목록-->
+    <select id="getInquiryList" resultMap="inquiryResultMap">
+        select
+        hp.contact_answer_code,
+        hp.inquire_code,
+        hp.member_id,
+        hp.iq_subject,
+        hp.iq_content,
+        hp.iq_datetime
+        from
+        home_pageinquiry_answer_management as hp
+
+    </select>
+
+<!--    문의 관리 답변페이지 목록-->
+    <select id="getInquiryModifyList" parameterType="Inquiry" resultMap="inquiryResultMap">
+        select
+        hp.contact_answer_code,
+        hp.inquire_code,
+        hp.member_id,
+        hp.iq_subject,
+        hp.iq_content,
+        hp.iq_datetime
+        from
+        home_pageinquiry_answer_management as hp
+
+
+
+    </select>
+
+    <!-- 특정 문의 관리 답변 조회 -->
+    <select id="getInquiryModifyListByCode" parameterType="String" resultMap="inquiryResultMap">
+        select
+            hp.contact_answer_code,
+            hp.inquire_code,
+            hp.member_id,
+            hp.iq_subject,
+            hp.iq_content,
+            hp.iq_datetime
+        from
+            home_pageinquiry_answer_management as hp
+        where
+            hp.inquire_code = #{inquireCode};
+
+
+    </select>
+
+
+</mapper>

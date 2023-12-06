@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksmart.ks48team02.common.mapper.payments.PaymentsMapper">
+
+    <!-- reward payments -->
+    <resultMap type="RewardPayments" id="rewardPaymentsMap">
+        <id property="paymentCode" column="reward_payment_code"/>
+        <result property="orderCode" column="order_code"/>
+        <result property="memberId" column="member_id"/>
+        <result property="rewardRefundCode" column="reward_refund_code"/>
+        <result property="switchingCode" column="switching_code"/>
+        <result property="orderPrice" column="order_price"/>
+        <result property="deliveryPrice" column="delivery_price"/>
+        <result property="orderTotalPrice" column="order_total_price"/>
+        <result property="useReservePrice" column="use_reserve_price"/>
+        <result property="useReserveCode" column="use_reserve_code"/>
+        <result property="discountRankPrice" column="discount_rank_price"/>
+        <result property="discountCouponPrice" column="discount_coupon_price"/>
+        <result property="paymentScheduledPrice" column="payment_scheduled_price"/>
+        <result property="paymentMethod" column="payment_method"/>
+        <result property="depositName" column="deposit_name"/>
+        <result property="depositAccount" column="deposit_account"/>
+        <result property="refundAccount" column="refund_account"/>
+        <result property="depositPrice" column="deposit_price"/>
+        <result property="paymentState" column="payment_state"/>
+        <result property="paymentDeadlineDate" column="payment_deadline_date"/>
+        <result property="paymentCompletedDate" column="payment_completed_date"/>
+    </resultMap>
+
+    <!-- donation payments -->
+    <resultMap id="donationPaymentsMap" type="DonationPayments">
+        <id property="paymentCode" column="donation_order_code"/>
+        <result property="orderCode" column="order_code"/>
+        <result property="donationGoods" column="donation_goods"/>
+        <result property="donationPrice" column="donation_price"/>
+        <result property="donationName" column="donation_name"/>
+        <result property="donationSecurityNumber" column="donation_security_number"/>
+    </resultMap>
+
+    <!-- investment payments -->
+    <resultMap id="investPaymentsMap" type="InvestPayments">
+        <id property="paymentCode" column="investment_order_code"/>
+        <result property="orderCode" column="order_code"/>
+        <result property="investmentCode" column="investment_code"/>
+        <result property="memberId" column="member_id"/>
+        <result property="refundCode" column="refund_code"/>
+        <result property="securitiesIssuanceCode" column="securities_issuance_code"/>
+        <result property="buyStockCount" column="buy_stock_count"/>
+        <result property="buyStockPrice" column="buy_stock_price"/>
+        <result property="orderPrice" column="order_price"/>
+        <result property="paymentPrice" column="payment_price"/>
+        <result property="paymentStatus" column="payment_status"/>
+        <result property="subscriptionPaymentDate" column="subscription_payment_date"/>
+        <result property="subscriptionState" column="subscription_state"/>
+        <result property="investorsBankName" column="investors_bank_name"/>
+        <result property="investorsAccount" column="investors_account"/>
+        <result property="securitiesName" column="securities_name"/>
+        <result property="securitiesAccount" column="securities_account"/>
+        <result property="depositBankName" column="deposit_bank_name"/>
+        <result property="depositAccount" column="deposit_account"/>
+        <result property="paymentDeadlineDate" column="payment_deadline_date"/>
+    </resultMap>
+
+    <!-- reward payments list 조회 -->
+    <select id="getRewardPayments" resultMap="rewardPaymentsMap">
+        SELECT
+            rp.reward_payment_code,
+            rp.order_code,
+            rp.member_id,
+            rp.reward_refund_code,
+            rp.switching_code,
+            rp.order_price,
+            rp.delivery_price,
+            rp.order_total_price,
+            rp.use_reserve_price,
+            rp.use_reserve_code,
+            rp.discount_rank_price,
+            rp.discount_coupon_price,
+            rp.payment_scheduled_price,
+            rp.payment_method,
+            rp.deposit_name,
+            rp.deposit_account,
+            rp.refund_account,
+            rp.deposit_price,
+            rp.payment_state,
+            rp.payment_deadline_date,
+            rp.payment_completed_date
+        FROM
+            reward_payment AS rp;
+    </select>
+
+    <!-- 특정 reward payments 정보 조회 -->
+    <select id="getRewardPaymentsById" parameterType="String" resultMap="rewardPaymentsMap">
+        SELECT
+            rp.reward_payment_code,
+            rp.order_code,
+            rp.member_id,
+            rp.reward_refund_code,
+            rp.switching_code,
+            rp.order_price,
+            rp.delivery_price,
+            rp.order_total_price,
+            rp.use_reserve_price,
+            rp.use_reserve_code,
+            rp.discount_rank_price,
+            rp.discount_coupon_price,
+            rp.payment_scheduled_price,
+            rp.payment_method,
+            rp.deposit_name,
+            rp.deposit_account,
+            rp.refund_account,
+            rp.deposit_price,
+            rp.payment_state,
+            rp.payment_deadline_date,
+            rp.payment_completed_date
+        FROM
+            reward_payment AS rp
+        WHERE
+            rp.order_code = #{orderCode};
+    </select>
+
+    <!-- 특정 기부 결제 정보 조회 -->
+    <select id="getDonationPaymentsById" parameterType="String" resultMap="donationPaymentsMap">
+        SELECT
+            dp.donation_order_code,
+            dp.order_code,
+            dp.donation_goods,
+            dp.donation_price,
+            dp.donation_name,
+            dp.donation_security_number
+        FROM
+            donation_payment AS dp
+        WHERE
+            dp.order_code = #{orderCode};
+    </select>
+
+    <!-- 특정 투자 결제 정보 조회 -->
+    <select id="getInvestPaymentsById" parameterType="String" resultMap="investPaymentsMap">
+        SELECT
+            ip.investment_order_code,
+            ip.order_code,
+            ip.investment_code,
+            ip.member_id,
+            ip.refund_code,
+            ip.securities_issuance_code,
+            ip.buy_stock_count,
+            ip.buy_stock_price,
+            ip.order_price,
+            ip.payment_price,
+            ip.payment_status,
+            ip.subscription_payment_date,
+            ip.subscription_state,
+            ip.investors_bank_name,
+            ip.investors_account,
+            ip.securities_name,
+            ip.securities_account,
+            ip.deposit_bank_name,
+            ip.deposit_account,
+            ip.payment_deadline_date
+        FROM
+            investment_payment AS ip
+        WHERE
+            ip.order_code = #{orderCode};
+    </select>
+
+
+</mapper>

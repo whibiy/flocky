@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{seller/layout/default}">
+<!--스토어 메인페이지 : 소속된 스토어 정보 조회 페이지(스토어 정보, 등록된 직원 목록...)-->
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <style>
+        /*  검은 버튼  */
+        .submitBtn_black {
+            background: #191919;
+            padding: 7px 23px;
+            transition: all .4s;
+            color: #fff;
+            display: inline-block;
+            text-decoration: none;
+            border: 1px solid #191919;
+            font-size: 12px;
+            transition: background 0.3s;
+            margin-left: 7px;
+        }
+
+        .submitBtn_black:hover {
+            background: var(--maincolor);
+            border: 1px solid var(--maincolor);
+        }
+
+        /* 흰 버튼 */
+        .submitBtn_white {
+            background: #fff;
+            padding: 7px 23px;
+            transition: all .4s;
+            color: #191919;
+            display: inline-block;
+            text-decoration: none;
+            border: 1px solid #191919;
+            font-size: 12px;
+            transition: background 0.3s;
+            margin-left: 10px;
+        }
+
+        .submitBtn_white:hover {
+            background: var(--maincolor);
+            border: 1px solid var(--maincolor);
+            color: #fff;
+        }
+
+        .store-profile{
+            display: flex;
+            justify-content: center;
+        }
+
+    </style>
+</head>
+<!-- 사용자정의 contents start -->
+<th:block layout:fragment="customContents">
+    <!-- 스토어가 있는 판매자 page content -->
+    <div class="right_col" role="main">
+        <div class="pageContainer" style="width:1200px; display: flex; justify-content:space-evenly; gap:30px; padding: 20px;">
+            <div>
+                <!-- 스토어 이름 + 이미지 -->
+                <div id="profileContainer" style="padding-top:60px; padding-right: 30px;">
+                    <!-- 프로필 이미지 -->
+                    <div class="img-box">
+                        <img style="width: 180px; height: 180px; border-radius: 50%;" src="https://search.pstatic.net/common/?src=http%3A%2F%2Fshop1.phinf.naver.net%2F20230830_137%2F169335864225220l8t_PNG%2F904819171823915_1190040385.png&type=sc960_832"
+                             id="profile_img" alt="">
+                    </div>
+
+                    <!-- 스토어 이름 + 설정 아이콘 -->
+                    <div id="name-box" style="display:flex; flex-direction: column; justify-content: center; ">
+                        <!-- 스토어 이름 -->
+                        <h2 class="store-profile" style="font-weight: bold;">철수네 약과</h2>
+
+                        <p class="store-profile">안녕하세요 철수네 약과입니다. 저희 철수네 약과는 다른 평범한 약과들과는 다릅니다 이렇게 길게 써도 프로필 소개에 다 들어갑니다 </p>
+                        <!-- 편집 클릭시 스토어 프로필 편집 모달 팝업 -->
+                        <div style="display: flex;justify-content: center; ">
+                            <a th:href="@{#}"><p style="text-decoration: underline;" data-toggle="modal" data-target="#exampleModal"
+                                                 onclick="openModal()">편집</p></a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row" style="display: flex; " >
+                <div class="admin-wrapper">
+                    <form class="edit-store" style="width:700px; display: flex; flex-direction: column; padding: 20px; gap:10px;">
+                        <div class="mb-3">
+                            <label for="store-name" class="form-label">스토어 이름</label>
+                            <div style="display: flex; gap:10px;">
+                                <input type="text" class="form-control" id="store-name" value="철수네" readonly="readonly">
+                            </div>
+                        </div>
+                        <div id="emailHelp" class="form-text"></div>
+                        <div class="mb-3">
+                            <label for="corp-reg-num" class="form-label">사업자등록번호</label>
+                            <input type="password" class="form-control"  aria-describedby="emailHelp" id="corp-reg-num" placeholder="사업자 등록번호 10자리 입력">
+                        </div>
+                        <div class="mb-3">
+                            <label for="corp_name" class="form-label">상호 또는 법인명</label>
+                            <input type="password" class="form-control" id="corp_name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="field-of-business" class="form-label">사업의 종류</label>
+                            <input type="text" class="form-control"  aria-describedby="emailHelp" id="field-of-business">
+                        </div>
+                        <div class="mb-3">
+                            <label for="business-license" class="form-label">사업자등록증</label>
+                            <input type="file" class="form-control"  aria-describedby="emailHelp" id="business-license">
+                        </div>
+                        <div class="mb-3">
+                            <label for="representative" class="form-label">대표자명</label>
+                            <input type="password" class="form-control"  aria-describedby="emailHelp" id="representative" placeholder="">
+                        </div>
+                        <div class="mb-3">
+                            <label for="input-account-bank" class="form-label">대표 계좌 은행</label>
+                            <input type="text" class="form-control"  aria-describedby="emailHelp" id="input-account-bank">
+                        </div>
+                        <div class="mb-3">
+                            <label for="input-account-number" class="form-label">대표 계좌번호</label>
+                            <input type="password" class="form-control" id="input-account-number">
+                        </div>
+                        <div class="mb-3">
+                            <label for="copy-bankbook" class="form-label">통장사본</label>
+                            <input type="file" class="form-control"  aria-describedby="emailHelp" id="copy-bankbook">
+                        </div>
+                        <div class="mb-3">
+                            <label for="business-place" class="form-label">사업장 소재지</label>
+                            <input type="file" class="form-control"  aria-describedby="emailHelp" id="business-place">
+                        </div>
+                    </form>
+
+
+                    <div class="d-grid gap-2" style="width: 700px; display: flex; justify-content: end; padding-right: 20px;">
+                        <button type="submit" class="submitBtn_black" id="join-button">저장</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 스토어 프로필 편집 Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel" style="font-size: large">스토어 프로필 편집</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <form>
+                        <div id="profile-box"  style="width: 570px; height: 500px; display: flex; flex-direction: column; justify-content: space-evenly;" >
+
+                            <div id="img-box" style="display: flex; flex-direction: column; justify-content: space-evenly; align-items: center; gap:20px;">
+                                <!-- 2. 선택된 이미지 미리보기  -->
+                                <img id="edit-image-preview" src="" style="width: 200px; height: 200px; border-radius: 50%; background-color: grey;" >
+
+                                <!-- 1. 이미지 선택  -->
+                                <input type="file" onchange="previewImage(this)" accept="image/jpeg, image/png, image/gif, image/*">
+                            </div>
+
+                            <div id="introduce-box" style=" height: 100px; display: flex; flex-direction: column; justify-content: space-evenly; align-items: center;" >
+                                <div>
+                                    <label for="profile-text"></label>
+                                    <textarea  class="form-control" id="profile-text" rows="6" cols="50" placeholder="소개글 입력"></textarea>
+
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="submitBtn_white" data-dismiss="modal">닫기</button>
+                    <button type="submit" class="submitBtn_black">편집하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- /스토어가 있는 page content -->
+
+
+
+    <!-- 사용자정의 contents end -->
+</th:block>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+        /* 이미지 미리 보기 */
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('edit-image-preview').src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+    </script>
+
+</th:block>
+
+
+
+</html>

@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksmart.ks48team02.user.mapper.donation.DonationUserMapper">
+    <insert id="addDonation" parameterType="ksmart.ks48team02.user.dto.DonationRegistration">
+        /* 기부 상품 등록*/
+        <selectKey keyProperty="donationCode,storeCode" resultType="hashmap" order="BEFORE">
+            SELECT
+                (
+                    CASE
+                    WHEN COUNT(d.donation_reg_date) = 0     THEN CONCAT('don_', CURDATE()+0, '_0001')
+                    WHEN COUNT(d.donation_reg_date) > 9999  THEN CONCAT('don_', CURDATE()+0, '_', COUNT(d.donation_reg_date)+1)
+                    ELSE CONCAT('don_', CURDATE()+0, '_', LPAD(COUNT(d.donation_reg_date)+1, 4, '0'))
+                    END
+                ) AS donationCode,
+                (
+                    SELECT
+                        s.store_code
+                    FROM
+                        store AS s
+                    WHERE
+                        s.member_id = #{memberId}
+                ) AS storeCode
+            FROM
+                donation AS d
+            WHERE
+                DATE_FORMAT(d.donation_reg_date, '%Y-%m-%d') = CURDATE();
+        </selectKey>
+        INSERT INTO donation
+        (donation_code, store_code, member_id, donation_judgement_reason_code, admin_member_id, total_category_code, donation_subject, donation_like,
+        donation_contents, donation_image, donation_reg_date, donation_start_date, donation_end_date, donation_achievement_money,
+        donation_goal_money, donation_achievement_percent, donation_judgment_reason_detail, donation_judgement_date, search_count, donation_condition)
+        VALUES
+        (#{donationCode}, #{storeCode}, #{memberId}, NULL, NULL, #{totalCategoryCode}, #{donationSubject}, 0, #{donationContents},
+        #{donationImage}, NOW(), NULL, #{donationEndDate}, 0, #{donationGoalMoney}, 0, NULL, NULL, 0, 0);
+    </insert>
+
+    <!-- 도네이션 정보 리스트 가져오기-->
+    <select id="getDonationInfo" parameterType="String">
+        SELECT
+            d.donation_code AS donationCode,
+            d.store_code AS storeCode,
+            d.member_id AS memberId,
+            d.donation_judgement_reason_code AS donationJudgementReasonCode,
+            d.admin_member_id AS adminMemberId,
+            d.total_category_code AS totalCategoryCode,
+            d.donation_subject AS donationSubject,
+            d.donation_like AS donationLike,
+            d.donation_contents AS donationContents,
+            d.donation_image AS donationImage,
+            d.donation_reg_date AS donationRegDate,
+            d.donation_start_date AS donationStartDate,
+            d.donation_end_date AS donationEndDate,
+            d.donation_achievement_money AS donationAchievementMoney,
+            d.donation_goal_money AS donationGoalMoney,
+            d.donation_achievement_percent AS donationAchievementPercent,
+            d.donation_judgment_reason_detail AS donationJudgmentReasonDetail,
+            d.donation_judgement_date AS donationJudgementDate,
+            d.search_count AS searchCount,
+            d.donation_condition AS donationCondition
+        FROM
+            donation AS d
+        WHERE
+            d.donation_code = #{donationCode};
+    </select>
+
+    <!-- 원하는 유저의 카테고리,회사 정보만 가져오기 -->
+    <select id="getCateAndCompany" parameterType="String" resultType="CategoryAndCompany">
+        SELECT
+            s.store_name AS storeName,
+            t.category_name AS categoryName
+        FROM
+            donation AS d
+        INNER JOIN
+            store AS s
+        ON
+            d.member_id = s.member_id
+            INNER JOIN
+            total_category AS t
+        ON
+            d.total_category_code = t.total_category_code
+        WHERE
+            d.donation_code = #{donationCode};
+    </select>
+
+    <!-- 유저의 모든 정보 리스트 가져오기-->
+    <select id="getAllDonationInfo" resultType="AllDonationInfo">
+        SELECT
+            d.donation_code AS donationCode,
+            d.store_code AS storeCode,
+            s.store_name AS storeName,
+            t.category_name AS categoryName,
+            d.member_id AS memberId,
+            d.donation_judgement_reason_code AS donationJudgementReasonCode,
+            d.admin_member_id AS adminMemberId,
+            d.total_category_code AS totalCategoryCode,
+            d.donation_subject AS donationSubject,
+            d.donation_like AS donationLike,
+            d.donation_contents AS donationContents,
+            d.donation_image AS donationImage,
+            d.donation_reg_date AS donationRegDate,
+            d.donation_start_date AS donationStartDate,
+            d.donation_end_date AS donationEndDate,
+            d.donation_achievement_money AS donationAchievementMoney,
+            d.donation_goal_money AS donationGoalMoney,
+            d.donation_achievement_percent AS donationAchievementPercent,
+            d.donation_judgment_reason_detail AS donationJudgmentReasonDetail,
+            d.donation_judgement_date AS donationJudgementDate,
+            d.search_count AS searchCount,
+            d.donation_condition AS donationCondition
+        FROM
+            donation AS d
+            INNER JOIN
+            store AS s
+        ON
+            s.store_code = d.store_code
+        INNER JOIN
+            total_category AS t
+        ON
+            t.total_category_code = d.total_category_code
+    </select>
+
+    <!-- 현황 가져오기 -->
+    <select id="getCondition" parameterType="String">
+        SELECT
+            condition_content
+        FROM
+            `condition`
+        WHERE
+            project_code = #{donationCode};
+    </select>
+
+    <!-- 뉴스 전체 리스트 가져오기 -->
+    <select id="getNewsList" parameterType="String" resultType="NewsList">
+        SELECT
+            news_code AS newsCode,
+            project_code AS projectCode,
+            news_subject AS newsSubject,
+            news_content AS newsContent,
+            news_datetime AS newsDatetime,
+            news_modify_datetime AS newsModifyDatetime,
+            news_delete_datetime AS newsDeleteDatetime,
+            news_display AS newsDisplay
+        FROM
+            news
+        WHERE
+            project_code = #{donationCode};
+    </select>
+
+    <!-- 뉴스 상세 정보 가져오기-->
+    <select id="getDetailNews" parameterType="String" resultType="NewsList">
+        SELECT
+            news_code AS newsCode,
+            project_code AS projectCode,
+            news_subject AS newsSubject,
+            news_content AS newsContent,
+            news_datetime AS newsDatetime,
+            news_modify_datetime AS newsModifyDatetime,
+            news_delete_datetime AS newsDeleteDatetime,
+            news_display AS newsDisplay
+        FROM
+            news
+        WHERE
+            news_code = #{newsCode};
+    </select>
+
+    <!-- 멤버 정보 가져오기 -->
+    <select id="getMember" parameterType="String" resultType="CommentMember">
+        SELECT
+            member_id AS memberId,
+            member_type_code AS memberTypeCode,
+            member_name AS memberName,
+            member_pw AS memberPw,
+            member_reg_date AS memberRegDate,
+            member_email AS memberEmail,
+            contact_info AS contactInfo,
+            unreg_date AS unregDate,
+            unreg_status AS unregStatus
+        FROM
+            member
+        WHERE
+            member_id = #{memberId};
+    </select>
+
+    <!-- 댓글 등록 -->
+    <insert id="CommentAdd" parameterType="String">
+        <selectKey keyProperty="donationCommentCode" resultType="String" order="BEFORE">
+            SELECT
+                (
+                CASE
+                WHEN COUNT(comment_datetime) = 0     THEN CONCAT('com_', CURDATE()+0, '_0001')
+                WHEN COUNT(comment_datetime) > 9999  THEN CONCAT('com_', CURDATE()+0, '_', COUNT(comment_datetime)+1)
+                ELSE CONCAT('com_', CURDATE()+0, '_', LPAD(COUNT(comment_datetime)+1, 4, '0'))
+                END
+                ) AS donationCommentCode
+            FROM
+                donation_comment
+            WHERE
+                DATE_FORMAT(comment_datetime, '%Y-%m-%d') = CURDATE();
+        </selectKey>
+        INSERT INTO donation_comment
+            (donation_comment_code, member_id, donation_code, member_name, comment_content, comment_datetime, comment_modify_datetime, comment_delete_datetime,
+             comment_code, comment_class)
+        VALUES
+            (#{donationCommentCode}, #{memberId}, #{donationCode}, #{memberName}, #{commentContent}, NOW(), NULL, NULL, NULL, 'comment');
+    </insert>
+
+    <!-- 댓글 리스트 가져오기 -->
+    <select id="getCommentList" parameterType="String" resultType="DonationCommentList">
+        SELECT
+            donation_comment_code AS donationCommentCode,
+            member_id AS memberId,
+            donation_code AS donationCode,
+            member_name AS memberName,
+            comment_content AS commentContent,
+            comment_datetime AS commentDatetime,
+            comment_modify_datetime AS commentModifyDatetime,
+            comment_delete_datetime AS commentDeleteDatetime,
+            comment_code AS commentCode,
+            comment_class AS commentClass
+        FROM
+            donation_comment
+        WHERE
+            donation_code = #{donationCode};
+    </select>
+
+    <!-- 댓글 등록 -->
+    <insert id="replyAdd" parameterType="String">
+        <selectKey keyProperty="donationCommentCode" resultType="String" order="BEFORE">
+            SELECT
+                (
+                CASE
+                WHEN COUNT(comment_datetime) = 0     THEN CONCAT('com_', CURDATE()+0, '_0001')
+                WHEN COUNT(comment_datetime) > 9999  THEN CONCAT('com_', CURDATE()+0, '_', COUNT(comment_datetime)+1)
+                ELSE CONCAT('com_', CURDATE()+0, '_', LPAD(COUNT(comment_datetime)+1, 4, '0'))
+                END
+                ) AS donationCommentCode
+            FROM
+                donation_comment
+            WHERE
+                DATE_FORMAT(comment_datetime, '%Y-%m-%d') = CURDATE();
+        </selectKey>
+            INSERT INTO donation_comment
+            (donation_comment_code, member_id, donation_code, member_name, comment_content, comment_datetime, comment_modify_datetime, comment_delete_datetime,
+            comment_code, comment_class)
+            VALUES
+            (#{donationCommentCode}, #{memberId}, #{donationCode}, #{memberName}, #{reply}, NOW(), NULL, NULL, #{parentCommentCode}, 'reply');
+    </insert>
+
+    <!-- 플로버 개수 확인 -->
+    <select id="getFlover" parameterType="String">
+        SELECT
+            customer_flover
+        FROM
+            customer
+        WHERE
+            member_id = #{memberId};
+    </select>
+
+    <!-- 기부 플로버 변동 -->
+    <update id="deductFlover" parameterType="Map">
+        UPDATE
+            customer
+        SET
+            customer_flover = #{resultFlover}
+        WHERE
+            member_id = #{SID};
+    </update>
+
+    <insert id="addOrderTable" parameterType="String">
+        <selectKey keyProperty="orderCode,memberName,donationSubject" resultType="hashmap" order="BEFORE">
+            SELECT
+                (CASE
+                    WHEN
+                        COUNT(o.order_code) = 0  THEN CONCAT('ORD_', CURDATE()+0, '_1')
+                    ELSE
+                        CONCAT('ORD_', CURDATE()+0 ,'_' ,MAX(CAST(substring_index(o.order_code,'_',-1)AS UNSIGNED )+1))
+                END) AS orderCode,
+                (
+                    SELECT
+                        member_name
+                    FROM
+                        member
+                    WHERE
+                        member_id = #{memberId}
+                ) AS memberName,
+                (
+                    SELECT
+                        d.donation_subject
+                    FROM
+                        donation AS d
+                    WHERE
+                        d.donation_code = #{donationCode}
+                ) AS donationSubject
+            FROM
+                order_table AS o
+            WHERE
+                SUBSTRING_INDEX(SUBSTRING_INDEX(o.order_code,'_',2),'_',-1) = CURDATE()+0
+        </selectKey>
+        INSERT INTO order_table
+            (order_code, member_id, order_category_code, order_name, order_funding_name, order_total_price, order_category_detail, goods_code, order_application_date, order_confirm_date, order_cancell_date)
+        VALUES
+            (#{orderCode}, #{memberId}, 'ORDC_002', #{memberName}, #{donationSubject}, #{orderTotalPrice}, '주문 확정-기부 프로젝트 주문 확정', #{donationCode}, NOW(), NULL, NULL);
+    </insert>
+
+    <insert id="addDonationPayment" parameterType="String">
+        <selectKey keyProperty="donationOrderCode,orderCode,memberName" resultType="hashmap" order="BEFORE">
+            SELECT
+                (CASE
+                    WHEN
+                        COUNT(donation_order_code) = 0  THEN CONCAT('DOC_', CURDATE()+0, '_1')
+                    ELSE
+                        CONCAT('DOC_', CURDATE()+0 ,'_' ,MAX(CAST(substring_index(donation_order_code,'_',-1)AS UNSIGNED )+1))
+                    END) AS donationOrderCode,
+                (
+                SELECT
+                    order_code
+                FROM
+                    order_table
+                ORDER BY order_code DESC
+                LIMIT 1
+                ) AS orderCode,
+                (
+                SELECT
+                    m.member_name
+                FROM
+                    member AS m
+                WHERE
+                    m.member_id = 'id005'
+                ) AS memberName
+            FROM
+                donation_payment
+            WHERE
+                SUBSTRING_INDEX(SUBSTRING_INDEX(donation_order_code ,'_',2),'_',-1) = CURDATE()+0;
+        </selectKey>
+        INSERT INTO donation_payment
+        (donation_order_code, order_code, donation_goods, donation_price, donation_name, donation_security_number)
+        VALUES
+        (#{donationOrderCode}, #{orderCode}, #{floverAmount}, #{floverToMoney}, #{memberName}, '941020-1241234');
+    </insert>
+
+    <update id="updateMoney" parameterType="String">
+        UPDATE
+            donation
+        SET
+            donation_achievement_money = #{acvMoney},
+            donation_achievement_percent = #{acvPercent}
+        WHERE
+            donation_code = #{donationCode};
+    </update>
+
+    <!-- 기부 참여인원 확인 쿼리 -->
+    <select id="getNumberOfParticipants" parameterType="String">
+        SELECT
+            COUNT(DISTINCT member_id)
+        FROM
+            order_table
+        WHERE
+            goods_code = #{donationCode};
+    </select>
+
+    <update id="chargeFlover" parameterType="String">
+        UPDATE
+            customer
+        SET
+            customer_flover = #{floverCount}
+        WHERE
+            member_id = #{memberId};
+    </update>
+
+    <update id="searchCountUpdate" parameterType="String">
+        UPDATE
+            donation
+        SET
+            search_count = #{searchCount}
+        WHERE
+            donation_code = #{donationCode};
+    </update>
+
+    <delete id="removeOrderInfo" parameterType="String">
+        DELETE
+        FROM
+            order_table
+        WHERE
+            order_code = #{orderCode};
+    </delete>
+
+    <select id="getOrderInfo" parameterType="String" resultType="OrderTableList">
+        SELECT
+            order_code AS orderCode,
+            member_id AS memberId,
+            order_category_code AS orderCategoryCode,
+            order_name AS orderName,
+            order_funding_name AS orderFundingName,
+            order_total_price AS orderTotalPrice,
+            order_category_detail AS orderCategoryDetail,
+            goods_code AS goodsCode,
+            order_application_date AS orderApplicationDate,
+            order_confirm_date AS orderConfirmDate,
+            order_cancell_date AS orderCancellDate
+        FROM
+            order_table
+        WHERE
+            order_code = #{orderCode};
+    </select>
+
+    <select id="getCustomerInfo" parameterType="String" resultType="Customer">
+        SELECT
+            customer_code AS customerCode,
+            member_id AS customerMemberId,
+            reward_rank_code AS rewardRankCode,
+            donation_rank_code AS donationRankCode,
+            customer_gender AS customerGender,
+            customer_birth AS customerBirth,
+            customer_addr AS customerAddr,
+            customer_addr_detail AS customerAddrDetail,
+            customer_point AS customerPoint,
+            customer_flover AS customerFlover,
+            customer_coupon AS customerCoupon
+        FROM
+            customer
+        WHERE
+            member_id = #{memberId};
+    </select>
+
+</mapper>

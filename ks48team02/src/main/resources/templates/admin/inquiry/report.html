@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+    <link rel="stylesheet" th:href="@{/admin/css/adminBoard.css}">
+
+<style>
+
+    .reportCate{
+        padding-bottom: 20px;
+    }
+</style>
+</head>
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <!--    <script>-->
+    <!--        function popupOpen(){-->
+    <!--            console.log("a");-->
+    <!--            var url= "/admin/board/main";    //팝업창에 출력될 페이지 URL-->
+    <!--            var winWidth = 700;-->
+    <!--            var winHeight = 600;-->
+
+    <!--            var popupX = (document.body.offsetWidth / 2) - (winWidth / 2);-->
+    <!--            // 만들 팝업창 좌우 크기의 1/2 만큼 보정값으로 빼주었음-->
+
+    <!--            var popupY= (window.screen.height / 2) - (winHeight / 2);-->
+    <!--            // 만들 팝업창 상하 크기의 1/2 만큼 보정값으로 빼주었음-->
+    <!--            var popupOption= 'status=no, height='+winWidth+', width='+winHeight+', left='+ popupX + ', top='+ popupY;    //팝업창 옵션(optoin)-->
+
+    <!--            window.open(url,' target="_blank"',popupOption);-->
+    <!--    </script>-->
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+        // 체크박스 전체 선택
+        $('#allCheck').on('click', function (){
+            let isChecked = $(this).prop('checked');
+            $('input[name="admin_board"]').prop('checked', isChecked);
+        });
+
+        // 개별 체크박스 선택 시 전체 체크박스 상태 확인
+        $('input[name="admin_board"]').on('click', function() {
+            let totalCheckboxes = $('input[name="admin_board"]').length;
+            let checkedCheckboxes = $('input[name="admin_board"]:checked').length;
+
+            if (totalCheckboxes === checkedCheckboxes) {
+                $('#allCheck').prop('checked', true);
+            } else {
+                $('#allCheck').prop('checked', false);
+            }
+        });
+
+        // 개별 체크박스 중 하나라도 체크를 해제할 때 전체 선택 체크박스도 해제
+        $('input[name="admin_board"]').on('click', function() {
+            let isChecked = $(this).prop('checked');
+
+            if (!isChecked) {
+                $('#allCheck').prop('checked', false);
+            }
+        });
+
+        $('#reportCate').change(function (){
+            var reportCate = $(this).val();
+
+            switch (reportCate){
+                case '리워드':
+                    $('.rewardCate').closest('tr').show();
+                    $('.donationCate').closest('tr').hide();
+                    $('.investmentCate').closest('tr').hide();
+                    break;
+                case '기부':
+                    $('.rewardCate').closest('tr').hide();
+                    $('.donationCate').closest('tr').show();
+                    $('.investmentCate').closest('tr').hide();
+                    break;
+                case '투자':
+                    $('.rewardCate').closest('tr').hide();
+                    $('.donationCate').closest('tr').hide();
+                    $('.investmentCate').closest('tr').show();
+                    break;
+                default:
+                    $('.rewardCate, .donationCate, .investmentCate').closest('tr').show();
+                    break;
+            }
+        });
+    </script>
+</th:block>
+
+<th:block layout:fragment="customContents">
+    <div class="boardMain" style="margin-bottom: 20px;">
+        <h3>신고 관리</h3>
+    </div>
+    <form>
+
+        <div class="section">
+            <div><h2>신고 목록</h2></div>
+        </div>
+        <div id="reportCateArea">
+            <select id="reportCate">
+                <option>전체 카테고리</option>
+                <option>리워드</option>
+                <option>기부</option>
+                <option>투자</option>
+            </select>
+        </div>
+
+        <div class="boardTable">
+            <table border="1">
+                <thead class="top">
+                <tr>
+                    <th><input type="checkbox" id="allCheck"></th>
+                    <th>신고 유형</th>
+                    <th>신고 제목</th>
+                    <th>신고자 아이디</th>
+                    <th>신고 내용</th>
+                    <th>신고 일시</th>
+                    <th>관리자 ID</th>
+                    <th>게시물 관리</th>
+                </tr>
+                </thead>
+                <tbody class="center">
+                <tr>
+                    <td>
+                        <input type="checkbox" class="rewardCate" name="admin_board">
+                    </td>
+                    <td>리워드</td>
+                    <td>신고합니다.</td>
+                    <td>id005</td>
+                    <td>타인의 지적재산권을 허락없이 사용함</td>
+                    <td>2023-10-26</td>
+                    <td>id001</td>
+                    <td>
+                        <a class="modify" onclick="popupOpen('/admin/inquiry/reportModify', 720,720)">답변</a>
+                        <a class="delete" th:href="@{#}">삭제</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="checkbox" class="donationCate" name="admin_board">
+                    </td>
+                    <td>기부</td>
+                    <td>신고합니다.</td>
+                    <td>id005</td>
+                    <td>타인의 지적재산권을 허락없이 사용함</td>
+                    <td>2023-10-26</td>
+                    <td>id001</td>
+                    <td>
+                        <a class="modify" onclick="popupOpen('#')">답변</a>
+                        <a class="delete" th:href="@{#}">삭제</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="checkbox" class="investmentCate" name="admin_board">
+                    </td>
+                    <td>투자</td>
+                    <td>신고합니다.</td>
+                    <td>id005</td>
+                    <td>타인의 지적재산권을 허락없이 사용함</td>
+                    <td>2023-10-26</td>
+                    <td>id001</td>
+                    <td>
+                        <a class="modify" onclick="popupOpen('#')">답변</a>
+                        <a class="delete" th:href="@{#}">삭제</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="board-page-area">
+            <div class="list-controller-inner">
+                <ul>
+                    <li class="link-active"><a th:href="@{#}">1</a></li>
+                    <li><a th:href="@{#}">2</a></li>
+                    <li><a th:href="@{#}">3</a></li>
+                    <li><a th:href="@{#}">4</a></li>
+                    <li><a th:href="@{#}">5</a></li>
+                    <li><a th:href="@{#}">6</a></li>
+                </ul>
+                <div class="list-btn-area">
+                    <button class="prev-transfer">
+                        <span>prev</span>
+                    </button>
+                    <button class="next-transfer">
+                        <span>next</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</th:block>
+</html>

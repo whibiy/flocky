@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{seller/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+    <style>
+        #slSettlementBankInfo input,
+        #slSettlementBankInfo select{
+            border: 1px solid var(--borderColor);
+            height: 25px;
+            padding: 3px;
+        }
+        #slSettlementBankInfo label {
+            margin: 0 6px 0 15px;
+        }
+        #slSettlementBankInfo input:focus,
+        #slSettlementBankInfo select:focus{
+            border: 1px solid var(--maincolor);
+        }
+        #orderBackBtn:hover {
+            border: 1px solid var(--maincolor);
+        }
+    </style>
+    <link rel="stylesheet" th:href="@{/admin/css/order_detail_style.css}">
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <script th:src="@{/common/js/submenuJs.js}"></script>
+    <script th:src="@{/admin/js/settlement/adminCustomJs.js}"></script>
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+
+        console.log(CURRENT_URL,'<-- CURRENT_URL');
+        console.log(document.referrer,'<-- document.referrer');
+
+        $('.project-info-title').css('margin','0 0 20px');
+        $('.admin-content-wrapper').css('margin-top','0');
+
+
+        //  배송 예정일 setting
+        $('input[name="delivedDateInput"]').on('change', function(){
+            let value = $(this).val();
+            $('input[name="delivedDate"]').val(value);
+            $(this).val('');
+        });
+
+
+
+
+        // 반려 사유 prompt input controls
+        $('select[name="refundProgressCt"]').on('change', function(){
+           let value = $(this).val();
+           if(value == 'N') {
+               $('input[name="refundComment"]').attr('disabled', false).focus();
+           } else {
+               $('input[name="refundComment"]').attr('disabled', true);
+           }
+        });
+
+    </script>
+</th:block>
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <!-- 교환 정보 -->
+    <div class="admin-wrapper"> <!-- 수정 -->
+        <!-- contents -->
+
+        <form id="swappingInfoDetailBt" method="get">
+            <div class="admin-content-wrapper form-table" style="margin-top: 40px;">
+
+            <!-- 정보 영역 -->
+                <div class="project-info-title"  style="margin: 50px 0 20px;">
+                    <h5>환불 신청 코드</h5>
+                    <p style="color: var(--maincolor);">DIC_20230922_00001</p>
+                </div>
+                <form >
+                    <table id="deliveryInfo" class="settlement-log" style="border:none;">
+                        <!-- contents -->
+
+                        <tr style="height: auto;">
+                            <td colspan="5" style="height: 35px;">
+                               주문 상세
+                            </td>
+                        </tr>
+                        <tr class="sub-table-area sub-table sub-table-tr" style="height: auto;">
+                            <td style="height: 35px;">주문 옵션 코드</td>
+                            <td style="height: 35px; width: 50%;">옵션명</td>
+                            <td style="height: 35px;">옵션 단가</td>
+                            <td style="height: 35px; width: 10%;">환불 수량</td>
+                            <td style="height: 35px;">총 환불 신청 금액</td>
+                        </tr>
+                        <tr>
+                            <td style="background: #fff;">ROC20231102_000001</td>
+                            <td>
+                                <select name="orderOption">
+                                    <option value="1">
+                                        [얼리버드 한정] 휴대용 무선 키보드 위에 터치패드 + 스마트 케이스까지! 한층 더 세련된 화이트 에디션으로 돌아왔어요.
+                                    </option>
+                                    <option value="2">
+                                        옵션 2
+                                    </option>
+                                    <option value="3">
+                                        옵션 3
+                                    </option>
+                                    <option value="4">
+                                        옵션 4
+                                    </option>
+                                </select>
+                            </td>
+                            <td ><span>5,000</span> 원</td>
+                            <td> <input type="number" min="1" max="9999" value="1"> 개</td>
+                            <td><span>5,000</span> 원</td>
+                        </tr>
+
+<!--                        <tr>-->
+<!--                            <td>-->
+<!--                                택배사-->
+<!--                            </td>-->
+<!--                            <td style="text-align: left !important;">-->
+<!--                                <select name="delivery_category">-->
+<!--                                    <option value="">=== 택배사를 선택해주세요 ===</option>-->
+<!--                                    <option value="1">CJ 대한통운</option>-->
+<!--                                    <option value="1">롯데택배</option>-->
+<!--                                    <option value="1">우체국택배</option>-->
+<!--                                    <option value="1">로젠택배</option>-->
+<!--                                    <option value="1">한진택배</option>-->
+<!--                                    <option value="1">편의점택배</option>-->
+<!--                                </select>-->
+<!--                            </td>-->
+<!--                            <td class="title-td">-->
+<!--                                운송장번호-->
+<!--                            </td>-->
+<!--                            <td>-->
+<!--                                <input type="text" name="deliverNumber" value="304928-327372">-->
+<!--                            </td>-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <td >-->
+<!--                                배송 메세지-->
+<!--                            </td>-->
+<!--                            <td  colspan="3" style="text-align: left !important;">-->
+<!--                                <select name="deliveryMessage" style="width:210px;">-->
+<!--                                    <option value="1" selected>문 앞에 두고 가주세요</option>-->
+<!--                                    <option value="2">배송 전에 연락 바랍니다</option>-->
+<!--                                    <option value="3">직접 받고 부재시 문 앞</option>-->
+<!--                                    <option value="4">부재시 경비실에 두고 가주세요</option>-->
+<!--                                    <option value="5" >직접 입력</option>-->
+<!--                                </select>-->
+<!--                                <input type="text" width="700px" maxlength="20" placeholder="직접입력" name="deliveryMessageDirect" disabled>-->
+<!--                            </td>-->
+<!--                        </tr>-->
+                    </table>
+                    <table class="settlement-log" style="margin-top: 20px;">
+                        <tr>
+                            <td>
+                                환불 신청일
+                            </td>
+                            <td colspan="4" style="text-align: left !important;">
+                                2023-10-20
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                환불 신청 사유
+                            </td>
+                            <td colspan="4" style="text-align: left !important;">
+                                <select name="refundOption">
+                                    <option value="1">
+                                        단순변심
+                                    </option>
+                                    <option value="2">
+                                        파손
+                                    </option>
+                                    <option value="3">
+                                        오배송
+                                    </option>
+                                    <option value="4">
+                                        기타
+                                    </option>
+                                    <option value="4">
+                                        펀딩 실패
+                                    </option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                환불 신청 제목
+                            </td>
+                            <td colspan="4" style="text-align: left !important;">
+                                환불 신청해요
+                            </td>
+                        </tr>
+                        <tr>
+                            <td >
+                                환불 신청 내용
+                            </td>
+                            <td colspan="4" style="text-align: left !important;">
+                                생각보다 너무 작아서 환불 신청 합니다
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                승인 유무
+                            </td>
+                            <td style="text-align: left !important; width:25%;">
+                                <select name="refundProgressCt">
+                                    <option value="0">
+                                        ==== 승인 유무 선택하세요 ====
+                                    </option>
+                                    <option value="Y">
+                                        승인
+                                    </option>
+                                    <option value="N">
+                                        반려
+                                    </option>
+                                </select>
+                            </td>
+                            <td class="title-td" style="width:13%;">
+                                반려 사유
+                            </td>
+                            <td style="text-align: left !important;">
+                                <input type="text" style="width: 350px;" name="refundComment" placeholder="반려 사유를 입력하세요" disabled>
+                            </td>
+                        </tr>
+                    </table>
+
+                </form>
+            <div class="btn-area">
+                <ul>
+                    <li>
+                        <button id="refundBackBtn" class="submitBtn" type="button" onclick="backLocationFn()">뒤로</button>
+                    </li>
+                    <li>
+                        <button id="refundInfoRemoveBtn" onclick="confirmBtnFn(event.target)" class="submitBtn" type="button" >수정</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        </form>
+
+    </div>
+
+
+
+</th:block>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+</th:block>
+
+<div class="col-lg-5" th:fragment="asideFragments">
+    <div class="col-lg-12" style="height: 40px"></div>
+    <div class="container" style="position: sticky; top: 100px; scroll-behavior: smooth;">
+        <div>
+            <span style="display: inline-block;">
+                <a th:href="@{#}" id="category" style="text-decoration: none; color: grey"></a>
+            </span>
+            <span style="display: inline-block;">
+                <div style="background: lightgrey; padding: 2px; border-radius: 10px">
+                    <a th:href="@{#}" style="text-decoration: none; color: black">
+                        <span>
+                            <span style="color: #235FD9">#</span>
+                        <!--<span>재난</span>-->
+                        </span>
+                    </a>
+                </div>
+            </span>
+        </div>
+        <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%"></div>
+        <div>
+            <p id="detailSubject" th:text="${donationInfo.donationSubject}" style="font-weight: bold; font-size: 20px; color: black"></p>
+            <p id="subContens"></p>
+        </div>
+        <div>
+            <div>
+                <span id="numberOfParticipants" style="font-size: 20px; color: #235FD9; font-weight: bold" th:text="${NumberOfParticipants}"></span>
+                <span style="color: #235FD9">명 참여</span>
+                <span id="deadLine" style="margin-left: 5px; background: #daf6fb; color: #235FD9; border-radius: 5px; padding: 2px;"></span>
+                <input id="donationEndDate" th:value="${donationInfo.donationEndDate}" hidden="hidden">
+            </div>
+            <div>
+                <span id="achievementMoney" style="font-size: 20px; color: black; font-weight: bold;" th:text="${donationInfo.donationAchievementMoney}"></span>
+                <span style="color: black">원 달성</span>
+                <span id="achievementPercent" style="margin-left: 5px; background: #daf6fb; color: #235FD9; border-radius: 5px; padding: 2px;" th:text="${donationInfo.donationAchievementPercent}"></span>
+            </div>
+        </div>
+        <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%"></div>
+        <div>
+            <button id="donationBtn" type="button" style="background: #235FD9; width: 100%; height: 100px; font-size: 30px; color: white;">기부 모금하기</button>
+        </div>
+        <div style="height: 20px"></div>
+        <div style="border: 3px solid #f3f4f5; border-radius: 5px; padding: 20px; text-align: center">
+            <div>
+                <span>기부하신 금액은 수수료 없이</span>
+                <span style="color: #235FD9">100% 전달</span>
+                <span>됩니다.</span>
+            </div>
+        </div>
+        <div style="border: 3px solid #f3f4f5; border-radius: 5px; padding: 20px; text-align: center">
+            <div>
+                <div>모금단체</div>
+                <div id="company" style="color: black; font-weight: bold; font-size: 20px"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</html>

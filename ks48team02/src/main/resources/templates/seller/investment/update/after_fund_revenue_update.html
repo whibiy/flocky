@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{seller/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <style>
+        input {
+            width: 100%;
+        }
+
+        .revenue-result {
+            color: #0b44d7;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+        function validationCheck(data) {
+            let isValid = true;
+            if (typeof data == 'object') {
+
+                $.each(data, function () {
+                    let checkValue = $(this).val();
+                    if (checkValue == null || checkValue == '' || typeof checkValue == 'undefined') {
+                        isValid = false;
+                        let eleId = $(this).attr('id');
+                        let cate = $(`label[for="${eleId}"]`).text();
+                        alert(`${cate} 필수 입력 항목입니다.`);
+                        $(this).focus();
+                        return isValid;
+                    }
+                });
+
+            } else {
+                if (data == null || data == '' || typeof data == 'undefined') {
+                    isValid = false;
+                }
+            }
+
+            return isValid;
+        }
+
+        $('#settUpdateBtn').click(function () {
+
+            const formEles = $('#modifyAfterFundRevenueStockForm input, #modifyAfterFundRevenueStockForm select');
+
+            let isValid = validationCheck(formEles);
+
+            if (isValid) $('#modifyAfterFundRevenueStockForm').submit();
+
+        });
+
+        $('#settUpdateBtn2').click(function () {
+
+            const formEles = $('#modifyAfterFundRevenueBondForm input, #modifyAfterFundRevenueBondForm select');
+
+            let isValid = validationCheck(formEles);
+
+            if (isValid) $('#modifyAfterFundRevenueBondForm').submit();
+
+        });
+
+    // 입력 값이 변경될 때마다 계산 실행
+    $('.after-fund-calc').on('input', function () {
+    let salesBaseStockPrice = parseFloat($('#salesBaseStockPrice').val()) || 0;
+    let issuePrice = parseFloat($('#issuePrice').val()) || 0;
+    let dividendAmount = parseFloat($('#dividendAmount').val()) || 0;
+    let totalStockNumber = parseFloat($('#totalStockNumber').val()) || 1;
+
+    // 수식 계산
+    let earningsPerShareCalculate = (salesBaseStockPrice - issuePrice)
+    let dividendPerStockCalculate = (dividendAmount / totalStockNumber)
+    let salesDateEnterpriseValueCalculate = (salesBaseStockPrice * totalStockNumber)
+    let earningsPerShareResult = (salesBaseStockPrice - issuePrice).toLocaleString('ko-kr') + ' 원';
+    let dividendPerStockResult = (dividendAmount / totalStockNumber).toLocaleString('ko-kr') + ' 원';
+    let salesDateEnterpriseValueResult = (salesBaseStockPrice * totalStockNumber).toLocaleString('ko-kr') + ' 원';
+
+    // 계산 결과를 화면에 표시
+    $('#earningsPerShareResult').text(earningsPerShareResult);
+    $('#dividendPerStockResult').text(dividendPerStockResult);
+    $('#salesDateEnterpriseValueResult').text(salesDateEnterpriseValueResult);
+
+    // 계산 결과를 input에 반영
+    $('#earningsPerShare').val(earningsPerShareCalculate);
+    $('#dividendPerStock').val(dividendPerStockCalculate);
+    $('#salesDateEnterpriseValue').val(salesDateEnterpriseValueCalculate);
+    });
+    </script>
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+
+    <form id="modifyAfterFundRevenueStockForm" th:action="@{/seller/investment/update/after-fund-revenue-stock}"
+          method="post">
+        <div id="afterFundRevenueStock" class="admin-wrapper" th:unless="${afterFundRevenueStockInfo == null}"
+             th:object="${afterFundRevenueStockInfo}">
+
+            <div class="admin-content-wrapper form-table" style="margin-top: 40px;">
+                <div class="project-info-title">
+                    <h5>기업정보 공개 코드</h5>
+                    <p th:text="*{afterFundRevenueStockCode}" style="color: var(--maincolor);"></p>
+                    <input type="text" name="afterFundRevenueStockCode" th:value="*{afterFundRevenueStockCode}"
+                           hidden="hidden">
+                    <input type="number" id="earningsPerShare" name="earningsPerShare" class="after-fund-calc"
+                           th:value="*{earningsPerShare}"
+                           hidden="hidden">
+                    <input type="number" id="dividendPerStock" name="dividendPerStock" class="after-fund-calc"
+                           th:value="*{dividendPerStock}"
+                           hidden="hidden">
+                    <input type="number" id="salesDateEnterpriseValue" name="salesDateEnterpriseValue"
+                           class="after-fund-calc" th:value="*{salesDateEnterpriseValue}" hidden="hidden">
+                </div>
+                <br>
+
+                <form id="projectInfoDetailBt" method="get">
+                    <table class="settlement-log application-info-detail" style="border:none;">
+                        <tbody>
+                        <tr>
+                            <td>
+                                프로젝트 분류
+                            </td>
+                            <td colspan="5">
+                                투자
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                대표자 아이디
+                            </td>
+                            <td th:text="*{memberId}" colspan="5"></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                진행 후 펀딩 달성금액 가치
+                            </td>
+                            <td colspan="5">
+                                <input type="number" name="afterInvestmentAmount" class="after-fund-calc"
+                                       th:value="*{afterInvestmentAmount}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                펀딩 달성 금액
+                            </td>
+                            <td colspan="5"><span
+                                    th:text="*{#numbers.formatInteger(investmentAmount,3,'COMMA')}"></span> 원
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                매출기준일 기업가치
+                            </td>
+                            <td colspan="5" id="salesDateEnterpriseValueResult"
+                                th:text="*{#numbers.formatInteger(salesDateEnterpriseValue,3,'COMMA') + ' 원'}"
+                                class="revenue-result">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                청약당시 기업가치
+                            </td>
+                            <td colspan="5">
+                                <span th:text="*{#numbers.formatInteger(subscriptionEnterpriseValue,3,'COMMA')}"></span>
+                                원
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                매출기준일 주가
+                            </td>
+                            <td colspan="5">
+                                <input id="salesBaseStockPrice" type="number" name="salesBaseStockPrice"
+                                       class="after-fund-calc" th:value="*{salesBaseStockPrice}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                발행주가
+                            </td>
+                            <td colspan="5">
+                                <span th:text="*{#numbers.formatInteger(issuePrice,3,'COMMA')}"></span> 원
+                                <input id="issuePrice" name="issuePrice" type="number" class="after-fund-calc"
+                                       th:value="*{issuePrice}" hidden="hidden"></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                총 주식 수
+                            </td>
+                            <td colspan="5">
+                                <span th:text="*{#numbers.formatInteger(totalStockNumber,3,'COMMA')}"></span> 주
+                                <input id="totalStockNumber" name="totalStockNumber" type="number"
+                                       class="after-fund-calc" th:value="*{totalStockNumber}" hidden="hidden"></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                배당액
+                            </td>
+                            <td colspan="5">
+                                <input type="number" id="dividendAmount" name="dividendAmount" class="after-fund-calc"
+                                       th:value="*{dividendAmount}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                등록일자
+                            </td>
+                            <td th:text="*{uploadDate}" colspan="5"></td>
+                        </tr>
+                        <tr style="height: auto;">
+                            <td colspan="6" style="height: 35px;">
+                                상세
+                            </td>
+                        </tr>
+                        <tr class="sub-table-area sub-table sub-table-tr" style="height: auto;">
+                            <td style="height: 35px; width: 17%;">매출액</td>
+                            <td style="height: 35px; width: 17%;">매출원가</td>
+                            <td style="height: 35px;">매출총이익</td>
+                            <td style="height: 35px;">영업이익</td>
+                            <td style="height: 35px;">영업비용</td>
+                            <td style="height: 35px;">당기순이익</td>
+
+                        </tr>
+                        <tr>
+                            <td style="background: #fff;">
+                                <input type="number" name="take" class="after-fund-calc" th:value="*{take}">
+                            </td>
+                            <td>
+                                <input type="number" name="costOfSales" class="after-fund-calc"
+                                       th:value="*{costOfSales}">
+                            <td>
+                                <input type="number" name="grossProfit" class="after-fund-calc"
+                                       th:value="*{grossProfit}">
+                            <td>
+                                <input type="number" name="operatingProfit" class="after-fund-calc"
+                                       th:value="*{operatingProfit}">
+                            <td>
+                                <input type="number" name="operatingCost" class="after-fund-calc"
+                                       th:value="*{operatingCost}">
+                            <td>
+                                <input type="number" name="netIncome" class="after-fund-calc" th:value="*{netIncome}">
+                        </tr>
+                        <tr class="sub-table-area sub-table sub-table-tr" style="height: auto;">
+                            <td style="height: 35px;" colspan="2">배당률</td>
+                            <td style="height: 35px;">주당배당금</td>
+                            <td style="height: 35px;">주당수익</td>
+                            <td style="height: 35px;">매출기준기간(시작)</td>
+                            <td style="height: 35px;">매출기준기간(종료)</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="background: #fff;"><span th:text="*{dividendRate}"></span> %</td>
+                            <td id="dividendPerStockResult"
+                                th:text="*{#numbers.formatInteger(dividendPerStock,3,'COMMA') +' 원'}"
+                                class="revenue-result"></td>
+                            <td id="earningsPerShareResult" class="revenue-result"
+                                th:text="*{#numbers.formatInteger(earningsPerShare,3,'COMMA') +' 원'}"></td>
+                            <td>
+                                <input type="date" name="revenuePeriodStart" th:value="*{revenuePeriodStart}">
+                            </td>
+                            <td>
+                                <input type="date" name="revenuePeriodEnd" th:value="*{revenuePeriodEnd}">
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="btn-area">
+                        <ul>
+                            <li>
+                                <button id="settBackBtn" class="submitBtn" type="button" onclick="backLocationFn()">뒤로
+                                </button>
+                            </li>
+                            <li>
+                                <button id="settUpdateBtn" class="submitBtn" type="button">
+                                    확인
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </form>
+
+    <form id="modifyAfterFundRevenueBondForm" th:action="@{/seller/investment/update/after-fund-revenue-bond}"
+          method="post">
+        <div id="afterFundRevenueBond" class="admin-wrapper" th:unless="${afterFundRevenueBondInfo == null}"
+             th:object="${afterFundRevenueBondInfo}">
+
+            <div class="admin-content-wrapper form-table" style="margin-top: 40px;">
+                <div class="project-info-title">
+                    <h5>기업정보 공개 코드</h5>
+                    <p th:text="*{afterFundRevenueBondCode}" style="color: var(--maincolor);"></p>
+                    <input type="text" name="afterFundRevenueBondCode" th:value="*{afterFundRevenueBondCode}"
+                           hidden="hidden">
+                </div>
+                <br>
+
+                <form id="projectInfoDetailBt" method="get">
+                    <table class="settlement-log application-info-detail" style="border:none;">
+                        <tbody>
+                        <tr>
+                            <td>
+                                프로젝트 분류
+                            </td>
+                            <td colspan="5">
+                                투자
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                대표자 아이디
+                            </td>
+                            <td th:text="*{memberId}" colspan="5"></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                진행 후 펀딩 달성금액 가치
+                            </td>
+                            <td colspan="5">
+                                <input type="number" name="afterInvestmentAmount" th:value="*{afterInvestmentAmount}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                펀딩 달성 금액
+                            </td>
+                            <td colspan="5"><span
+                                    th:text="*{#numbers.formatInteger(investmentAmount,3,'COMMA')}"></span> 원
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                매출
+                            </td>
+                            <td colspan="5">
+                                <input type="number" name="take" th:value="*{take}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                이익
+                            </td>
+                            <td colspan="5">
+                                <input type="number" name="profit" th:value="*{profit}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                관람객수
+                            </td>
+                            <td colspan="5">
+                                <input type="number" name="visitorsNumber" th:value="*{visitorsNumber}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                이자율
+                            </td>
+                            <td colspan="5">
+                                <input type="number" step="0.01" name="interestRate" th:value="*{interestRate}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                등록일자
+                            </td>
+                            <td th:text="*{uploadDate}" colspan="5"></td>
+                        </tr>
+                        <tr style="height: auto;">
+                            <td colspan="6" style="height: 35px;">
+                                상세
+                            </td>
+                        </tr>
+                        <tr class="sub-table-area sub-table sub-table-tr" style="height: auto;">
+                            <td style="height: 35px; width: 17%;">비용</td>
+                            <td style="height: 35px; width: 17%;">당기순이익</td>
+                            <td style="height: 35px;">구좌가격</td>
+                            <td style="height: 35px;">구좌당수익</td>
+                            <td style="height: 35px;">매출기준기간(시작)</td>
+                            <td style="height: 35px;">매출기준기간(종료)</td>
+                        </tr>
+                        <tr>
+                            <td style="background: #fff;">
+                                <input type="number" name="cost" th:value="*{cost}">
+                            </td>
+                            <td>
+                                <input type="number" name="netIncome" th:value="*{netIncome}">
+                            </td>
+                            <td><span th:text="*{#numbers.formatInteger(accountPrice,3,'COMMA')}"></span> 원</td>
+                            <td>
+                                <input type="number" name="earningsPerAccount" th:value="*{earningsPerAccount}">
+                            </td>
+                            <td>
+                                <input type="date" name="revenuePeriodStart" th:value="*{revenuePeriodStart}">
+                            </td>
+                            <td>
+                                <input type="date" name="revenuePeriodEnd" th:value="*{revenuePeriodEnd}">
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="btn-area">
+                        <ul>
+                            <li>
+                                <button id="settBackBtn" class="submitBtn" type="button" onclick="backLocationFn()">뒤로
+                                </button>
+                            </li>
+                            <li>
+                                <button id="settUpdateBtn2" class="submitBtn" type="button">
+                                    확인
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </form>
+</th:block>
+</html>

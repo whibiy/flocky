@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+</head>
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+        function toggleInput() {
+            let selectElement = document.getElementById('searchKey');
+            let searchInput = document.getElementById('inputSearchValue');
+            let searchSelect = document.getElementById('selectSearchValue');
+
+            if (selectElement.value === 'corpValueFulfill') {
+                searchInput.classList.add('hidden');
+                searchSelect.classList.remove('hidden');
+                searchInput.value = '';
+            } else {
+                searchInput.classList.remove('hidden');
+                searchSelect.classList.add('hidden');
+                searchSelect.value = '';
+            }
+        }
+
+        // 현재 URL 가져오기
+        let currentUrl = window.location.href;
+
+        // 특정 키와 값 설정
+        let searchKey = 'searchKey';
+        let searchValue = 'searchValue';
+        let amDateSettStartDate = 'amDateSettStartDate';
+        let amDateSettEndDate = 'amDateSettEndDate';
+        let searchSelectValue = 'searchSelectValue';
+        let currentPage = 'currentPage';
+        let lastPage = 'lastPage';
+        let startPageNum = 'startPageNum';
+        let endPageNum = 'endPageNum';
+
+        // URL 파싱하여 쿼리스트링 맵으로 변환
+        let urlParams = new URLSearchParams(window.location.search);
+
+        // 특정 키와 값 제거
+        urlParams.delete(searchKey);
+        urlParams.delete(searchValue);
+        urlParams.delete(amDateSettStartDate);
+        urlParams.delete(amDateSettEndDate);
+        urlParams.delete(searchSelectValue);
+        urlParams.delete(currentPage);
+        urlParams.delete(lastPage);
+        urlParams.delete(startPageNum);
+        urlParams.delete(endPageNum);
+
+        // 수정된 쿼리스트링을 URL에 반영
+        let newUrl = currentUrl.split('?')[0] + '?' + urlParams.toString();
+
+        if (window.location.href !== newUrl) {
+
+            // history.replaceState를 사용하여 주소창에서 쿼리스트링 숨기기
+            history.replaceState({}, document.title, newUrl);
+        }
+
+    </script>
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+
+    <div th:each="l, index : ${corporateValueEvaluationList}" th:if="${index.index} < 1"
+         class="sett-total-data admin-content-wrapper form-table" th:fragment="settlementInfoHeader">
+        <div class="sett-total-item">
+            <h5>오늘 들어온 심사 요청</h5>
+            <div class="sett-total-item-data"><span class="today-add-count" th:href="@{#}"
+                                                 th:text="${l.adminInvestmentRequestJudge.todayRequestCnt}">0</span>건
+            </div>
+        </div>
+        <div class="sett-total-item">
+            <h5>처리중</h5>
+            <div class="sett-total-item-data"><span class="progress-add-count" th:href="@{#}"
+                                                 th:text="${l.adminInvestmentRequestJudge.standbyCnt}">0</span>건
+            </div>
+        </div>
+        <div class="sett-total-item">
+            <h5>오늘 처리 완료</h5>
+            <div class="sett-total-item-data"><span class="progress-completed-count" th:href="@{#}"
+                                                 th:text="${l.adminInvestmentRequestJudge.todayProceedCnt}">0</span>건
+            </div>
+        </div>
+        <div class="sett-total-item">
+            <h5>심사 반려</h5>
+            <div class="sett-total-item-data"><span class="progress-error-count" th:href="@{#}"
+                                                 th:text="${l.adminInvestmentRequestJudge.rejectCnt}">0</span>건
+            </div>
+        </div>
+    </div>
+
+    <div th:include="~{admin/judgement/investment/search/corporate_value_evaluation_search :: searchFragment}"></div>
+    <br>
+
+    <h4 class="admin-content-title">기업가치 평가 목록</h4>
+
+    <div class="admin-content-wrapper">
+
+        <div class="data-info">
+            <div class="list-count-area">
+                <ul>
+                    <li>심사 요청 총 <span class="count-data total-list">0</span>건</li>
+                    <li>선택 항목 총 <span class="count-data select-list-count">0</span>건</li>
+                </ul>
+            </div>
+        </div>
+
+        <table id="corporateValueTable" class="settlement-log">
+            <thead>
+            <tr>
+                <th>
+                    <input type="checkbox" name="allSelect" id="allSelectBtn">
+                </th>
+                <th>투자 심사요청 코드</th>
+                <th>심사요청 제목</th>
+                <th>심사요청한 아이디</th>
+                <th>기업가치 평가 코드</th>
+                <th>심사한 아이디</th>
+                <th>평가된 기업가치</th>
+                <th>주당가격</th>
+                <th>평가 결과</th>
+                <th>기업가치 평가일</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr th:if="${corporateValueEvaluationList == null}">
+                <td>
+                    <input type="checkbox" name="selectList">
+                </td>
+                <td colspan="10">기업가치 평가 목록이 없습니다.</td>
+            </tr>
+            <tr th:unless="${corporateValueEvaluationList == null}" th:each="l : ${corporateValueEvaluationList}">
+                <td>
+                    <input type="checkbox" name="selectList">
+                </td>
+                <td>
+                    <a class="valueLink detail-link"
+                       th:href="@{/admin/investment/view/judge(investmentRequestJudgeCode=${l.adminInvestmentRequestJudge.investmentRequestJudgeCode})}"
+                       th:text="${l.adminInvestmentRequestJudge.investmentRequestJudgeCode}"></a>
+                </td>
+                <td th:text="${l.adminInvestmentRequestJudge.investmentRequestSubject}"></td>
+                <td th:text="${l.adminInvestmentRequestJudge.memberIdSeller}"></td>
+                <td>
+                    <span th:if="${l.corporateValueEvaluationCode == null}">심사 대기중</span>
+                    <a th:unless="${l.corporateValueEvaluationCode == null}" class="detail-link"
+                       th:href="@{/admin/investment/view/corporate-value(corporateValueEvaluationCode=${l.corporateValueEvaluationCode})}"
+                       th:text="${l.corporateValueEvaluationCode}"></a>
+                </td>
+                <td th:if="${l.memberId == null}">심사 대기중</td>
+                <td th:unless="${l.memberId == null}" th:text="${l.memberId}"></td>
+                <td th:unless="${l.evaluatedCorpValue == 0}"
+                    th:text="${#numbers.formatInteger(l.evaluatedCorpValue,3,'COMMA')} + ' 원'"></td>
+                <td th:if="${l.evaluatedCorpValue == 0}">심사 대기중</td>
+                <td th:unless="${l.stockPrice == 0}"
+                    th:text="${#numbers.formatInteger(l.stockPrice,3,'COMMA')} + ' 원'"></td>
+                <td th:if="${l.stockPrice == 0}">심사 대기중</td>
+                <td th:if="${l.corpValueFulfill == 0}">심사 대기</td>
+                <td th:if="${l.corpValueFulfill == 1}">심사 승인</td>
+                <td th:if="${l.corpValueFulfill == 2}">심사 반려</td>
+                <td th:if="${l.corpValueEvaluateDay == null}">심사 대기중</td>
+                <td th:unless="${l.corpValueEvaluateDay == null}" th:text="${l.corpValueEvaluateDay}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+
+
+        <div class="board-page-area">
+            <div class="list-controller-inner">
+                <ul>
+                    <li>
+                        <a th:href="@{/admin/investment/search/corporate-value(searchKey=${searchKey}, searchValue=${searchValue}, amDateSettStartDate=${amDateSettStartDate}, amDateSettEndDate=${amDateSettEndDate}, searchSelectValue=${searchSelectValue})}"><<</a>
+                    </li>
+                    <li><a th:if="${currentPage > 1}"
+                           th:href="@{/admin/investment/search/corporate-value(currentPage=${currentPage - 1}, searchKey=${searchKey}, searchValue=${searchValue}, amDateSettStartDate=${amDateSettStartDate}, amDateSettEndDate=${amDateSettEndDate}, searchSelectValue=${searchSelectValue})}">&lt;</a>
+                        <span th:unless="${currentPage > 1}">&lt;</span>
+                    </li>
+                    <th:block th:each="num : ${#numbers.sequence(startPageNum, endPageNum)}">
+                        <a th:if="${num != currentPage}"
+                           th:href="@{/admin/investment/search/corporate-value(currentPage=${num}, searchKey=${searchKey}, searchValue=${searchValue}, amDateSettStartDate=${amDateSettStartDate}, amDateSettEndDate=${amDateSettEndDate}, searchSelectValue=${searchSelectValue})}">[[${'['
+                            + num + ']'}]]</a>
+                        <span th:unless="${num != currentPage}" th:text="|[${num}]|"></span>
+                    </th:block>
+                    <li><a th:if="${currentPage < lastPage}"
+                           th:href="@{/admin/investment/search/corporate-value(currentPage=${currentPage +1}, searchKey=${searchKey}, searchValue=${searchValue}, amDateSettStartDate=${amDateSettStartDate}, amDateSettEndDate=${amDateSettEndDate}, searchSelectValue=${searchSelectValue})}">></a>
+                        <span th:unless="${currentPage < lastPage}">></span>
+                    </li>
+                    <li>
+                        <a th:href="@{/admin/investment/search/corporate-value(currentPage=${lastPage}, searchKey=${searchKey}, searchValue=${searchValue}, amDateSettStartDate=${amDateSettStartDate}, amDateSettEndDate=${amDateSettEndDate}, searchSelectValue=${searchSelectValue})}">>></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-area">
+        <ul>
+            <li>
+                <button id="orderBackBtn" class="submitBtn" type="button"
+                        th:onclick="|location.href='@{/admin/investment/insert/corporate-value}'|">등록하기
+                </button>
+            </li>
+        </ul>
+    </div>
+
+</th:block>
+</html>

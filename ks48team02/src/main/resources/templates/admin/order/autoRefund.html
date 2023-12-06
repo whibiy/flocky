@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{|${(session.STYPECODE == 'mem_type_02'
+                                || session.STYPECODE == 'mem_type_03'
+                                || session.STYPECODE == 'mem_type_04')? 'seller/layout/default'
+                                :(session.STYPECODE == 'mem_type_01')? 'admin/layout/default':''}|}">
+
+<head>
+  <!--  사용자별 css file 추가 부분 -->
+  <title th:text="${title}"></title>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+  <script th:src="@{/common/js/ajaxJs.js}"></script>
+  <script th:src="@{/common/js/admin-commonJs.js}"></script>
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+  <script>
+    // ajax
+    const queryString = {};
+
+    // data setting
+    function setListData(list){
+      $('.settlement-log tbody tr').remove();
+      if(list.length == 0){
+        $('.settlement-log tbody').append(`
+              <tr>
+                <td colspan="9" style="text-align: center; padding: 30px 0;">검색 결과가 없습니다.</td>
+              </tr>
+          `);
+      }
+      $(list).each((idx, l) => {
+        $('.settlement-log tbody').append(`
+                <tr>
+                   <td class="table-data-center">
+                    <input type="checkbox" name="selectList">
+                  </td>
+                  <td class="table-data-center">
+                    <a class="detail-link" th:href="@{/seller/reword/order/refund/detail}">
+                      ${l.apcCode}
+                    </a>
+                  </td>
+                  <td class="table-data-center">
+                    <a class="detail-link" th:href="@{/admin/order/detail?(orderCode=${l.orderCode}, goodsPartition=${l.orderPartition})}">
+                     ${l.orderCode}
+                    </a>
+                  </td>
+                  <td class="table-data-center">
+                    ${l.orderTotal.memberId}
+                  </td>
+                  <td class="table-data-center">
+                    ${l.orderTotal.orderName}
+                  </td>
+                  <td class="table-data-center">
+                    프로젝트 실패 자동 환불
+                  </td>
+                  <td class="table-data-center">
+                    ${l.apcDate}
+                  </td>
+                  <td class="table-data-center">
+                    ${(l.apcState == 1)?'처리중':(l.apcState == 2)?'처리완료':''}
+                  </td>
+                  <td class="table-data-center">
+                    ${(l.completedDate != null)? l.completedDate:'-'}
+                  </td>
+                </tr>
+          `);
+      });
+      let priceEls = $('input[name="orderPrice"]');
+      payFormat(priceEls);
+    }
+    function autoRfndAjax(queryString, callback){
+      const request = $.ajax({
+        url: '/admin/order/autoRfnd/ajax',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(queryString),
+        dataType: 'json'
+      });
+      request.done(function(list){
+        console.log(list, '<-- list');
+        callback(list);
+      });
+      request.fail(function(list){
+        console.log(list)
+      });
+    }
+
+
+
+    // select 옵션 선택 ajax
+    $('select[name="orderby"], select[name="count-select"]').on('change',function(){
+
+      $('#allSelectBtn').prop('checked', false);
+      let orderbyValue = $('select[name="orderby"]').val();
+
+      $('.select-list-count').text('0');
+
+      // page value
+      let currentPage = 1;
+      let rowPerPage = $('select[name="count-select"]').val();
+
+      const searchObjectArr = searchObject();
+
+      queryString.dateSettStartDate = searchObjectArr.dateSettStartDate;
+      queryString.dateSettEndDate = searchObjectArr.dateSettEndDate;
+      queryString.searchKey = searchObjectArr.searchKey;
+      queryString.searchValue = searchObjectArr.searchValue;
+      queryString.projectPartition = searchObjectArr.projectPartition;
+      queryString.orderby = orderbyValue;
+      queryString.currentPage = currentPage;
+      queryString.rowPerPage = rowPerPage;
+
+
+      //ajax 호출
+      autoRfndAjax(queryString, function(list){
+        // list count
+        $('.total-list').text(list.list.length);
+
+        setListData(list.list);
+
+        // pager setting
+        const pageNumArr = Array((list.endPageNum - list.startPageNum) + 1).fill().map((item, idx) => list.startPageNum + idx);
+        setPagerData(pageNumArr, list.currentPage, list);
+      });
+    });
+
+    // 페이징 ajax
+    $(document).on('click', '.order-list-pager a',function(e){
+      let pageNumber = $(e.target).attr('data-value');
+      let orderbyValue = $('select[name="orderby"]').val();
+      let rowPerPage = $('select[name="count-select"]').val();
+
+
+      queryString.orderby = orderbyValue;
+      queryString.currentPage = pageNumber;
+      queryString.rowPerPage = rowPerPage;
+      console.log(queryString, '<-- queryString');
+
+      //ajax 호출
+      autoRfndAjax(queryString, function(list){
+        // list count
+        $('.total-list').text(list.list.length);
+
+        setListData(list.list);
+
+        // pager setting
+        const pageNumArr = Array((list.endPageNum - list.startPageNum) + 1).fill().map((item, idx) => list.startPageNum + idx);
+        setPagerData(pageNumArr, list.currentPage, list);
+      });
+    });
+
+    // prev, next click ajax
+    $(document).on('click', '.list-btn-area button', function(e){
+      let validation = $(e.target).closest('button').hasClass('no-action');
+
+      if(validation){
+        let value = $(e.target).text();
+        alert(`${(value.replaceAll(/\s/g, '') == 'prev')? '첫 번째':'마지막' } 페이지 입니다.`);
+        return;
+      }
+
+      const $orderListLi = $('.order-list-pager li');
+      let currentPage;
+
+      // current Page Number Validation
+      $($orderListLi).each((idx, element) => {
+        let validation = $(element).hasClass('currentPage');
+        if(validation) {
+          currentPage = $(element).text();
+          return;
+        }
+      });
+
+      // ajax 호출
+      let orderbyValue = $('select[name="orderby"]').val();
+      let rowPerPage = $('select[name="count-select"]').val();
+
+      // page number array
+      const numberArr = $.map($orderListLi, function(element, idx){
+        return $(element).find('a').text();
+      });
+
+      const queryString = searchObject();
+
+
+      queryString.orderby = orderbyValue;
+      queryString.rowPerPage = rowPerPage;
+
+
+      if($(e.target).parent().hasClass('prev-transfer')){
+        currentPage--;
+      } else if($(e.target).parent().hasClass('next-transfer')){
+        currentPage++;
+      }
+      queryString.currentPage = currentPage;
+      console.log(queryString, '<-- queryString');
+
+      //ajax 호출
+      autoRfndAjax(queryString, function(list){
+        // list count
+        $('.total-list').text(list.list.length);
+
+        setListData(list.list);
+
+        // pager setting
+        const pageNumArr = Array((list.endPageNum - list.startPageNum) + 1).fill().map((item, idx) => list.startPageNum + idx);
+        setPagerData(pageNumArr, list.currentPage, list);
+      });
+    });
+
+    $('.orderSearchBtn').on('click', function(){
+      // orderby 초기화
+      orderbyDefaultSet();
+
+      let orderbyValue = $('select[name="orderby"]').val();
+      let rowPerPage = $('select[name="count-select"]').val();
+      let currentPage = 1;
+
+      const searchObjectArr = searchObject();
+
+      queryString.dateSettStartDate = searchObjectArr.dateSettStartDate;
+      queryString.dateSettEndDate = searchObjectArr.dateSettEndDate;
+      queryString.searchKey = searchObjectArr.searchKey;
+      queryString.searchValue = searchObjectArr.searchValue;
+      queryString.projectPartition = searchObjectArr.projectPartition;
+      queryString.orderby = orderbyValue;
+      queryString.currentPage = currentPage;
+      queryString.rowPerPage = rowPerPage;
+
+
+      //ajax 호출
+      autoRfndAjax(queryString, function(list){
+        // list count
+        $('.total-list').text(list.list.length);
+
+        setListData(list.list);
+
+        // pager setting
+        const pageNumArr = Array((list.endPageNum - list.startPageNum) + 1).fill().map((item, idx) => list.startPageNum + idx);
+        setPagerData(pageNumArr, list.currentPage, list);
+      });
+    });
+
+  </script>
+
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+  <!-- search form fragments start -->
+  <th:block th:replace="~{common/fragments/searchFormFragments :: searchFormFragments}"></th:block>
+  <!-- search form fragments end -->
+
+  <div class="title-wrap">
+    <h4 class="admin-content-title">신청 목록</h4>
+    <div class="btnArea">
+      <button type="button" class="printBtn"><span>액셀 다운로드</span></button>
+    </div>
+  </div>
+  <div class="admin-content-wrapper" style="overflow-x: hidden;">
+    <div>
+      <!-- select are -->
+      <div class="data-info">
+        <div class="list-count-area">
+          <ul>
+            <li>신청 정보 총 <span class="count-data total-list">0</span>건</li>
+            <li>선택 항목 총 <span class="count-data select-list-count">0</span>건</li>
+          </ul>
+        </div>
+        <div class="list-count-selector">
+          <select name="orderby">
+            <option value="application_d">신청일 역순</option>
+            <option value="application_a">신청일 순</option>
+            <option>-----------------</option>
+            <option value="order_name_d">주문자 역순</option>
+            <option value="order_name_a">주문자 순</option>
+            <option>-----------------</option>
+            <option value="progressing">처리중</option>
+            <option value="completed">처리완료</option>
+
+          </select>
+          <select name="count-select">
+            <option value="15">15개씩 보기</option>
+            <option value="20">20개씩 보기</option>
+            <option value="30">30개씩 보기</option>
+          </select>
+        </div>
+      </div>
+      <!-- contents area -->
+      <table class="settlement-log">
+        <thead>
+          <tr>
+            <th style="width:5%;">
+              <input type="checkbox" name="allSelect" id="allSelectBtn">
+            </th>
+            <th style="width:8%;">
+              환불 신청 코드
+            </th>
+            <th style="width:8%;">주문 코드</th>
+            <th style="width:5%;">주문 아이디</th>
+            <th style="width:5%;">주문자명</th>
+            <th style="width:8%;">신청 사유</th>
+            <th style="width:7%;">신청 시간</th>
+            <th style="width:7%;">처리 현황</th>
+            <th style="width:7%;">처리 완료일</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- 조회 결과 없음 -->
+          <tr th:if="${list == null || #arrays.length(list) == 0}">
+            <td colspan="9" style="text-align: center; padding: 30px 0;">검색 결과가 없습니다.</td>
+          </tr>
+          <!-- 조회 결과 contents -->
+          <tr th:unless="${list == null}" th:each="l : ${list}">
+            <td class="table-data-center">
+              <input type="checkbox" name="selectList">
+            </td>
+            <td class="table-data-center">
+              <a class="detail-link" th:href="@{/seller/reword/order/refund/detail}">
+                [[${l.apcCode}]]
+              </a>
+            </td>
+            <td class="table-data-center">
+              <a class="detail-link" th:href="@{/admin/order/detail(orderCode=${l.orderCode}, goodsPartition=${l.orderPartition})}">
+                [[${l.orderCode}]]
+              </a>
+            </td>
+            <td class="table-data-center">
+              [[${l.orderTotal.memberId}]]
+            </td>
+            <td class="table-data-center">
+              [[${l.orderTotal.orderName}]]
+            </td>
+
+            <td class="table-data-center">
+              프로젝트 실패 자동 환불
+            </td>
+            <td class="table-data-center">
+              [[${l.apcDate}]]
+            </td>
+            <td class="table-data-center">
+              [[${(l.apcState == 1)?'처리중':(l.apcState == 2)?'처리완료':''}]]
+            </td>
+            <td class="table-data-center">
+              [[${(l.completedDate != null)? l.completedDate:'-'}]]
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- pagenation start -->
+      <th:block th:replace="~{common/fragments/adminPagenation :: adminPagenation}"></th:block>
+      <!-- pagenation end -->
+    </div>
+
+  </div>
+</th:block>
+</html>

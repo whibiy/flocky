@@ -1,0 +1,30 @@
+@charset "UTF-8";
+.pop_modify{
+    width: 700px;
+    margin: 0 auto;
+}
+.ui-header table{
+    width: 100%;
+}
+.sidebar{
+    background-color: #FAEDEC;
+}
+.option{
+    text-align: center;
+    margin-top: 20px;
+}
+.submitBtn {
+    display: inline-block;
+    text-decoration: none;
+    border: 1px solid #191919;
+    margin: 0 7px;
+    font-size: 12px;
+    background-color: black;
+    color: #EEE;
+    transition: background-color 0.3s;
+    border-radius: 20px 20px 20px 20px;
+
+}
+.cancel:hover {
+    background-color: var(--maincolor);
+}

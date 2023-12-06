@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{seller/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+</head>
+
+<!-- page content -->
+<div class="right_col" role="main">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left">
+                <h3 th:text="${contentsTitle}">스토어 페이지</h3>
+                <p th:text="${contentsSubTitle}">sub title 내용 작성, 변수 contentsSubTitle</p>
+            </div>
+
+        </div>
+
+
+        <div class="row" style="width: 1200px">
+            <div class="admin-wrapper">
+                <!-- 사용자정의 contents start -->
+                <th:block layout:fragment="customContents">
+
+                </th:block>
+                <!-- 사용자정의 contents end -->
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- /page content -->
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+
+</th:block>
+
+
+
+</html>

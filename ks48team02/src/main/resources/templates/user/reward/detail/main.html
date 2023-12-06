@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/reward/detail/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+    <style>
+    </style>
+
+
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+
+    <script>
+        var swiper = new Swiper(".mySwiper", {
+            spaceBetween: 30,    // 슬라이드 사이 여백
+            slidesPerView : 'auto', // 한 슬라이드에 보여줄 갯수
+            centeredSlides: true,    //센터모드
+            autoplay: {     //자동슬라이드 (false-비활성화)
+                delay: 2500, // 시간 설정
+                disableOnInteraction: false, // false-스와이프 후 자동 재생
+            },
+            loop : false,   // 슬라이드 반복 여부
+            loopAdditionalSlides : 1,
+            // 슬라이드 반복 시 마지막 슬라이드에서 다음 슬라이드가 보여지지 않는 현상 수정
+            pagination: { // 호출(pager) 여부
+                el: ".swiper-pagination", //버튼을 담을 태그 설정
+                clickable: true, // 버튼 클릭 여부
+            },
+            navigation: {   // 버튼
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+        });
+        let rewardProjectSwiperSlide = new Swiper("#rewardProject .contents-area", {
+            slidesPerView: 3,
+            spaceBetween: 12,
+            navigation: {
+                nextEl: "#rewardProject .swiper-button-next",
+                prevEl: "#rewardProject .swiper-button-prev",
+            },
+        });
+
+    </script>
+    <script type="text/javascript" th:inline="javascript">
+        // 현재 프로젝트코드로 상세페이지 데이터를 가져오기 위한 코드
+        let rewardProjectCode = [[${rewardProject.rewardProjectCode}]];
+
+        // 스토리에서 앞에 부분만 잘라서 공백포함 155글자만 가져옴 그뒤는 ... 으로 다자름
+        let storyBodyText = $('#storyBody').children('p:eq(0)').text();
+        $('#subContens').text(storyBodyText);
+        if (storyBodyText.length > 155) {
+            storyBodyText = storyBodyText.substring(0, 155) + '...';
+        }
+        // 가져온 텍스트를 subContens에 설정
+        $('#subContens').text(storyBodyText);
+
+        let currentDate = new Date();
+        // 비교 대상 날짜 설정
+        let targetDate = new Date($('#projectEndDate').val());
+        // 두 날짜 간의 차이 계산 (밀리초 단위)
+        let timeDifference = targetDate - currentDate;
+        // 차이를 일(day) 단위로 변환
+        let daysRemaining = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+        // 남은 일 수
+        if( daysRemaining < 1) {
+            $('#deadLine').text("프로젝트 마감.");
+            $('#deadLine').css("color","white");
+            $('#deadLine').css("background-color","red");
+        } else {
+            $('#deadLine').text(daysRemaining + '일남음');
+        }
+        // 회사 이름 설정
+        $('#company').text('[[${rewardProject.regCompany}]]');
+        // 달성 금액 설정
+        $('#achievementMoney').text(`[[${rewardProject.projectAchievementMoney}]]`.replace(/\B(?=(\d{3})+(?!\d))/g, ","))
+
+        //찜하기 여부에 따라 찜하기 아이콘 변화
+        let greatCheck = [[${greatCheck}]];
+        if(greatCheck > 0) {
+            $('#likeBtn').find('svg').attr('fill','currentColor');
+        } else {
+            $('#likeBtn').find('svg').attr('fill','lightGrey');
+        }
+
+        //찜하기 누를때마다 찜하기 진행, 취소.
+        $('#likeBtn').click(function(){
+            let fill = $(this).find('svg').attr('fill');
+            if(fill === 'currentColor') {
+                //찜하기 취소
+                window.location.href = `/user/reward/great?rewardProjectCode=${rewardProjectCode}&greatCheck=${greatCheck}`;
+            } else {
+                //찜하기 진행
+                location.href=`/user/reward/great?rewardProjectCode=${rewardProjectCode}&greatCheck=${greatCheck}`;
+            }
+        })
+
+        //상세페이지 사진 크기 맞추기
+        $('#storyBody').find('img').css('width','100%');
+
+        //옵션 내용 높이조절.
+        $('.rewardOptionContents').each((idx,item)=>{
+            let height = $(item).prop('scrollHeight');
+            let preHeight = $(item).height();
+                $(item).css('height',`${height}px`);
+        })
+
+    </script>
+
+
+
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <div class="col-lg-12" style="height: 40px"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="swiper mySwiper" style="height: 400px; border-radius: 10px;">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide">
+                            <img id="thumbNailImage"
+                                 th:src="|@{/summernoteImage/}${rewardProject.projectThumbnailImage}|"/>
+                        </div>
+                    </div>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12" style="height: 20px"></div>
+            <div class="col-lg-12 story-banner-box" style="background: #f9fafb; border-radius: 5px; padding: 10px">
+                <div>
+                    <p style="color: black">펀딩을 통해 출시되었거나 기존에 출시된 제품,서비스,콘텐츠를</p>
+                    <p style="color: black">특별구성,단독유통,한정판 등으로 혜택을 제공해요.</p>
+                    <p style="color: black">프로젝트 종료 전까지 언제든 결제 취소가 가능해요.</p>
+                </div>
+            </div>
+            <div class="col-lg-12" style="height: 40px"></div>
+            <div class="col-lg-12 story-header" style="padding: 0px">
+                <p style="color: black; font-weight: bold; font-size: 20px">리워드 프로젝트 스토리</p>
+            </div>
+            <div class="col-lg-12" style="height: 40px"></div>
+            <div class="col-lg-12 story-body">
+                <div id="storyBody" th:utext="${rewardProject.projectContents}" style="color: black; white-space: pre-line"></div>
+            </div>
+        </div>
+    </div>
+
+
+</th:block>
+
+</html>
+

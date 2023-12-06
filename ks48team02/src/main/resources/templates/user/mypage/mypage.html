@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layout/login_default}">
+<!--로그인 후 볼 수 있는 유저 마이 페이지-->
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <style>
+        .login-logo .user-connection-menu {
+            display: none;
+        }
+        #tabWrapper {
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+            padding-top: 30px;
+        }
+
+        #tabContainer {
+            width: 1040px;
+        }
+
+        .nav-link{
+            font-size: medium;
+        }
+
+        #profileContainer{
+            display: flex;
+            justify-content: center;
+            padding: 35px;
+            flex-direction: column;
+        }
+
+        .img-box{
+            margin: 0 auto;
+        }
+
+        #name-box{
+            display: flex;
+            justify-content: center;
+            flex-direction: row;
+        }
+
+        /*  tab의 내부 영역 시작 */
+        .titleContainer{
+            /*display : flex;*/
+            flex-direction: column;
+            /*height : 150px;*/
+            justify-content: start;
+            padding: 30px 0 20px 30px;
+
+        }
+
+        /* tab 내부의 타이틀 영역 */
+        .tabTitle{
+            display : flex;
+            height : 50px;
+            flex-direction: column;
+            justify-content: start;
+            font-size : 30px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color:black; !important;
+        }
+
+        /* 셀렉트 포함한 div */
+        #selectContainer{
+            display: flex;
+            width: 250px;
+            height: 50px;
+        }
+
+        #selectFund{
+            font-size:16px;
+            padding:10px 70px 10px 10px;
+            color:dimgray;
+        }
+
+        /* tab 내부의 본문 영역 */
+        .bodyContainer{
+            display : flex;
+            flex-direction: column;
+            padding: 30px;
+        }
+
+        /* 내역 리스트 항목  */
+        .contentsContainer{
+            margin-bottom: 10px;
+            display:flex;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        /*  검은 버튼  */
+        .submitBtn_black {
+            background: #191919;
+            padding: 7px 23px;
+            transition: all .4s;
+            color: #fff;
+            display: inline-block;
+            text-decoration: none;
+            border: 1px solid #191919;
+            font-size: 12px;
+            transition: background 0.3s;
+            margin-left: 7px;
+        }
+
+        .submitBtn_black:hover {
+            background: var(--maincolor);
+            border: 1px solid var(--maincolor);
+        }
+
+        .submitBtn_black:disabled{
+            background-color: lightgrey;
+            border: 1px solid lightgrey;
+        }
+
+        /* 흰 버튼 */
+        .submitBtn_white {
+            background: #fff;
+            padding: 7px 23px;
+            transition: all .4s;
+            color: #191919;
+            display: inline-block;
+            text-decoration: none;
+            border: 1px solid #191919;
+            font-size: 12px;
+            transition: background 0.3s;
+            margin-left: 7px;
+        }
+
+        .submitBtn_white:hover {
+            background: var(--maincolor);
+            border: 1px solid var(--maincolor);
+            color: #fff;
+        }
+
+        /* 흰 버튼 */
+        .submitBtn_blue {
+            background: var(--maincolor);
+            padding: 7px 23px;
+            transition: all .4s;
+            color: #fff;
+            display: inline-block;
+            text-decoration: none;
+            border: 1px solid #191919;
+            font-size: 12px;
+            transition: background 0.3s;
+            margin-left: 7px;
+        }
+
+        .submitBtn_blue:hover {
+            background: #fff;
+            border: 1px solid #191919;;
+            color: #191919;
+        }
+
+        .nav-link{
+            padding:10px 60px 0 60px;
+        }
+
+        .user-info{
+            width: 400px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            color:black;
+            padding-left: 10px;
+        }
+
+        .h4 pb-2 mb-4 text-danger border-bottom border-grey{
+            height: 80px ;
+        }
+        .user-info-list{
+            font-weight: bold;
+            font-size: medium;
+            color: black;
+        }
+
+        /* 회원 탈퇴 a 태그*/
+        #lead-drop-page {
+            color: lightgrey;
+        }
+
+        #lead-drop-page:hover {
+            color: black; /* 포커싱될 때 글자 색상을 검은색으로 변경 */
+        }
+
+        .hidden{
+            display: none;
+        }
+
+        .btn.btn-secondary.btn-sm{
+            background-color: lightgrey;
+            border: 1px solid white;
+            border-radius: 5px;
+        }
+        input::placeholder,.form-control {
+            font-size: 14px; /* 원하는 글꼴 크기로 조절 */
+            color: lightgrey;
+        }
+
+        /* 진현 쿠폰 */
+        .couponArea{
+            width: 900px;
+            margin: 0 auto;
+        }
+        ul.couponArea {
+            display: flex;
+            gap: 10px;
+        }
+        ul.couponArea li {
+            padding: 5px 0;
+        }
+        .title{
+            width: 900px;
+            margin: 0 auto;
+            max-width: 1000px;
+            line-height: 36px;
+            color: rgba(0,0,0,.87);
+            font-size: 28px;
+            font-weight: 700;
+            box-sizing: content-box;
+            margin-bottom: 30px;
+            margin-top: 30px;
+        }
+        .couponHeader{
+            color: #44484b;
+            padding-right: 20px;
+            /*border-bottom: 1px solid rgba(0,0,0,.08);*/
+
+        }
+        .couponTitle{
+            margin-right: 20px;
+        }
+        .myCouponPage{
+            margin-top: 40px;
+            color: black;
+            font-size: 19px;
+            margin-bottom: 50px;
+        }
+        .userCouponAdd{
+            display: flex;
+            background: transparent;
+            outline: none;
+            border: none;
+            cursor: pointer;
+            /*border-bottom: 1px solid ;*/
+        }
+        .userCouponAdd:focus{
+            outline: none;
+        }
+        .downloadArea{
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 100px;
+        }
+        .couponPolicy{
+            width: 900px;
+            margin: 0 auto;
+        }
+        .couponPolicy ol,
+        .couponPolicy li {
+            list-style-type: decimal;
+        }
+        .couponPolicy ol {
+            margin-left: 30px;
+        }
+        .modal-dialog{
+            width: 900px;
+            margin-top: 100px;
+        }
+        .couponCode{
+            text-align: center;
+        }
+    </style>
+
+</head>
+<body>
+<!--사용자별 html-->
+<th:block layout:fragment="customContents">
+    <!-- 유저 프로필 영역   -->
+    <div id="profileContainer">
+        <!-- 프로필 이미지 -->
+        <div class="img-box">
+            <img style="width: 90px; height: 90px; border-radius: 50%;" src="https://search.pstatic.net/sunny/?src=https%3A%2F%2Fi.namu.wiki%2Fi%2FDgDM89CJAmUv4KwG-JNwQOWklX6MPKPXip-KQL66igwbwegZ3y6pRdFZ3Ne28Qn7JaxXZzewB3_iHM_uqJ7s8A.webp&type=sc960_832"
+                 id="profile_img" alt="">
+        </div>
+
+        <!-- 사용자 이름 + 설정 아이콘 -->
+        <div id="name-box">
+            <!-- 사용자 이름 -->
+            <h2>최미미</h2>
+            <!-- 설정 아이콘 클릭시 프로필 설정 페이지로 이동  -->
+            <a th:href="@{/user/mypage/profile}"><i class="bi bi-gear" id="showProfileIcon" ></i></a>
+        </div>
+    </div>
+    <!-- tab 메뉴 영역  -->
+    <!-- data-toggle="tab" 속성을 Bootstrap의 <a> 태그에 추가하면 해당 링크가 tab 컴포넌트를 제어하도록 설정 -->
+    <div id="tabWrapper">
+        <div id="tabContainer">
+            <ul class="nav nav-tabs nav-justified justify-content-center" id="tabList">
+                <li class="nav-item"><a href="#menu1" class="nav-link active" data-toggle="tab">후원한 펀딩</a></li>
+                <li class="nav-item"><a href="#menu2" class="nav-link " data-toggle="tab">찜한 리워드 펀딩</a></li>
+                <li class="nav-item"><a href="#menu5" class="nav-link" data-toggle="tab">적립금/쿠폰/</a></li>
+                <li class="nav-item"><a href="#menu6" class="nav-link" data-toggle="tab">내 정보</a></li>
+            </ul>
+
+    <!-- tab 내에 표시될 영역  -->
+            <div class="tab-content" >
+                <div id="menu1" class="container tab-pane active">
+                    <!--  tab 내부 타이틀 영역 -->
+                    <div class="titleContainer" >
+                        <div class="tabTitle">펀딩 내역</div>
+
+                    <!--  펀딩 종류 select  -->
+                    <div id="selectContainer">
+                        <select id="selectFund" class="form-select form-select-lg" >
+                            <option class="fundCategory" value="viewAll">전체</option>
+                            <option class="fundCategory" value="reward">리워드</option>
+                            <option class="fundCategory" value="investment">투자</option>
+                            <option class="fundCategory" value="donation">기부</option>
+                        </select>
+                    </div>
+
+                    </div >
+                    <!--  리워드 펀딩 선택시 나타날 페이지  -->
+                    <!--  tab 내부 본문 영역 -->
+                    <div class="bodyContainer" id="orderProject">
+                        <!--  내역 리스트 항목 -->
+                        <div class="contentsContainer mb-lg-5" th:each="l : ${mypageOrderList}">
+                            <div class="card" style="width: 48rem;">
+                                <!-- 내역 상태 ( 주문 상태 상세 )  -->
+                                <h5 class="card-header" th:text="${l.orderCategoryDetail}"></h5>
+                                <!-- 내역 내용 -->
+                                <div class="card-body" style="display: flex">
+                                    <!-- 이미지  -->
+                                    <div>
+                                        <img class="card-img-top" style="width: 160px; height: 160px; border:#8a8a8a solid 1px;" alt="..." th:src="|@{/summernoteImage/}${l.projectThumbnailImage}|"
+                                             th:onerror="|this.src='@{/user/images/no-image.svg}'|">
+                                    </div>
+
+                                    <!-- 설명 / 버튼 -->
+                                    <form action="" method="post" style="display: flex; flex-direction: column; justify-content:space-between; padding-left:30px; width: 1200px;">
+                                            <p class="orderApplicationDate" th:text="${#strings.substring(l.orderApplicationDate,0,10)}">2023.10.30 결제</p>
+                                            <h5 class="orderName" th:text="${l.orderFundingName}">[9만원대 | 가성비 끝판왕] 누젠 모래시계 가열식 가습기</h5>
+                                            <th:block th:if="${#lists.size(rl) > 0}" th:each="rl : ${l.rewardOrderDetailList}">
+                                                <span class="card-text" th:text="${rl.optionName}">누젠 모래시계 가열식 가습기(화이트)</span>
+                                                <span th:text="|주문 수량 : ${rl.orderOptionAmount} 개|"></span>
+                                            </th:block>
+                                            <div style="display: flex; justify-content: end; margin:0;">
+                                                <th:block th:if="${l.orderCategoryCode =='ORDC_001'}">
+                                                    <!--리워드 프로젝트 주문 완료-->
+                                                    <a onclick="return confirm('정말로 구매확정 하시겠습니까?')"
+                                                            th:href="@{/user/mypage/reward/orderConfirm(orderCode=${l.orderCode})}" class="confirmBtn submitBtn_blue">구매 확정</a>
+                                                    <a th:href="@{/user/mypage/reward/detailInfo(orderCode=${l.orderCode},detailCategory='결제내역')}" class="payDetailBtn submitBtn_white">결제 내역</a>
+                                                    <a th:href="@{/user/mypage/reward/cancel(orderCode=${l.orderCode})}" class="orderCancelBtn submitBtn_black">주문 취소</a>
+                                                </th:block>
+                                                <th:block th:if="${l.orderCategoryCode =='ORDC_002'}">
+                                                    <!--기부 프로젝트 주문 완료-->
+                                                    <a th:href="@{/user/donation/payment/detailInfo(orderCode=${l.orderCode})}" class="payDetailBtn submitBtn_white" >기부 내역</a>
+                                                    <!--기부 취소는 기부 주문 후 7일 이내 가능하도록.-->
+                                                    <a th:href="@{/user/donation/floverPayment/cancel(orderCode=${l.orderCode})}" id="paymentCancelBtn" class="payDetailBtn orderCancelBtn submitBtn_black">기부 취소</a>
+                                                    <input class="donationOrderCode" hidden="hidden" th:value="${l.orderCode}">
+                                                </th:block>
+                                                <th:block th:if="${l.orderCategoryCode =='ORDC_003'}">
+                                                    <!--투자 프로젝트 주문 완료, 청약 신청 중-->
+                                                    <a href="#" class="submitBtn_white">투자 현황</a>
+                                                    <a href="#" class="payDetailBtn submitBtn_white">투자 내역</a>
+                                                    <a href="#" class="orderCancelBtn submitBtn_black">투자 취소</a>
+                                                </th:block>
+                                                <th:block th:if="${l.orderCategoryCode =='ORDC_004'}">
+                                                    <!--리워드 배송 대기-->
+                                                    <a onclick="return confirm('정말로 구매확정 하시겠습니까?')"
+                                                       th:href="@{/user/mypage/reward/orderConfirm(orderCode=${l.orderCode})}" class="confirmBtn submitBtn_blue">구매 확정</a>
+                                                    <a th:href="@{/user/mypage/reward/detailInfo(orderCode=${l.orderCode},detailCategory='결제내역')}" class="payDetailBtn submitBtn_white">결제 내역</a>
+                                                    <a th:href="@{/user/mypage/reward/cancel(orderCode=${l.orderCode})}" class="orderCancelBtn submitBtn_black">주문 취소</a>
+                                                </th:block>
+                                                <th:block th:if="${l.orderCategoryCode =='ORDC_015'}">
+                                                    <!--리워드 배송 중-->
+                                                    <a onclick="return confirm('정말로 구매확정 하시겠습니까?')"
+                                                       th:href="@{/user/mypage/reward/orderConfirm(orderCode=${l.orderCode})}" class="confirmBtn submitBtn_blue">구매 확정</a>
+                                                    <a href="#" class="submitBtn_white" >배송 정보</a>
+                                                    <a th:href="@{/user/mypage/reward/detailInfo(orderCode=${l.orderCode},detailCategory='결제내역')}" class="payDetailBtn submitBtn_white">결제 내역</a>
+                                                </th:block>
+                                                <th:block th:if="${l.orderCategoryCode =='ORDC_005'}">
+                                                    <!--리워드 배송 완료-->
+                                                    <a onclick="return confirm('정말로 구매확정 하시겠습니까?')"
+                                                       th:href="@{/user/mypage/reward/orderConfirm(orderCode=${l.orderCode})}" class="confirmBtn submitBtn_blue">구매 확정</a>
+                                                    <a th:href="@{/user/mypage/reward/detailInfo(orderCode=${l.orderCode},detailCategory='결제내역')}" class="payDetailBtn submitBtn_white">결제 내역</a>
+                                                    <a th:href="@{/user/mypage/refund}" class="submitBtn_black" >환불 신청</a>
+                                                    <a th:href="@{/user/mypage/refund/cancel}" class="submitBtn_black" >교환 신청</a>
+                                                </th:block>
+                                                <th:block th:if="${l.orderCategoryCode =='ORDC_006'}">
+                                                    <!--리워드 주문 확정-->
+                                                    <a th:href="@{/user/mypage/reward/detailInfo(orderCode=${l.orderCode},detailCategory='결제내역')}" class="payDetailBtn submitBtn_white">결제 내역</a>
+                                                </th:block>
+                                                <th:block th:if="${l.orderCategoryCode =='ORDC_007'}">
+                                                    <!--기부 주문 확정-->
+                                                    <a th:href="@{/user/donation/detail/condition(donationCode=${l.goodsCode})}" class="submitBtn_white" >기부 현황</a>
+                                                    <a th:href="@{/user/donation/detail(donationCode=${l.goodsCode})}" class="submitBtn_white" >기부 상세</a>
+                                                </th:block>
+                                                <th:block th:if="${l.orderCategoryCode =='ORDC_008'}">
+                                                    <!--투자 주문 확정, 납입일 도래-->
+                                                    <a href="#" class="submitBtn_white" >투자 현황</a>
+                                                    <a href="#" class="submitBtn_white" >투자 상세</a>
+                                                </th:block>
+                                                <th:block th:if="${l.orderCategoryCode =='ORDC_009'}">
+                                                    <!--리워드 환불 진행 중-->
+                                                    <a href="#" class="submitBtn_white" >환불 상세</a>
+                                                    <a th:href="@{/user/mypage/reward/detailInfo(orderCode=${l.orderCode},detailCategory='결제내역')}" class="payDetailBtn submitBtn_white">결제 내역</a>
+                                                </th:block>
+                                                <th:block th:if="${l.orderCategoryCode =='ORDC_010'}">
+                                                    <!--리워드 환불 처리 완료-->
+                                                    <a href="#" class="submitBtn_white" >환불 내역</a>
+                                                    <a th:href="@{/user/mypage/reward/detailInfo(orderCode=${l.orderCode},detailCategory='결제내역')}" class="payDetailBtn submitBtn_white">결제 내역</a>
+                                                </th:block>
+                                                <th:block th:if="${l.orderCategoryCode =='ORDC_011'}">
+                                                    <!--리워드 교환 진행 중-->
+                                                    <a href="#" class="submitBtn_white" >교환 상세</a>
+                                                    <a th:href="@{/user/mypage/reward/detailInfo(orderCode=${l.orderCode},detailCategory='결제내역')}" class="payDetailBtn submitBtn_white">결제 내역</a>
+                                                </th:block>
+                                                <th:block th:if="${l.orderCategoryCode =='ORDC_012'}">
+                                                    <!--리워드 교환 완료-->
+                                                    <a href="#" class="submitBtn_white" >교환 내역</a>
+                                                    <a th:href="@{/user/mypage/reward/detailInfo(orderCode=${l.orderCode},detailCategory='결제내역')}" class="payDetailBtn submitBtn_white">결제 내역</a>
+                                                </th:block>
+                                                <th:block th:if="${l.orderCategoryCode =='ORDC_013'}">
+                                                    <!--리워드 프로젝트 실패로 주문 취소-->
+                                                    <a th:href="@{/user/mypage/reward/detailInfo(orderCode=${l.orderCode},detailCategory='취소내역')}" class="payDetailBtn submitBtn_white">취소 내역</a>
+                                                    <a th:href="@{/user/mypage/reward/detailInfo(orderCode=${l.orderCode},detailCategory='결제내역')}" class="payDetailBtn submitBtn_white">결제 내역</a>
+                                                </th:block>
+                                                <th:block th:if="${l.orderCategoryCode =='ORDC_014'}">
+                                                    <!--리워드 구매자 신청으로 주문 취소-->
+                                                    <a th:href="@{/user/mypage/reward/detailInfo(orderCode=${l.orderCode},detailCategory='취소내역')}" class="payDetailBtn submitBtn_white">취소 내역</a>
+                                                    <a th:href="@{/user/mypage/reward/detailInfo(orderCode=${l.orderCode},detailCategory='결제내역')}" class="payDetailBtn submitBtn_white">결제 내역</a>
+                                                </th:block>
+                                            </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="menu2" class="container tab-pane ">
+                    <div class="titleContainer">
+                        <div class="tabTitle">찜한 리워드 펀딩</div>
+                    </div>
+                    <div class="bodyContainer" id="rewardGreatProject">
+                        <!--  내역 리스트 항목 -->
+                        <div class="contentsContainer mb-lg-5 text-dark" th:each="l : ${rewardGreatList}"
+                             th:onclick="|location.href='@{/user/reward/detail(rewardProjectCode=${l.rewardProjectCode})}'|">
+                            <div class="card" style="width: 48rem;">
+                                <!-- 내역 상태 ( 주문 상태 상세 )  -->
+                                <h5 class="card-header" th:text="${l.projectSubject}"></h5>
+                                <!-- 내역 내용 -->
+                                <div class="card-body" style="display: flex">
+                                    <!-- 이미지  -->
+                                    <div>
+                                        <img class="card-img-top" style="width: 160px; height: 160px; border:#8a8a8a solid 1px;" alt="..." th:src="|@{/summernoteImage/}${l.projectThumbnailImage}|"
+                                             th:onerror="|this.src='@{/user/images/no-image.svg}'|">
+                                    </div>
+
+                                    <!-- 설명 / 버튼 -->
+                                    <form action="" method="post" style="display: flex; flex-direction: column; justify-content:space-between; padding-left:30px; width: 1200px;">
+                                        <span style=" font-weight: bold; font-size: 20px; color: #235FD9;" th:text="|${l.projectAchievementPercent}% 달성|"></span>
+                                        <span>펀딩 목표 금액 : <span class="text-primary" th:text="${#numbers.formatInteger(l.projectGoalMoney,0,'COMMA')}"></span> 원</span>
+                                        <span>펀딩 달성 금액 : <span class="text-primary" th:text="${#numbers.formatInteger(l.projectAchievementMoney,0,'COMMA')}"></span> 원</span>
+                                        <span>펀딩 마감 일자 : <span class="reward-item-span-third" th:text="${#strings.substring(l.projectEndDate,0,10)}"></span></span>
+                                        <div class="reward-item-fourth-child" th:text="${l.regCompany}"></div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <div id="menu5" class="container tab-pane">
+                    <div class="titleContainer">
+                        <div class="tabTitle">적립금/쿠폰</div>
+                        <div class="couponArea">
+                            <h2 class="title">쿠폰</h2>
+                        </div>
+                        <div class="tab-btn-area">
+                            <ul class="couponArea">
+                                <li>
+                                    <a class="couponTitle" th:href="@{'#'}">나의 쿠폰</a>
+                                </li>
+
+                                <li>
+                                    <a class="couponTitle" th:href="@{/user/coupon/couponZone}">쿠폰존</a>
+                                </li>
+
+                                <li>
+                                    <a class="couponTitle" th:href="@{'#'}">지난 쿠폰 내역</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="couponArea">
+                                <div class="myCouponPage couponArea">
+                                    <strong class="couponPageTitle">
+                                        현재 사용가능 쿠폰
+                                        <span class="couponCount">0장</span>
+                                    </strong>
+                                </div>
+                                </div>
+                            <table>
+                                <thead>
+                                    <tr>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:if="${memberHaveCouponList == null}">
+                                    <td colspan="4">등록된 쿠폰이 없습니다</td>
+                                </tr>
+                                <tr th:unless="${memberHaveCouponList == null}" th:each=" l : ${memberHaveCouponList}">
+                                    <td th:text="${l.couponName}"></td>
+                                    <th:block th:if="${l.couponDiscountAmount} >0">
+                                        <td th:text="${l.couponDiscountAmount}"></td>
+                                    </th:block>
+                                    <th:block th:if="${l.couponDiscountRate} > 0">
+                                        <td th:text="${l.couponDiscountRate}"></td>
+                                    </th:block>
+                                    <td th:text="${l.memberCoupon.couponRegDate}"></td>
+                                    <td th:text="${l.memberCoupon.couponEndDate}"></td>
+                                </tr>
+                                </tbody>
+
+
+                            </table>
+
+                        </div>
+
+                        <div class="downloadArea">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                            </svg>
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                쿠폰 등록하기
+                            </button>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="staticBackdropLabel">쿠폰번호를 입력해주세요</h5>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form>
+                                                <div class="field">
+                                                    <label class="couponSerialNum">쿠폰번호</label>
+                                                    <br>
+                                                    <div class="couponCode">
+                                                        <input class="couponCode" name="couponCode" maxlength="15" placeholder="쿠폰번호 입력" type="text">
+                                                        <br>
+                                                        <em class="addCouponModal">최대 10자리 혹은 15자리 (~제외)</em>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                                            <button type="button" class="btn btn-primary">등록</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <br><br><br><br><br><br><br><br><br><br><br><br>
+
+                        <div class="couponPolicy">
+                            <strong class="couponMessage">
+                                펀딩 스토어 이용안내
+                            </strong>
+                            <ol>
+                                <li>쿠폰은 리워드・기부 서비스 이용 시 사용할 수 있습니다.</li>
+                                <li>쿠폰은 다른 쿠폰과 중복하여 사용할 수 없습니다.</li>
+                                <li>쿠폰의 구체적인 사용 조건은 발행되는 쿠폰 별로 다를 수 있습니다.</li>
+                                <li>프로젝트가 실패하거나 결제 예약 취소를 한 경우, 쿠폰은 반환됩니다. 단, 반환 시점에 쿠폰 유효기간이 만료된 경우 자동 소멸됩니다.</li>
+                                <li>결제 실패인 경우에는 쿠폰이 반환되지않고, 소멸됩니다.</li>
+                            </ol>
+                            <br><br>
+
+                            <strong>스토어 쿠폰 이용안내</strong>
+                            <ol>
+                                <li>스토어 서비스 이용 시 사용할 수 있습니다.</li>
+                                <li>쿠폰은 다른 쿠폰과 중복하여 사용할 수 없습니다.</li>
+                                <li>쿠폰의 구체적인 사용 조건은 발행되는 쿠폰 별로 다를 수 있습니다.</li>
+                                <li>쿠폰은 배송비를 제외한 주문 상품 금액을 기준으로 적용되며, 쿠폰 금액보다 주문 상품 금액이 낮은 경우 사용할 수 없습니다.</li>
+                                <li>결제 취소(주문 취소, 환불 완료 등) 시 사용한 쿠폰은 자동 복구됩니다. 단, 복구 시점에 쿠폰 유효 기간이 만료된 경우 자동 소멸됩니다.</li>
+                                <li>사용 완료, 기간 만료, 소멸된 쿠폰은 지난 쿠폰 내역에서 확인할 수 있습니다.</li>
+                            </ol>
+                        </div>
+                        <br><br><br><br>
+                    </div>
+                </div>
+                <div id="menu6" class="container tab-pane" style="" >
+                    <div class="titleContainer" >
+                        <div class="tabTitle">내 정보</div>
+                        <div style=" display: flex; flex-direction: column;
+                        justify-content: center; align-items: center;">
+
+                            <form class="join-form">
+                                <div class="mb-6">
+                                    <p class="user-info-list">ID</p>
+                                    <div class="user-info">
+                                    <div th:text="${loginId}">id001</div>
+                                    </div>
+                                </div>
+                                <div class="h4 pb-2 mb-4 text-danger border-bottom border-grey" style="width: auto"></div>
+                                <!-----  1️⃣ 비밀번호 정보 ----->
+                                <div class="mb-6" style="display: flex; justify-content: space-between;" >
+                                    <p class="user-info-list">비밀번호</p>
+                                    <button id="edit-pw-btn" type="button" data-target="edit-pw" class="btn btn-secondary btn-sm">변경</button>
+                                </div>
+                                <!-- 변경 버튼의 target (변경 버튼 클릭시 edit-pw div가 floating)  -->
+                                <div id="edit-pw" class="info-box" style="margin: 10px 50px 0 50px; display: none;">
+                                    <!--  기존 비밀번호   -->
+                                    <p>현재 비밀번호 확인</p>
+                                    <input class="form-control" type="password" placeholder="비밀번호 입력" id="floating-input"
+                                           style="height: 10px; border: 1px solid black; margin: 15px 40px 10px 15px;"/>
+                                    <div id="pw-auth-alert" class="form-text" style="color:red; font-size:13px; margin: 0 0 5px 15px;"></div>
+                                    <button id="pw-check-btn" type="button" class="submitBtn_black" style="margin-left:15px; margin-bottom: 10px;">확인</button>
+                                    <!--  새로운 비밀번호   -->
+                                    <p>새로운 비밀번호</p>
+                                    <input class="form-control" type="password" placeholder="새로운 비밀번호" id="new-pw"
+                                           style="height: 10px; border: 1px solid black; margin: 15px 40px 15px 15px;"/>
+                                    <input class="form-control" type="password" placeholder="새로운 비밀번호 확인" id="new-pw-check"
+                                           style="height: 10px; border: 1px solid black; margin: 15px 40px 10px 15px;"/>
+                                    <div id="pw-check-alert" class="form-text" style="color:red; font-size:13px; margin: 0 0 5px 15px;" ></div>
+                                    <button id="pw-edit-btn" type="button" class="submitBtn_black" style="margin-left:15px; margin-bottom: 10px;" disabled>저장</button>
+                                </div>
+
+
+                                <div class="h4 pb-2 mb-4 text-danger border-bottom border-grey" style="width: auto"></div>
+
+                                <!------ 2️ e-mail 정보 ----->
+                                <div class="mb-6">
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <p class="user-info-list">e-mail</p>
+                                        <button id="edit-email-btn" type="button" data-target="edit-email" class="btn btn-secondary btn-sm edit" >변경</button>
+                                    </div>
+                                    <div>
+                                        <div id="edit-email" class="info-box" style="margin: 10px 50px 0 50px; display:none;">
+                                            <input class="form-control" placeholder="이메일 입력" id="email-input"
+                                                   style="height: 10px; border: 1px solid black; margin: 15px 40px 10px 15px;"/>
+                                            <div id="email-alert" class="form-text" style="color:red; font-size:13px; margin: 0 0 5px 15px;"></div>
+                                            <button id="email-edit-btn" type="button" class="submitBtn_black" style="margin-left:15px; margin-bottom: 10px;">저장</button>
+                                        </div>
+                                    </div>
+                                    <div class="user-info">
+                                        <div class="existing-value" th:text="${memberEmail}"></div>
+                                    </div>
+                                </div>
+
+
+                                <div class="h4 pb-2 mb-4 text-danger border-bottom border-grey" style="width: auto"></div>
+
+                                <!--  3️⃣ 휴대폰 번호 정보 -->
+                                <div class="mb-6">
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <p class="user-info-list">휴대폰 번호</p>
+                                        <!-- 변경 버튼 클릭시 div가 floating  -->
+                                        <button id="edit-phone-btn" type="button" data-target="edit-phone" class="btn btn-secondary btn-sm edit">변경</button>
+                                    </div>
+                                    <div>
+                                        <div id="edit-phone" class="info-box" style="margin: 10px 50px 0 50px; display: none;">
+                                            <input class="form-control" placeholder="휴대폰 번호 11자리 숫자만 입력" id="phone-input"
+                                                   style="height: 10px; border: 1px solid black; margin: 15px 40px 10px 15px;"/>
+                                            <div id="phone-alert" class="form-text" style="color:red; font-size:13px; margin: 0 0 5px 15px;"></div>
+                                            <button id="phone-edit-btn" type="button" class="submitBtn_black" style="margin-left:15px; margin-bottom: 10px;">저장</button>
+                                        </div>
+                                    </div>
+                                    <div class="user-info">
+                                        <div class="existing-value" th:text="${memberContactInfo}"></div>
+                                    </div>
+                                </div>
+
+                                <div class="h4 pb-2 mb-4 text-danger border-bottom border-grey" style="width: auto"></div>
+                                <div class="mb-6" style="padding-bottom:80px;">
+                                    <a id="lead-drop-page" th:href="@{/user/account/drop}">회원탈퇴</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+</th:block>
+
+<!-- 사용자별 스크립트 파일 -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script type="text/javascript" th:inline="javascript">
+      /* 선택한 select 항목별로 내용 나타나게  */
+      /* 일단 모든 항목을 숨기고 나타나게 해야 할 듯 */
+      $rewardTab = document.getElementById('rewardTab');
+      $investmentTab = document.getElementById('investmentTab');
+      $selectFund = document.getElementById('selectFund');
+      $donationTab = document.getElementById('donationTab');
+      $bodyContainer = document.querySelectorAll('.bodyContainer');
+
+
+
+        document.getElementById('lead-drop-page').addEventListener('focus', ()=>{
+        })
+
+
+      /* 내 정보 tab 🔽 */
+      /* 비밀번호 변경 버튼 클릭시 div 보이게 */
+      const $editPwBtn = document.getElementById('edit-pw-btn');
+      const $pwEditDiv = document.getElementById('edit-pw')
+      $editPwBtn.addEventListener('click',function(){
+          if($pwEditDiv.style.display === 'none'){
+              $pwEditDiv.style.display = 'block';
+              this.style.backgroundColor = 'white';
+              this.style.color ='black';
+              this.textContent = '취소';
+          }else{
+              $pwEditDiv.style.display = 'none';
+              this.style.backgroundColor = 'lightgrey';
+              this.style.color ='white';
+              this.textContent = '변경';
+          }
+      })
+
+      /*  이메일 + 연락처 변경 버튼 클릭시 숨겨진 div 보이게 */
+      const $editBtns = document.querySelectorAll('.btn.btn-secondary.btn-sm.edit');
+      $editBtns.forEach(function (button){
+          button.addEventListener('click',()=>{
+              /* data-target 속성 이용하여 특정 버튼과 연결된 숨겨진 div 식별*/
+              const $targetDivId = button.getAttribute('data-target');
+              const $targetDiv= document.getElementById($targetDivId);
+
+              // $targetDiv의 부모로 가서 (기존 정보 보여 주는) existing-value 찾기
+              const $existingDiv = $targetDiv.parentNode.nextSibling.nextSibling;
+
+              if($targetDiv.style.display === 'none'){
+                  $targetDiv.style.display = 'block';
+                  /* 숨겨진 div 나타나면 기존 회원정보 가리기 */
+                  $existingDiv.style.display = 'none';
+                  const $targetInput = $targetDiv.querySelector('.form-control');
+
+                  $targetInput.focus();
+
+                  $targetInput.value=$existingDiv.textContent.replaceAll(' ',''); // 기존 회원 정보를 표시
+                  button.textContent = '취소';
+                  button.style.backgroundColor = 'white';
+                  button.style.color = 'black';
+              }else{
+                  /* div 숨겨지면 기존 회원정보 나타나게 하기 */
+                  $existingDiv.style.display = 'block';
+                  $targetDiv.style.display = 'none';
+                  button.textContent = '변경';
+                  button.style.backgroundColor = 'lightgrey';
+                  button.style.color = 'white';
+              }
+          })
+      })
+
+      /* 저장 버튼 클릭 이벤트 리스너 */
+      const $pwEditBtn = document.getElementById('pw-edit-btn');
+      const $emailEditBtn = document.getElementById('email-edit-btn');
+      const $phoneEditBtn = document.getElementById('phone-edit-btn');
+
+
+      /* 기존 비밀번호 인증 */
+      const $pwInput = document.getElementById('floating-input');
+      document.getElementById('pw-check-btn').addEventListener('click',()=>{
+          $.ajax({
+              url : '/user/mypage/pwCheck',
+              method : 'POST',
+              data : {'memberPw' : $pwInput.value },
+              dataType : 'json'
+          })
+              .done(function(response){
+                  if(!response){
+                      document.getElementById('pw-auth-alert').textContent = '비밀번호가 일치하지 않습니다';
+                      $pwEditBtn.disabled = true;
+                  }else{
+                      document.getElementById('pw-auth-alert').textContent = '';
+                      $pwEditBtn.disabled = false;
+                  }
+              })
+
+              .fail(function (jqXHR, textStatus){
+                  alert('통신 중 오류가 발생하였습니다');
+                  console.log(`Request failed: ${textStatus}`);
+              })
+
+      })
+
+      /* 새로운 비밀번호 저장 버튼 클릭시 : 유효성 검사 + 새 비밀번호 일치 확인 모두 만족시 비밀번호 update */
+      let $newPw = document.getElementById('new-pw');
+      $pwEditBtn.addEventListener('click',function(){
+          const $pwCheckAlert = document.getElementById('pw-check-alert');
+          // 1. 유효성 검사 통과 못 한 경우
+          const $inputEles = $pwEditDiv.querySelectorAll('.form-control');
+          let isValid = Array.from($inputEles).every(inputEle => validationCheck(inputEle));
+          console.log(isValid);
+          if(!isValid){
+              $pwCheckAlert.textContent = '유효한 값을 입력해 주세요';
+          } else {
+              // 2. 기존 비밀번호와 동일하진 않은지 확인
+              if($pwInput.value === $newPw.value){
+                  $pwCheckAlert.textContent = '기존 비밀번호와 다른 값을 입력해 주세요';
+                  $newPw.focus();
+              } else {
+                  $pwCheckAlert.textContent = '';
+                  // 3. 유효성 검사 통과하면 새 비밀번호 일치 여부 확인
+                  if($newPw.value === document.getElementById('new-pw-check').value){
+                      $pwCheckAlert.textContent = '';
+                      // 비밀번호 UPDATE
+                      $.ajax({
+                          url : '/user/mypage/pwModify',
+                          method : 'POST',
+                          data : { 'memberPw': document.getElementById('new-pw').value },
+                          dataType : 'json'
+                      })
+                          .done(function(response){
+                              if(response.result == 1) alert('비밀번호가 정상적으로 변경되었습니다.'); else alert('비밀번호 변경에 실패하였습니다');
+                          })
+
+                          .fail(function(jqXHR, textStatus){
+                              alert('통신 중 오류가 발생하였습니다');
+                              console.log(`Request failed: ${textStatus}`);
+                          })
+                  } else {
+                      $pwCheckAlert.textContent = '비밀번호가 서로 일치하지 않습니다.';
+                      document.getElementById('new-pw-check').focus();
+                  }
+              }
+
+          }
+
+      })
+
+
+      /* 이메일 저장 버튼 클릭시 update */
+      let $newEmail = document.getElementById('email-input');
+      $emailEditBtn.addEventListener('click',function (){
+          $newEmail.nextElementSibling.textContent = '';
+          // 유효성 검사
+          if(validationCheck($newEmail)){
+              // 비밀번호 UPDATE
+              $.ajax({
+                  url : '/user/mypage/emailModify',
+                  method : 'POST',
+                  data : { 'memberEmail': $newEmail.value },
+              })
+                  .done(function(){
+                      alert('이메일이 정상적으로 변경되었습니다.');
+                  })
+
+                  .fail(function(jqXHR, textStatus){
+                      alert('통신 중 오류가 발생하였습니다');
+                      console.log(`Request failed: ${textStatus}`);
+                  })
+          }
+      })
+
+      /* 휴대폰 번호 keydown 이벤트 리스너 등록 */
+      let $newContact = document.getElementById('phone-input');
+      $newContact.addEventListener('keydown',function (event){
+          // 입력된 키가 숫자가 아니면 무시
+          const allowedKeys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'Backspace', 'ArrowLeft', 'ArrowRight'];
+
+          if (!allowedKeys.includes(event.key)) {
+              event.preventDefault();
+          }
+
+          let phoneNumber = event.target.value;
+          if (phoneNumber.length > 6) {
+              phoneNumber = phoneNumber.replace(/(\d{3})(\d{4})(\d{1,4})/, '$1-$2-$3');
+          }
+          event.target.value = phoneNumber;
+
+          // 길이가 13자 이상이면 초과 부분을 잘라냄
+          if (phoneNumber.length > 13) {
+              phoneNumber = phoneNumber.substring(0, 12);
+          }
+          event.target.value = phoneNumber;
+      })
+
+      /* 휴대폰번호 저장 버튼 클릭시 update */
+      $phoneEditBtn.addEventListener('click',function (){
+          $newContact.nextElementSibling.textContent = '';
+          // 유효성 검사
+          if(validationCheck($newContact)){
+              // 비밀번호 UPDATE
+              $.ajax({
+                  url : '/user/mypage/contactInfoModify',
+                  method : 'POST',
+                  data : { 'memberEmail': $newContact.value },
+              })
+                  .done(function(){
+                      alert('휴대폰 번호가 정상적으로 변경되었습니다.');
+                  })
+
+                  .fail(function(jqXHR, textStatus){
+                      alert('통신 중 오류가 발생하였습니다');
+                      console.log(`Request failed: ${textStatus}`);
+                  })
+          }
+      })
+      /* 입력란 유효성 검사 함수 */
+      function validationCheck(input){
+          let isValid = true;
+          if( input.value.trim() === '' || typeof input === 'undefined' || input.value == null ){
+              isValid = false;
+              input.nextElementSibling.textContent = '유효한 값이 아닙니다';
+          }
+          return isValid;
+      }
+
+
+        //====================상민======================
+
+        let selectFund = [[${selectFund}]];
+
+        $('.fundCategory').each((idx,item)=>{
+            if($(item).val() === selectFund) {
+                $(item).prop('selected',true);
+                return false;
+            }
+        })
+        //펀딩 내역 셀렉트 박스
+        $('#selectFund').change(function(){
+            selectFund = $(this).val();
+            console.log(selectFund);
+            location.href = `/user/mypage/?selectFund=${selectFund}`;
+        })
+
+
+      $('#paymentCancelBtn').click(function (){
+          if (confirm('기부를 취소하시겠습니까?')){
+              event.preventDefault();
+              console.log($(this).next().val());
+              window.location.href = "/user/donation/floverPayment/cancel?orderCode="+$(this).next().val();
+          }else{
+              return false;
+          }
+      })
+
+
+    </script>
+</th:block>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+</body>
+</html>

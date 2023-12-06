@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <style>
+        input {
+            width: 100%;
+        }
+
+        select {
+            width: 100%;
+        }
+    </style>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+        function validationCheck(data) {
+            let isValid = true;
+            if (typeof data == 'object') {
+
+                $.each(data, function () {
+                    let checkValue = $(this).val();
+                    if (checkValue == null || checkValue == '' || typeof checkValue == 'undefined') {
+                        isValid = false;
+                        let eleId = $(this).attr('id');
+                        let cate = $(`label[for="${eleId}"]`).text();
+                        alert(`${cate} 필수 입력 항목입니다.`);
+                        $(this).focus();
+                        return isValid;
+                    }
+                });
+
+            } else {
+                if (data == null || data == '' || typeof data == 'undefined') {
+                    isValid = false;
+                }
+            }
+
+            return isValid;
+        }
+
+        $('#settUpdateBtn').click(function () {
+
+            const formEles = $('#modifyIncongruitySectorsForm input, #modifyIncongruitySectorsForm select');
+
+            let isValid = validationCheck(formEles);
+
+            if (isValid) $('#modifyIncongruitySectorsForm').submit();
+
+        });
+    </script>
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <form id="modifyIncongruitySectorsForm" th:action="@{/admin/investment/update/incongruity-sectors}" method="post">
+
+        <div class="admin-wrapper" th:object="${incongruitySectorsInfo}">
+
+            <div class="admin-content-wrapper form-table" style="margin-top: 40px;">
+                <div class="project-info-title">
+                    <h5>부적합 업종 코드</h5>
+                    <p th:text="*{incongruitySectorsCode}" style="color: var(--maincolor);"></p>
+                </div>
+                <br>
+                <form id="projectInfoDetailBt" method="get">
+                    <table class="settlement-log application-info-detail" style="border:none;">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <label for="incongruitySectorsBusiness">부적합 업종</label>
+                            </td>
+                            <td colspan="5">
+                                <input type="text" id="incongruitySectorsBusiness" name="incongruitySectorsBusiness"
+                                       th:value="*{incongruitySectorsBusiness}" placeholder="부적합 업종을 입력해주세요.">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="memberId">등록한 아이디</label>
+                            </td>
+                            <td colspan="5" th:text="*{memberId}"></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="incongruitySectorsWhether">부적합 여부</label>
+                            </td>
+                            <td>
+                                <select id="incongruitySectorsWhether" name="incongruitySectorsWhether">
+                                    <option value="">===부적합여부를 선택해주세요===</option>
+                                    <option value="0" th:selected="*{incongruitySectorsWhether == 0}">부적합</option>
+                                    <option value="1" th:selected="*{incongruitySectorsWhether == 1}">적합</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label>등록일시</label>
+                            </td>
+                            <td th:text="*{codeRegDay}" colspan="5"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <input type="text" id="incongruitySectorsCode" name="incongruitySectorsCode"
+                           th:value="*{incongruitySectorsCode}"
+                           hidden="hidden">
+                    <input type="text" id="memberId" name="memberId" th:value="*{memberId}" hidden="hidden">
+
+                    <div class="btn-area">
+                        <ul>
+                            <li>
+                                <button id="settBackBtn" class="submitBtn" type="button" onclick="backLocationFn()">
+                                    뒤로
+                                </button>
+                            </li>
+                            <li>
+                                <button id="settUpdateBtn" class="submitBtn" type="button">
+                                    확인
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </form>
+</th:block>
+</html>

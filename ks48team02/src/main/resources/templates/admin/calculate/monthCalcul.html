@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/default}">
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+        // chart code
+        new Chart(document.getElementById("adminMonthChart"), {
+            type: 'bar',
+
+            data: {
+                labels: ['10/13','10/14','10/15','10/16','10/17','10/18','10/19'],
+                datasets: [{
+                    barThickness: 20,
+                    data: [86,114,1006,107,221,783,2478],
+                    label: "리워드",
+                    backgroundColor: projectPointColor[0],
+                    // backgroundColor: (context) => {
+                    //     const bgColor = [
+                    //         'rgba(234,84,85,0.25)',
+                    //         'rgba(254,182,146,0.59)'
+                    //     ];
+                    //     if (!context.chart.chartArea){
+                    //         return;
+                    //     }
+                    //     const { ctx, data, chartArea: {top, bottom}} = context.chart;
+                    //     const gradientBg = ctx.createLinearGradient(0, top, 0, bottom);
+                    //     gradientBg.addColorStop(0, bgColor[0]);
+                    //     gradientBg.addColorStop(1, bgColor[1]);
+                    //     return gradientBg;
+                    // },
+                    fill: true
+                },{
+                    barThickness: 20,
+                    data: [282,1350,1411,502,635,809,947],
+                    label: "기부",
+                    backgroundColor: projectPointColor[1],
+                    // backgroundColor: (context) => {
+                    //     const bgColor = [
+                    //         'rgba(50,204,236,0.2)',
+                    //         'rgba(144,247,236,0.6)'
+                    //     ];
+                    //     if (!context.chart.chartArea){
+                    //         return;
+                    //     }
+                    //     const { ctx, data, chartArea: {top, bottom}} = context.chart;
+                    //     const gradientBg = ctx.createLinearGradient(0, top, 0, bottom);
+                    //     gradientBg.addColorStop(0, bgColor[0]);
+                    //     gradientBg.addColorStop(1, bgColor[1]);
+                    //     return gradientBg;
+                    // },
+                    fill: true
+                },
+                    {
+                        barThickness: 20,
+                        data: [1680,1270,178,930,1203,1276,708],
+                        label: "투자",
+                        backgroundColor: projectPointColor[2],
+                        // backgroundColor: (context) => {
+                        //     const bgColor = [
+                        //         'rgba(206,159,252,0.2)',
+                        //         'rgba(115,103,240,0.72)'
+                        //     ];
+                        //     if (!context.chart.chartArea){
+                        //         return;
+                        //     }
+                        //     const { ctx, data, chartArea: {top, bottom}} = context.chart;
+                        //     const gradientBg = ctx.createLinearGradient(0, top, 0, bottom);
+                        //     gradientBg.addColorStop(0, bgColor[0]);
+                        //     gradientBg.addColorStop(1, bgColor[1]);
+                        //     return gradientBg;
+                        // },
+                        fill: true
+                    }]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'World population per region (in millions)'
+                }
+            }
+        });
+
+        // 3개월 이전 date
+        let projectCalFnDate = new Date(startDate(nowDateSet));
+
+
+        // start value setting
+        const $optionEls = $('select[name="amMonthCulStartM"] option');
+        monthDateSettingFn(projectCalFnDate, $optionEls);
+
+        // start year value setting
+        const $startYearOptionEls = $('select[name="amMonthCulStartY"] option');
+        yearDateSettingFn(projectCalFnDate, $startYearOptionEls);
+
+        // end year value setting
+        const $endYearOptionEls = $('select[name="amMonthCulEndY"] option')
+        yearDateSettingFn(nowDateSet, $endYearOptionEls);
+
+        // end month value setting
+        const $endMonthOptionEls = $('select[name="amMonthCulEndM"] option');
+        monthDateSettingFn(nowDateSet, $endMonthOptionEls);
+    </script>
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <div class="admin-content-wrapper" style="min-height:auto; color: var(--maincolor); margin-bottom: 20px;">
+        통계자료는 국세청 및 기타제출용 자료로 사용이 불가능하며, 쇼핑몰 운영의 참고자료로 이용하시기 바랍니다.
+    </div>
+    <div class="admin-content-wrapper form-table">
+        <form id="amMonthChartForm" method="get">
+            <table class="partition-select">
+                <tbody>
+                <tr>
+                    <td>
+                        기간
+                    </td>
+                    <td>
+                        <select name="amMonthCulStartY">
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="2020">2020</option>
+                            <option value="2019">2019</option>
+                            <option value="2018">2018</option>
+                            <option value="2017">2017</option>
+                            <option value="2016">2016</option>
+                            <option value="2015">2015</option>
+                        </select> 년
+                        <select name="amMonthCulStartM">
+                            <option value="1" >1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                        </select> 월
+                        <span> - </span>
+                        <select name="amMonthCulEndY">
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="2020">2020</option>
+                            <option value="2019">2019</option>
+                            <option value="2018">2018</option>
+                            <option value="2017">2017</option>
+                            <option value="2016">2016</option>
+                            <option value="2015">2015</option>
+                        </select> 년
+                        <select name="amMonthCulEndM">
+                            <option value="1" >1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                        </select> 월
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        프로젝트 분류
+                    </td>
+                    <td>
+                        <select id="amProjectSelect" name="amProjectSelect">
+                            <option value="">프로젝트 분류를 선택해주세요</option>
+                            <option value="total">전체 프로젝트</option>
+                            <option value="reward">리워드 프로젝트</option>
+                            <option value="donation">기부 프로젝트</option>
+                            <option value="investment">투자 프로젝트</option>
+                        </select>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="btn-area">
+                <button type="button" class="submitBtn">검색</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="title-wrap">
+        <h4 class="admin-content-title">통계 그래프</h4>
+    </div>
+    <div class="admin-content-wrapper">
+        <h5 class="chart-title">펀딩 성공 프로젝트 매출 집계</h5>
+        <canvas id="adminMonthChart"></canvas>
+    </div>
+
+    <div class="title-wrap">
+        <h4 class="admin-content-title">월별 매출 내역</h4>
+    </div>
+    <div class="admin-content-wrapper">
+        <table class="date-payment-log">
+            <thead>
+            <tr>
+                <th rowspan="2">일자</th>
+                <th colspan="6">결제완료 주문</th>
+                <th rowspan="2">결제합계</th>
+                <th rowspan="2">환불합계</th>
+                <th rowspan="2">순매출</th>
+            </tr>
+            <tr>
+                <th>주문수</th>
+                <th>품목수</th>
+                <th>상품구매금액</th>
+                <th>배송비</th>
+                <th>할인금액</th>
+                <th>쿠폰사용금액</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td colspan="10" style="text-align: center; padding: 30px 0;">검색 결과가 없습니다.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+
+  <div class="py-1 bg-primary" th:fragment="topBannerFragment">
+ 	<div class="container">
+ 		<a th:href="@{#}">지금 회원가입시 15% 할인 쿠폰 즉시 지급 !!</a>
+  	</div>
+  </div>
+
+    <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar" th:fragment="headerNavFragment">
+	    <div class="container">
+		    <div class="top-left-conts">
+		    
+		      <a class="navbar-brand" th:href="@{/user}">flocky</a>
+		      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+		        <span class="oi oi-menu"></span> Menu
+		      </button>
+	
+		      <div class="main-header collapse navbar-collapse" id="ftco-nav">
+			        <ul class="navbar-nav ml-auto">
+			          <li class="nav-item">
+			          	<a th:href="@{/user}" class="nav-link">홈</a>
+			          </li>
+			          <li class="nav-item">
+			          	<a th:href="@{/user/reward}" class="nav-link">리워드</a>
+			          </li>
+			          <li class="nav-item">
+			          	<a th:href="@{/user/investment}" class="nav-link">투자</a>
+			          </li>
+			          <li class="nav-item">
+			          	<a th:href="@{/user/donation}" class="nav-link">기부</a>
+			          </li>
+			          <li class="nav-item">
+			          	<a th:href="@{#}" class="nav-link">더보기</a>
+			          </li>
+			         <!-- <li class="nav-item">
+			          	<a th:href="@{../admin}" class="nav-link">어드민</a>
+			          </li>-->
+						
+			          <!-- 
+			          	어드민
+			          	<li class="nav-item"><a th:href="@{../admin}" class="nav-link">Admin</a></li> 
+			          	-->
+			          <!-- 
+			          	장바구니
+			          	<li class="nav-item cta cta-colored"><a href="cart.html" class="nav-link"><span class="icon-shopping_cart"></span>[0]</a></li>
+		 				-->
+			        </ul>
+		        
+		    	</div>
+	      	</div>
+	        <div class="top-right-conts">
+	        	<form method="get" class="search-area">
+	        		<input class="search-bar" type="search" name="total_search"
+	        			placeholder="검색어를 입력하세요"
+	        			onfocus="this.placeholder=''"
+	        			onblur="this.placeholder='검색어를 입력하세요'"
+	        			
+	        		>
+	        		<button type="button" class="search-btn">검색</button>
+	        	</form>
+	        	<ul class="user-connection-menu">
+	        		<li th:if="${session.SID == null}"><a th:href="@{/user/account/login}">로그인</a></li>
+	        		<li th:if="${session.SID == null}"><a th:href="@{/user/account}">회원가입</a></li>
+					<li th:unless="${session.SID == null}">
+						<a class="header-menu-icon myPage-icon"></a>
+						<ul class="header-menu-submenu" style="--variable-index: 4;">
+							<li th:if="${session.STYPECODE == 'mem_type_05'}"><a th:href="@{/user/mypage}">마이페이지</a></li>
+							<li th:unless="${session.STYPECODE == 'mem_type_05'}">
+								<a th:href="@{${(session.STYPECODE == 'mem_type_01')?'/admin':'/seller'}}">관리자페이지</a>
+							</li>
+							<li><a th:href="@{/user/inquiry}">1:1문의</a></li>
+							<li><a th:href="@{/user/account/logout}">로그아웃</a></li>
+						</ul>
+					</li>
+					<li th:if="${session.STYPECODE == 'mem_type_05'}">
+						<a class="header-menu-icon cart-icon"></a>
+						<ul class="header-menu-submenu" style="--variable-index: 3;">
+							<li><a th:href="@{#}">주문관리</a></li>
+							<li><a th:href="@{#}">배송조회</a></li>
+							<li><a th:href="@{#}">찜하기</a></li>
+						</ul>
+					</li>
+				<!--<li><a th:unless="${session.SID == null}" th:href="@{/user/account/logout}">로그아웃</a></li>-->
+	        	</ul>
+	        	<div class="make-project-btn" th:unless="${session.STYPECODE == 'mem_type_05'}">
+	        		<a th:href="@{/user/projectRegistration}">프로젝트 만들기</a>
+	        	</div>
+	        </div>
+	    </div>
+	  </nav>
+	  
+	
+		  	<!-- -->
+	
+  
+  
+</html>

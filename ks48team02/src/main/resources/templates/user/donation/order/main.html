@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/donation/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+    <style>
+        .order-donation-btn {
+            width: 150px;
+            height: 50px;
+
+            /* 상자 디자인 큰틀*/
+            margin-bottom: 30px;
+            border: 0px;
+            background-color: #235FD9;
+            outline-color: #235FD9;
+            outline-width: 1px;
+
+            /* 그림자 */
+            border-radius: 10px;
+            box-shadow:.8rem .5rem 1.4rem  #BEC5D0, -.3rem -.4rem .8rem #FBFBFB;
+            /* box-shadow:-.2rem -.2rem 1.8rem white, .8rem .8rem 1.4rem  #AAB7CB; */
+
+            /* 글씨 */
+            color: whitesmoke;
+            font-size: 15px;
+            font-weight: bold;
+
+            animation-name: keybtn-language;
+            animation-duration: .2s;
+
+        }
+        /*버튼 눌리는 효과*/
+        .order-donation-btn:active {
+            box-shadow: inset -.3rem -.1rem 1.4rem  #FBFBFB, inset .3rem .4rem .8rem #BEC5D0;
+            cursor: pointer;
+        }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+        $("#floverCount").click(function (){
+            $(this).val('');
+        });
+        $('#floverCount').focusout(function (){
+            if($(this).val() == '' || $(this).val() == null || typeof $(this).val() == 'undefined'){
+                $(this).val('0');
+            }
+        });
+        $('.order-donation-btn').click(function (){
+            const sessionId = '[[${SID}]]';
+            const floverCount = $('#floverCount').val();
+            const curMyFlover = parseInt($('#curMyFlover').text());
+            if(floverCount <= 0){
+                alert('Flover는 1개 이상부터 기부 하실 수 있습니다!');
+                return false;
+            }
+            console.log(sessionId);
+            if (sessionId == null || sessionId == '' || typeof sessionId == 'undefined'){
+                alert('결제하려면 로그인을 해주세요!');
+            }else{
+                if (floverCount > curMyFlover){
+                    if (confirm('Flover가 부족합니다.\n충전하시겠습니까?')){
+                        var url = '/user/donation/payment/charge/main?memberId='+'[[${SID}]]';
+                        var name = "popup test";
+                        var option = "width = 500, height = 700, top = 100, left = 200, location = no"
+                        window.open(url, name, option);
+                    }else{
+                        return false;
+                    }
+                }else {
+                    if (confirm('정말로 기부 하시겠습니까?')){
+                        $('#floverForm').submit();
+                    }else{
+                        return false;
+                    }
+                }
+            }
+        });
+    </script>
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <div class="container" style="border: 1px solid lightgrey; margin-top: 50px; padding: 30px">
+        <div class="row">
+            <h3 class="d-flex col-lg-12 justify-content-center">"기부자님의 소중한 마음으로 놀라운 변화가 일어납니다."</h3>
+            <h6 class="d-flex col-lg-12 justify-content-center">투명한 기부 후기로 그 변화를 소개하고 보답하겠습니다!</h6>
+            <div class="d-flex col-lg-12 justify-content-center" style="margin-top: 30px; margin-bottom: 10px">
+                <div style="border-top: 2px solid darkgrey; width: 80%;"></div>
+            </div>
+            <div class="d-flex col-lg-12 justify-content-center">
+                <strong style="color: black">현재 나의 Flover [<strong id="curMyFlover" style="color: #235FD9;" th:text="${myFlover}"></strong>] 개</strong>
+            </div>
+            <br>
+            <div class="d-flex col-lg-12 justify-content-center">
+                <strong style="color: #235FD9">결제할 Flover</strong>
+                <form id="floverForm" th:action="@{/user/donation/payment}" method="post">
+                    <input id="floverCount" name="floverCount" type="number" value="0" style="margin-left: 5px; margin-right: 5px; text-align: right; padding-right: 5px; color: #235FD9; font-weight: bold; width: 150px; height: 30px">
+                    <input th:value="${donationCode}" name="donationCode" hidden="hidden">
+                </form>
+                <span>개</span>
+            </div>
+            <div class="d-flex col-lg-12 justify-content-center">
+                <div style="background: #f9fafb; border-radius: 5px; padding: 10px; display: inline-block; width: 80%; height: auto; margin-top: 10px; margin-bottom: 10px; text-align: center">
+                    <strong>결제수수료 없이 100% 기부</strong><br>
+                    결제하신 금액은 기부시 별도 수수료 없이 <em style="color: #235FD9; font-weight: bold">단체로 100% 기부</em> 됩니다.
+                </div>
+            </div>
+            <div class="d-flex col-lg-12 justify-content-center" style="margin-top: 10px;">
+                <button type="button" class="order-donation-btn" style="margin-right: 10px">기부하기</button>
+                <button type="button" onclick="history.go(-1)" class="order-donation-btn" style="background-color: grey; color: ghostwhite">스토리로 돌아가기</button>
+            </div>
+
+        </div>
+    </div>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <style>
+        input {
+            width: 100%;
+        }
+
+        select {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+        // 유효성 검사
+        function validationCheck(data) {
+            let isValid = true;
+            if (typeof data == 'object') {
+
+                $.each(data, function () {
+                    let checkValue = $(this).val();
+                    if (checkValue == null || checkValue == '' || typeof checkValue == 'undefined') {
+                        isValid = false;
+                        let eleId = $(this).attr('id');
+                        let cate = $(`label[for="${eleId}"]`).text();
+                        alert(`${cate} 필수 입력 항목입니다.`);
+                        $(this).focus();
+                        return isValid;
+                    }
+                });
+
+            } else {
+                if (data == null || data == '' || typeof data == 'undefined') {
+                    isValid = false;
+                }
+            }
+
+            return isValid;
+        }
+
+        $('#settAddBtn').click(function () {
+
+            const formEles = $('#addLawSatistifyForm input, #addLawSatistifyForm select');
+
+            let isValid = validationCheck(formEles);
+
+            if (isValid) $('#addLawSatistifyForm').submit();
+        });
+    </script>
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <form id="addLawSatistifyForm" th:action="@{/admin/investment/insert/law-satistify}" method="post">
+
+        <div class="admin-content-wrapper form-table" style="margin-top: 40px;">
+
+            <div class="project-info-title">
+                <h5>자본시장법 범위충족</h5>
+                <p style="color: var(--maincolor);"></p>
+            </div>
+            <br>
+
+            <form id="projectInfoDetailBt" method="get">
+                <table class="settlement-log application-info-detail" style="border:none;">
+                    <tbody>
+                    <tr>
+                        <td>
+                            <label for="lawSatistifyReason">자본시장법 범위충족 사유</label>
+                        </td>
+                        <td colspan="5">
+                            <input type="text" id="lawSatistifyReason" name="lawSatistifyReason"
+                                   placeholder="자본시장법 범위충족 사유를 입력해주세요.">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="memberId">등록하는 아이디</label>
+                        </td>
+                        <td colspan="5">id100</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="lawSatistifyWhether">범위충족 여부</label>
+                        </td>
+                        <td>
+                            <select id="lawSatistifyWhether" name="lawSatistifyWhether">
+                                <option value="">===충족여부를 선택해주세요===</option>
+                                <option value="1">충족</option>
+                                <option value="0">미충족</option>
+                            </select>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <input type="text" id="memberId" name="memberId" value="id100" hidden="hidden">
+
+                <div class="btn-area">
+                    <ul>
+                        <li>
+                            <button id="settBackBtn" class="submitBtn" type="button" onclick="backLocationFn()">
+                                뒤로
+                            </button>
+                        </li>
+                        <li>
+                            <button id="settAddBtn" class="submitBtn" type="button">
+                                확인
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+    </form>
+</th:block>
+</html>

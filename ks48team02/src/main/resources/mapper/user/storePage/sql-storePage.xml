@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ksmart.ks48team02.user.mapper.storePage.StorePageMapper">
+    <resultMap id="storeNewsResultMap" type="StorePageDto" >
+        <!-- pk == id  -->
+        <id property="storeNewsCode"            column="store_news_code"/>
+        <!-- pk 제외한 모든 컬럼 == result -->
+        <result property="storeCode" 	        column="store_code"/>
+        <result property="storeNewsTitle"       column="title"/>
+        <result property="storeNewsContents"    column="contents"/>
+        <result property="createdDatetime"      column="created_datetime"/>
+        <result property="updatedDatetime"      column="updated_datetime"/>
+        <result property="deletedDatetime"      column="deleted_datetime"/>
+        <result property="storeNewsDisplay"     column="store_news_display"/>
+        <!--    기부    -->
+        <association property="donation" javaType="DonationRegistration">
+            <id property="donationCode" column="donation_code"/>
+            <result property="donationSubject" column="donation_subject"/>
+            <result property="donationEndDate" column="donation_end_date"/>
+            <result property="donationAchievementPercent" column="donation_achievement_percent"/>
+            <result property="donationImage" column="donation_image"/>
+            <result property="donationCondition" column="donation_condition"/>
+            <result property="donationLike" column="donation_like"/>
+        </association>
+        <!--    리워드    -->
+        <association property="reward" javaType="RewardProject">
+            <id property="rewardProjectCode" column="reward_project_code"/>
+            <result property="projectSubject" column="project_subject"/>
+            <result property="projectEndDate" column="project_end_date"/>
+            <result property="projectAchievementPercent" column="project_achievement_percent"/>
+            <result property="projectThumbnailImage" column="project_thumbnail_image"/>
+            <result property="projectCondition" column="project_condition"/>
+            <result property="rewardLike" column="reward_like"/>
+        </association>
+        <!--   투자     -->
+        <association property="investment" javaType="InvestmentInfo">
+            <id property="investmentCode" column="investment_code"/>
+            <result property="investmentSubject" column="investment_subject"/>
+            <result property="investmentDeadline" column="investment_deadline"/>
+            <result property="investAchievementPercent" column="invest_achievement_percent"/>
+            <result property="investmentImage" column="investment_image"/>
+            <result property="investJudgeSituation" column="invest_judge_situation"/>
+            <result property="investmentLike" column="investment_like"/>
+        </association>
+
+    </resultMap>
+
+    <select id="storePageNewsList" resultMap="storeNewsResultMap">
+        SELECT
+            title,
+            contents,
+            created_datetime,
+            store_code
+        FROM
+            store_news
+        WHERE
+            store_news_display = 1 AND store_code = #{storeCode};
+    </select>
+
+    <!-- 특정 스토어 코드에 해당하는 모든 종류의 프로젝트 조회 (리워드 / 기부 / 투자)  -->
+    <select id="getProjectList" resultMap="storeNewsResultMap">
+        SELECT
+            r.project_subject,
+            r.project_end_date,
+            r.project_achievement_percent,
+            r.project_thumbnail_image,
+            r.project_condition,
+            r.reward_like
+        FROM
+            reward_project AS r
+        WHERE
+            r.store_code = #{storeCode}
+        UNION
+        SELECT
+            d.donation_subject,
+            d.donation_end_date,
+            d.donation_achievement_percent,
+            d.donation_image,
+            d.donation_condition,
+            d.donation_like
+        FROM
+            donation AS d
+        WHERE
+            d.store_code = #{storeCode}
+        UNION
+        SELECT
+            i.investment_subject,
+            i.investment_deadline,
+            i.invest_achievement_percent,
+            i.investment_image,
+            i.invest_judge_situation,
+            i.investment_like
+        FROM
+            investment AS i
+        WHERE
+            i.store_code = #{storeCode};
+    </select>
+
+
+</mapper>

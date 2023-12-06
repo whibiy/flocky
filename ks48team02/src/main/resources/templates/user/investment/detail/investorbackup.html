@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/investment/detail/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+    <style>
+        .invest_comp-box{
+            height: 84px;
+            box-sizing: border-box;
+            border-radius: 20px;
+            background-color: #fafafa;
+            margin-bottom: 13px;
+        }
+        .inc-img-box{
+            width: 51px;
+            height: 51px;
+            margin-left: 16px;
+            margin-right: 13px;
+        }
+        .inc-img{
+            width: 51px;
+            height: 51px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: #4db6ac;
+        }
+        .inc-text-row{
+            margin-bottom: 6px;
+        }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+        }
+        .invest-detail-main img {
+            width: 100% !important;
+            height:auto !important;
+        }
+        .pc-id-width{
+            width: 100%;
+        }
+        .ids-left-section{
+            width: 604px !important;
+        }
+        .ids-left-section3{
+            width: 604px;
+        }
+
+
+    </style>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+</th:block>
+
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+
+    <script>
+        var swiper = new Swiper(".mySwiper", {
+            spaceBetween: 30,    // 슬라이드 사이 여백
+            slidesPerView : 'auto', // 한 슬라이드에 보여줄 갯수
+            centeredSlides: true,    //센터모드
+            autoplay: {     //자동슬라이드 (false-비활성화)
+                delay: 2500, // 시간 설정
+                disableOnInteraction: false, // false-스와이프 후 자동 재생
+            },
+            loop : false,   // 슬라이드 반복 여부
+            loopAdditionalSlides : 1,
+            // 슬라이드 반복 시 마지막 슬라이드에서 다음 슬라이드가 보여지지 않는 현상 수정
+            pagination: { // 호출(pager) 여부
+                el: ".swiper-pagination", //버튼을 담을 태그 설정
+                clickable: true, // 버튼 클릭 여부
+            },
+            navigation: {   // 버튼
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+        });
+        let investContentsSwiperSlide = new Swiper("#investProject .contents-area", {
+            slidesPerView: 3,
+            spaceBetween: 12,
+            navigation: {
+                nextEl: "#investProject .swiper-button-next",
+                prevEl: "#investProject .swiper-button-prev",
+            },
+        });
+
+        const $writeButton = document.getElementById('commentBtn');
+
+
+
+    </script>
+
+    <script type="text/javascript">
+        let investmentProjectCode = '[[${investmentInfo.investmentCode}]]';
+        // 썸네일 이미지 경로 지정
+        let thumbNailImageSrc = $('#thumbNailImage').attr('src');
+        $('#thumbNailImage').attr('src', '/summernoteImage/' + '[[${investmentInfo.investmentImage}]]');
+    </script>
+
+
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <div class="col-lg-12" style="height: 40px"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <span style="font-weight: bold; font-size: 20px; color: black">투자자</span>
+            </div>
+        </div>
+    </div>
+    <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%"></div>
+    <div class="pc-id-width row-between-start id-invest-section" style="display: flex;">
+        <div class="column-1-center ids-left-section3">
+            <div class="inm-invest-section column" style="margin-top: 30px; display: flex;">
+                <div class="width100 invest_comp-box row-1-center ids-left-section">
+                    <div class="inc-img-box row-center-center">
+                        <img class="inc-img" alt="profile" src="https://picpac.kr/common/img/default_profile.png">
+                    </div>
+                    <div class="column-between-1 inc-text-box">
+                        <div class="font-n-16 color-2a2a2c inc-text1 inc-text-row" style="color: black"><b>정**</b>님이 <b>100,000원</b>을 투자하셨습니다.</div>
+                        <div class="font-n-13 color-8e92a0 inc-text2">2023.09.19 14:57:38</div>
+                    </div>
+                </div>
+            </div>
+            <div class="inm-invest-section column" style="margin-top: 30px; display: flex;">
+                <div class="width100 invest_comp-box row-1-center ids-left-section">
+                    <div class="inc-img-box row-center-center">
+                        <img class="inc-img" alt="profile" src="https://picpac.kr/common/img/default_profile.png">
+                    </div>
+                    <div class="column-between-1 inc-text-box">
+                        <div class="font-n-16 color-2a2a2c inc-text1 inc-text-row" style="color: black"><b>정**</b>님이 <b>100,000원</b>을 투자하셨습니다.</div>
+                        <div class="font-n-13 color-8e92a0 inc-text2">2023.09.19 14:57:38</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+</html>

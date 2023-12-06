@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{seller/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+    <style>
+        #slSettlementBankInfo input,
+        #slSettlementBankInfo select{
+            border: 1px solid var(--borderColor);
+            height: 25px;
+            padding: 3px;
+        }
+        #slSettlementBankInfo label {
+            margin: 0 6px 0 15px;
+        }
+        #slSettlementBankInfo input:focus,
+        #slSettlementBankInfo select:focus{
+            border: 1px solid var(--maincolor);
+        }
+
+    </style>
+    <link rel="stylesheet" th:href="@{/admin/css/order_detail_style.css}">
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <script th:src="@{/common/js/submenuJs.js}"></script>
+    <script th:src="@{/admin/js/settlement/adminCustomJs.js}"></script>
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+        console.log(CURRENT_URL,'<-- CURRENT_URL');
+        console.log(document.referrer,'<-- document.referrer');
+
+
+        // price count
+        const $optionInfoTrEls = $('.option-info-tr');
+        $('.sub-title-td').attr('rowspan', $($optionInfoTrEls).length +1);
+
+        const $priceValue = $('.order-total-price span');
+        console.log($priceValue);
+        $($priceValue).each((idx, item) => {
+            let max = $(item).attr('data-value')
+            counterLong(item, max);
+        })
+
+        //  배송 예정일 setting
+        $('input[name="delivedDateInput"]').on('change', function(){
+            let value = $(this).val();
+            $('input[name="delivedDate"]').val(value);
+            $(this).val('');
+        });
+
+
+    </script>
+</th:block>
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <div class="admin-wrapper"> <!-- 수정 -->
+
+        <div class="order-total-info">
+            <div class="info-items">
+                <h5>총 주문 금액</h5>
+                <p class="order-total-price"><span class="price-data" data-value="17500000">0</span>원</p>
+            </div>
+            <span class="sign">=</span>
+            <div class="info-items">
+                <h5>주당 금액</h5>
+                <p class="order-total-price"><span class="price-data" data-value="5000">0</span>원</p>
+            </div>
+            <span class="sign">x</span>
+            <div class="info-items">
+                <h5>구입 갯수</h5>
+                <p class="order-total-price"><span data-value="500">0</span>개</p>
+            </div>
+        </div>
+
+        <div id="orderInfoArea" class="admin-content-wrapper form-table">
+            <div class="project-info-title-area">
+                <div class="project-info-title">
+                    <h5>주문 코드</h5>
+                    <p style="color: var(--maincolor);">ORD_20230922_0000001</p>
+                </div>
+                <div class="info-more-btn">
+                    <a class="more-btn" th:href="@{#}" style="padding: 7px 10px 9px 19px;">
+                        <span>공고 상세 보기</span>
+                    </a>
+                </div>
+            </div>
+
+            <form id="orderInfoDetail" method="get">
+                <table class="settlement-log application-info-detail" style="border:none; margin-bottom: 10px;">
+                    <tbody>
+                        <!-- contents -->
+                        <tr>
+                            <td>
+                                주문 일자
+                            </td>
+                            <td colspan="4">
+                                2023-09-22 13:37
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                주문 공고
+                            </td>
+                            <td colspan="4">
+                                [글로벌23억] 보이지 않는 터치패드! 모키보 퓨전키보드 화이트 에디션!
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                청약 상태
+                            </td>
+                            <td colspan="4">
+                                청약 신청중
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                주문자
+                            </td>
+                            <td colspan="4">
+                                신형만
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                               주문 확정 일시
+                            </td>
+                            <td>
+                                2023-10-23
+                            </td>
+                            <td class="title-td" style=" width: 13%;">
+                                주문 취소 일시
+                            </td>
+                            <td colspan="2">
+                                2023-10-23
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+
+
+<!--                <div class="btn-area">-->
+<!--                    <ul>-->
+<!--                        <li>-->
+<!--                            <button id="modifyBtn" class="submitBtn" type="button" onclick="confirmBtnFn(event.target)">수정</button>-->
+<!--                        </li>-->
+
+<!--                    </ul>-->
+<!--                </div>-->
+            </form>
+
+        </div>
+
+        <!-- contents -->
+        <th:block th:replace="~{common/fragments/orderPaymentsFragments :: investPayments}"></th:block>
+        <div class="btn-area" style="justify-content: flex-end;">
+            <ul>
+                <li>
+                    <button id="orderBackBtn" class="submitBtn" type="button" onclick="backLocationFn()">뒤로</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</th:block>
+</body>
+</html>

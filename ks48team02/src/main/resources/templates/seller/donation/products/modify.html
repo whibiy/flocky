@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <!-- Link Swiper's CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    <link rel="stylesheet" th:href="@{/user/css/swiper-event-css.css}" />
+    <link rel="stylesheet" th:href="@{/user/css/main_style.css}" />
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        .info-contents-area {
+            display: none; /*진열안함*/
+        }
+        /* 탭 활성화 버튼 css control */
+        .list-group li.active {
+            background: var(--maincolor);
+        }
+    </style>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <!-- 	  	<script th:src="@{user/js/swiper-slide-event.js}"></script> -->
+
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/locales/bootstrap-datepicker.ko.min.js"></script>
+
+
+</th:block>
+
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+        $(function(){
+
+            //유효성 검사를 위한 validationCheck 함수.
+            function validationCheck(data) {
+                let isValid =true;
+
+                //1.인수 값이 객체일 경우
+                if(typeof data =='object') {
+
+                    $.each(data, function(){
+                        let checkValue = $(this).val();
+                        if(checkValue === null || checkValue === '' || checkValue === 'undefined') {
+                            isValid = false;
+                            let eleId = $(this).attr('id');
+                            let cate = $(`label[for="${eleId}"]`).text();
+                            alert(`${cate} 필수 입력 항목입니다.`);
+                            $(this).focus();
+                            return isValid;
+                        }
+                    });
+                    //2.인수 값이 객체가 아닐 경우
+                }else{
+                    if(data === null || data === '' || data === 'undefined') {
+                        isValid = false;
+                    }
+                }
+                return isValid;
+            }
+
+            let swiper = function(){
+                new Swiper(".contents-area", {
+                    slidesPerView: 3,
+                    spaceBetween: 20,
+                    navigation: {
+                        nextEl: ".swiper-button-next",
+                        prevEl: ".swiper-button-prev",
+                    },
+                });
+            }
+
+            //왼쪽 탭 선택 시 화면전환
+            $('.list-group li').click(function(){
+                $('.list-group li').removeClass('active');
+                $(this).addClass('active');
+                let clickBunDataTab = $(this).attr('data-tab');
+                $('.info-contents-area').hide();
+                $('#'+clickBunDataTab).show();
+            })
+
+            //다음 단계 버튼 클릭시 화면전환
+            $('.nextBtn').click(function(){
+                let dataTab = $(this).parents('.info-contents-area').attr('id');
+                let nextDataTab = $(this).parents('.info-contents-area').next().attr('id');
+                $(`li[data-tab=${dataTab}]`).removeClass('active');
+                $(`li[data-tab=${nextDataTab}]`).addClass('active');
+                $(this).parents('.info-contents-area').hide();
+                $(this).parents('.info-contents-area').next().show();
+            })
+
+            //이전 단계 버튼 클릭시 화면전환
+            $('.prevBtn').click(function(){
+                let dataTab = $(this).parents('.info-contents-area').attr('id');
+                let prevDataTab = $(this).parents('.info-contents-area').prev().attr('id');
+                $(`li[data-tab=${dataTab}]`).removeClass('active');
+                $(`li[data-tab=${prevDataTab}]`).addClass('active');
+                $(this).parents('.info-contents-area').hide();
+                $(this).parents('.info-contents-area').prev().show();
+            })
+
+
+            $('#date-picker').datepicker({
+                format: "yyyy-mm-dd",
+                startDate: "today",
+                language: "ko",
+                autoclose: true,
+                todayHighlight: true
+            })
+
+            $('#date-picker-delever').datepicker({
+                format: "yyyy-mm-dd",
+                startDate: "today",
+                language: "ko",
+                autoclose: true,
+                todayHighlight: true
+            })
+
+
+            //리워드 추가 버튼 클릭 시 슬라이더 폼 추가
+            $('#rewardAddBtn').click(function(){
+
+                let rewardSubject = $('#rewardSubject').val();
+                let rewardPrice = $('#rewardPrice').val();
+                let rewardComent = $('#rewardComent').val();
+                let rewardDelever = $('#date-picker-delever').val();
+
+                let card = $(' <div class="swiper-slide">\n' +
+                    '                    <div class="card border-primary mb-4 shadow-sm">\n' +
+                    '                      <div class="card-header ">\n' +
+                    '                        <h5 class="rewardSebjectH my-0 fw-normal"></h5>\n' +
+                    '                      </div>\n' +
+                    '                      <div class="card-body">\n' +
+                    '                        <p class="text-dark">리워드 금액</p>\n' +
+                    '                        <input class="rewardPriceInput form-control-sm" type="text" readonly value="">\n' +
+                    '                        <p class="text-dark">예상 배송일</p>\n' +
+                    '                        <input class="rewardDeleverInput form-control-sm" type="text" readonly value="">\n' +
+                    '                        <br><br>\n' +
+                    '                        <button type="button" class="modifyBtn w-70 btn btn-sm btn-primary">수정</button>\n' +
+                    '                        <button type="button" class="delBtn w-70 btn btn-sm btn-danger">삭제</button>\n' +
+                    '                      </div>\n' +
+                    '                    </div>\n' +
+                    '                  </div>')
+
+
+                $(card).find('.rewardSebjectH').text(rewardSubject);
+                $(card).find('.rewardPriceInput').val(`${Number(rewardPrice.replaceAll(',','')).toLocaleString('ko-KR')}원`);
+                $(card).find('.rewardDeleverInput').val(rewardDelever);
+                $('.swiper-wrapper').append($(card));
+
+                swiper();
+
+
+                $('#rewardPrice').val('');
+                $('#rewardSubject').val('');
+                $('#rewardComent').val('');
+                $('#date-picker-delever').val('');
+
+            });
+
+            //초기화 버튼 클릭 시 추가된 슬라이더 폼 모두 삭제
+            $('#rewardInitializeBtn').click(function(){
+                $('.swiper-slide').remove();
+                swiper();
+            })
+
+            //검색 태그 추가 버튼 클릭시 모달 창 열기
+            $('#modalOpenBtn').click(function(e){
+                e.preventDefault();
+                $('#modalSearchTag').modal("show");
+            });
+
+            //모달 창 닫기
+            $('#modalCloseBtn').click(function(){
+                $('#modalSearchTag').modal("hide");
+            });
+
+            //모달 창 추가 버튼 누를 시 검색태그 추가
+            $('#modalActionBtn').click(function(){
+                let addTag = `${$('#modalSearchTagAdd').val()},  `;
+                let searchTag = $('#searchTag').val() + addTag;
+
+                $('#searchTag').val(searchTag);
+                $('#modalSearchTagAdd').val('');
+                $('#modalSearchTag').modal("hide");
+
+            });
+
+
+
+        })
+
+        //추가된 리워드 폼에서 삭제 버튼 클릭 시 폼 삭제
+        $(document).on('click', '.delBtn', function(){
+            $(this).parents('.swiper-slide').remove();
+
+            swiper();
+        })
+
+        //추가된 리워드 폼에서 수정 버튼 클릭 시 폼 삭제 후 리워드 추가 폼에 수정할 데이터 입력
+        $(document).on('click', '.modifyBtn', function(){
+            let rewardSubject = $(this).parent().prev().find('.rewardSebjectH').text();
+            let rewardPrice = $(this).siblings('.rewardPriceInput').val();
+            let rewardDelever = $(this).siblings('.rewardDeleverInput').val();
+
+            $('#rewardSubject').val(rewardSubject);
+            $('#rewardPrice').val(rewardPrice.replace('원',''));
+            $('#date-picker-delever').val(rewardDelever);
+
+            $(this).parents('.swiper-slide').remove();
+
+            swiper();
+        })
+
+
+        $('#submitBtn').click(function(){
+            console.log($('.needs-validation').val());
+        })
+
+
+
+
+
+
+
+
+    </script>
+
+
+
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <!-- main swiper slide start -->
+
+    <div class="py-3 text-center bg-light">
+        <h2>기부 프로젝트 수정</h2>
+    </div>
+    <br><br>
+
+    <div class="main-section container">
+        <div class="row">
+            <div class="col-lg-2 order-md-first">
+                <!--      <div class="col-md-5 col-lg-4 order-md-last">-->
+                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-primary">&nbsp;&nbsp;수정 목차</span>
+                </h4>
+                <ul class="list-group mb-3">
+                    <li data-tab="defaultInfo" class="active list-group-item d-flex justify-content-between lh-sm">
+                        <h6 class="my-0">1.기본정보</h6>
+                    </li>
+                    <li data-tab="storyInfo" class="list-group-item d-flex justify-content-between lh-sm">
+                        <h6 class="my-0">2.스토리</h6>
+                    </li>
+                </ul>
+            </div>
+
+
+            <!-- defaultInfo area -->
+            <div id="defaultInfo" class="info-contents-area col-lg-10" style="display: block;">
+                <h4 class="mb-2 fw-bord">기부 프로젝트는 순수비영리민간법인 혹은 단체이어야 합니다.</h4>
+                <h5 class="mb-2 fw-bord"> 공익사업을 주 사업 내용으로 하며, 아래의 단체 유형에 해당되어야 합니다.</h5>
+                <h6>  - 소외•취약계층의 삶의 질 향상과 변화의 기회를 제공하는 사회복지시설<br>
+                    - 시민참여를 통해 지역사회 변화와 공익을 추구하는 시민사회단체<br>
+                    - 환경, 복지, 보건의료, 교육, 문화, 주거, 고용 등의 영역에서 활동하는 비영리민간단체<br>
+                    - 그 외 공익사업을 주 사업으로 하여 운영하고 있는 민간단체 <br></h6>
+
+                <br><br>
+
+                <form class="needs-validation" novalidate="">
+                    <div class="row g">
+                        <div class="col-8">
+                            <label for="projectSubject" class="form-label fw-bord text-dark">프로젝트의 제목을 적어주세요</label>
+                            <input type="text" class="form-control" id="projectSubject" placeholder="제목을 입력해 주세요." value="" required="">
+                            <br>
+                        </div>
+
+                        <div class="col-8">
+                            <label for="projectGoalMoney" class="form-label fw-bord text-dark">목표 금액을 적어주세요</label>
+                            <input type="text" class="form-control" id="projectGoalMoney" placeholder="목표 금액을 입력해주세요." value="" required="">
+                            <br>
+                        </div>
+
+                        <div class="col-8">
+                            <div class="mb-3">
+                                <label for="thumbnailImage" class="form-label fw-bord text-dark">썸네일 이미지를 등록해주세요.</label>
+                                <div class="banner-content">썸네일 이미지</div>
+                                <!--                <img src="..." class="img-thumbnail" alt="...">-->
+                                <!--                <input type="file" accept="image/png, image/jpeg" multiple>-->
+                                <input class="form-control" id="thumbnailImage" type="file">
+                            </div>
+
+                        </div>
+
+                        <div class="col-10">
+                            <br>
+                            <label for="searchTag" class="form-label fw-bord text-dark">프로젝트 검색 키워드를 입력해주세요 <br>
+                                제목 외에도 키워드 검색 시 검색 결과에 프로젝트가 나타납니다.</label>
+
+                            <div class="input-group input-group-sm mb-3">
+                <span class="input-group-text">
+                  <!-- 모달 진입 버튼 -->
+                  <button id="modalOpenBtn" class="btn btn-primary">추가</button>
+                </span>
+                                <input type="text" class="form-control" id="searchTag" placeholder="검색 키워드를 입력해주세요." aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" readonly="readonly">
+                            </div>
+
+                            <!-- 회원가입 확인 Modal-->
+                            <div class="modal fade" id="modalSearchTag" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">검색 키워드 추가</h5>
+                                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">X</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-primary" id="modalActionBtn">추가</button>
+                                            <button type="button" class="btn btn-secondary" id="modalCloseBtn">취소</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <br>
+                        </div>
+
+                        <div class="col-8">
+                            <br><br>
+                            <button class="nextBtn w-80 btn btn-primary btn-lg" type="button">다음단계</button>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+                </form>
+            </div>
+
+            <!-- storyInfo area -->
+
+            <div id="storyInfo" class="info-contents-area col-lg-10">
+
+                <h5 class="mb-2 fw-bord">프로젝트 소개 영상과 이미지를 등록해주세요</h5>
+                <h6 class="mb-2">영상과 이미지를 함께 등록할 경우, 영상이 먼저 보여집니다.</h6>
+                <br><br>
+
+                <form class="needs-validation" novalidate="">
+                    <div class="row g">
+                        <div class="col-8">
+                            <div class="mb-3">
+                                <label for="detailImage" class="form-label fw-bord text-dark">상세 이미지를 등록해주세요.</label>
+                                <div class="banner-content">상세 이미지</div>
+                                <!--                <input type="file" accept="image/png, image/jpeg" multiple>-->
+                                <input class="form-control" id="detailImage" type="file">
+                            </div>
+                        </div>
+
+                        <div class="col-10">
+                            <label for="detailMovie" class="form-label fw-bord text-dark">동영상 주소를 적어주세요</label>
+                            <input type="text" class="form-control" id="detailMovie" placeholder="동영상 주소를 적어주세요." value="" required="">
+                            <br>
+                        </div>
+
+                        <div class="col-10">
+                            <div class="mb-3">
+                                <label for="detailComent" class="form-label">프로젝트 스토리를 적어주세요</label>
+                                <textarea class="form-control" id="detailComent" rows="20"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-8">
+                            <br><br>
+                            <button class="prevBtn w-80 btn btn-secondary btn-lg" type="button">이전단계</button>
+                            <button class="submitBtn w-80 btn btn-primary btn-lg" type="button">제출하기</button>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                </form>
+            </div>
+
+
+            <hr class="my-4">
+            </form>
+        </div>
+    </div>
+    </div>
+
+    <br><br><br><br><br><br>
+
+
+</th:block>
+</html>

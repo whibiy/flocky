@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/donation/detail/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+    <style>
+        #commentBox {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            z-index: 99999;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.2);
+        }
+        .comment-box-content {
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-top: 15px;
+            padding-bottom: 10px;
+            width: 550px;
+            height: 520px;
+            background: #fff;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 20px;
+        }
+        /*버튼 눌리는 효과*/
+        #commentBtn:active, #commentAddBtn:active{
+            box-shadow: inset -.3rem -.1rem 1.4rem  #FBFBFB, inset .3rem .4rem .8rem #BEC5D0;
+            cursor: pointer;
+        }
+        #commentBtn, #commentAddBtn{
+            /* 상자 디자인 큰틀*/
+            padding: 10px;
+            border: 0px;
+            background-color: #E4EBF5;
+
+            /* 그림자 */
+            border-radius: 5px;
+            box-shadow:.5rem .3rem 1.4rem  #BEC5D0, -.1rem -.2rem .8rem #FBFBFB;
+            /* box-shadow:-.2rem -.2rem 1.8rem white, .8rem .8rem 1.4rem  #AAB7CB; */
+
+            /* 글씨 */
+            color: #333333;
+            font-weight: bold;
+
+            animation-name: keybtn-language;
+            animation-duration: .2s;
+        }
+        .comments-reply{
+            display: none;
+        }
+        .donation-comments{
+            color: black;
+            white-space: pre-line;
+            overflow: hidden;
+            font-size: 13px;
+            text-align: left;
+            padding-left: 5px;
+        }
+    </style>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+
+    <script>
+        var swiper = new Swiper(".mySwiper", {
+            spaceBetween: 30,    // 슬라이드 사이 여백
+            slidesPerView : 'auto', // 한 슬라이드에 보여줄 갯수
+            centeredSlides: true,    //센터모드
+            autoplay: {     //자동슬라이드 (false-비활성화)
+                delay: 2500, // 시간 설정
+                disableOnInteraction: false, // false-스와이프 후 자동 재생
+            },
+            loop : false,   // 슬라이드 반복 여부
+            loopAdditionalSlides : 1,
+            // 슬라이드 반복 시 마지막 슬라이드에서 다음 슬라이드가 보여지지 않는 현상 수정
+            pagination: { // 호출(pager) 여부
+                el: ".swiper-pagination", //버튼을 담을 태그 설정
+                clickable: true, // 버튼 클릭 여부
+            },
+            navigation: {   // 버튼
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+        });
+        let donationContentsSwiperSlide = new Swiper("#donationProject .contents-area", {
+            slidesPerView: 3,
+            spaceBetween: 12,
+            navigation: {
+                nextEl: "#donationProject .swiper-button-next",
+                prevEl: "#donationProject .swiper-button-prev",
+            },
+        });
+
+        const $writeButton = document.getElementById('commentBtn');
+        const $commentBox = document.getElementById('commentBox');
+        const $commentBoxClose = document.getElementById('commentBoxClose');
+
+        $writeButton.addEventListener('click', function (){
+            const  sessionId = '[[${SID}]]';
+            if (sessionId == '' || sessionId == null || typeof sessionId == 'undefined'){
+                alert('글쓰기 기능은 로그인을 해야합니다!');
+                return false;
+            }else{
+                $commentBox.style.display = 'block'; // 버튼 클릭 시 댓글 창 열림
+            }
+
+        });
+
+        $commentBoxClose.addEventListener('click', function (){
+            $commentBox.style.display = 'none'; // 버튼 클릭 시 댓글 창 종료
+        });
+
+        $('.comment-text-box').keyup(function (e){
+            const content = $(this).val();
+            if(content.length > 10){
+                $('#commentCounter').html("("+content.length+" / 최대 2000자 까지만 등록 가능합니다.)");
+            }else{
+                $('#commentCounter').html("("+content.length+" / 최소 10글자 이상만 등록 가능합니다.)");
+            }
+        });
+
+        $('.reply').on('click', function (){
+            const $clickedReply = $(this);
+            const $replyArrow = $clickedReply.find('.replyArrow');
+            const $commentsReply = $clickedReply.siblings('.comments-reply');
+            if ($replyArrow.text() == '▽') {
+                $replyArrow.text("△");
+                $commentsReply.css('display', 'inline-block');
+            } else {
+                $replyArrow.text("▽");
+                $commentsReply.css('display', 'none');
+            }
+        });
+
+        // 현재 프로젝트코드로 상세페이지 데이터를 가져오기 위한 기부코드
+        let donationCode = '[[${donationCode}]]';
+        // 썸네일 이미지 경로 지정
+        let thumbNailImageSrc = $('#thumbNailImage').attr('src');
+        $('#thumbNailImage').attr('src', '/summernoteImage/' + '[[${donationInfo.donationImage}]]');
+
+        // 스토리에서 앞에 부분만 잘라서 공백포함 155글자만 가져옴 그뒤는 ... 으로 다자름
+        let storyBodyText = $('#storyBody').text();
+        $('#subContens').text(storyBodyText);
+        if (storyBodyText.length > 155) {
+            storyBodyText = storyBodyText.substring(0, 155) + '...';
+        }
+        // 가져온 텍스트를 subContens에 설정
+        $('#subContens').text(storyBodyText);
+
+        let currentDate = new Date();
+        // 비교 대상 날짜 설정
+        let targetDate = new Date($('#donationEndDate').val());
+        // 두 날짜 간의 차이 계산 (밀리초 단위)
+        let timeDifference = targetDate - currentDate;
+        // 차이를 일(day) 단위로 변환
+        let daysRemaining = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+        // 남은 일 수
+        const $condition = '[[${donationInfo.donationCondition}]]';
+
+        if (daysRemaining <= 0 && $condition == 4){
+            $('#deadLine').text('종료:성공');
+        }else if(daysRemaining <= 0 && $condition == 5){
+            $('#deadLine').text('종료:실패');
+            $('#deadLine').css('background', 'rgba(255,1,15,0.32)');
+            $('#deadLine').css('color', 'rgba(255,1,15,0.77)');
+        }else {
+            // 남은 일 수
+            $('#deadLine').text(daysRemaining + '일남음');
+        }
+
+        // 카테고리 이름 설정
+        $('#category').text('[[${cateAndCompany.categoryName}]]' + ' >');
+        // 회사 이름 설정
+        $('#company').text('[[${cateAndCompany.storeName}]]');
+        $('#achievementPercent').text($('#achievementPercent').text()+'%');
+
+        $('#commentAddBtn').click(function (){
+            if($('.comment-text-box').val().length < 10){
+                alert('10글자 이상만 등록이 가능합니다!');
+                return false;
+            }else{
+                $('#commentAddForm').submit();
+            }
+            //
+        });
+
+        $('.replyBtn').click(function (){
+            const  sessionId = '[[${SID}]]';
+            if (sessionId == '' || sessionId == null || typeof sessionId == 'undefined'){
+                alert('글쓰기 기능은 로그인을 해야합니다!');
+                return false;
+            }else{
+                const parentCommentCode = $(this).next().val();
+                const reply = $(this).prev().val();
+                const donationCode = $(this).next().next().val();
+                $.ajax({
+                    type: "post",
+                    url: "/user/donation/detail/reply",
+                    data: { parentCommentCode : parentCommentCode,
+                        reply : reply,
+                        donationCode : donationCode },
+                    success: function (){
+                        console.log("ajxa성공");
+                        location.reload();
+                    },
+                    error:function (){
+                        console.log("ajax실패");
+                    }
+                });
+            }
+        });
+
+        const replyArr = [];
+        $('.comments-review').each(function (){
+            replyArr.push($(this).find('.comments-reply .reply').length);
+        });
+
+        $('.comment-count').each(function (idx){
+            $(this).text(replyArr[idx]);
+        });
+
+
+
+    </script>
+
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <div class="col-lg-12" style="height: 40px"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <span style="font-weight: bold; font-size: 20px; color: black">응원리뷰</span>
+                <span id="reviewSize" style="color: #235FD9; font-weight: bold; margin-left: 5px;" th:text="${viewCount}"></span>
+                <span style="float: right">
+                    <button id="commentBtn" type="button" style="background: #235FD9; width: 100%; height: 40px; color: white; font-size: 15px; outline-color: #235FD9; outline-width: 1px">글쓰기</button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 comments-review" th:if="${l.commentClass == 'comment'}" th:each="l , cl: ${donationCommentList}">
+                <div class="user-comments-profile">
+                    <div style="display: inline-block;">
+                        <img src="https://picpac.kr/common/img/default_profile.png" style="width: 50px; height: 50px; border-radius: 30px;">
+                    </div>
+                    <div style="display: inline-block; width: auto; height: 100%; color: black; font-weight: bold; margin-left: 5px; top: 10%">
+                        <p th:text="${l.memberName}"></p>
+                    </div>
+                </div>
+                <div class="col-lg-12" style="height: 10px"></div>
+                <div style="background: #f9fafb; border-radius: 5px; padding: 10px">
+                    <div>
+                        <div class="donation-comments" th:text="${l.commentContent}"></div>
+                    </div>
+                </div>
+                <div class="reply" style="display: inline-block; cursor: pointer">
+                    <span>💬</span>
+                    <span class="comment-count"></span>
+                    <span class="replyArrow" style="margin-left: 3px">▽</span>
+                </div>
+                <div class="comments-reply" style="width: 100%">
+                    <div style="display: flex; margin-bottom: 10px">
+                        <div style="display: inline-block; top: 0; margin-right: 5px; margin-bottom: 5px;">
+                            <img src="https://picpac.kr/common/img/default_profile.png" style="width: 40px; height: 40px; border-radius: 30px;">
+                            <span th:text="${session.SID}" style="color: black; margin-left: 5px; font-weight: bold"></span>
+                        </div>
+                        <div style="display: flex">
+                            <textarea class="replyArea" style="width: 480px; height: 60px; resize: none; outline-color: #235FD9; outline-width: 1px; padding: 10px;" minlength="10" maxlength="200" placeholder="댓글을 입력해주세요!"></textarea>
+                            <button class="replyBtn btn btn-primary my-2" type="button" style="background-color: #235FD9; margin-left: 5px; width: 60px; border-radius: 10px;">입력</button>
+                            <input class="parentCommentCode" hidden="hidden" th:value="${l.donationCommentCode}">
+                            <input class="donationCode" hidden="hidden" th:value="${donationCode}">
+                        </div>
+                    </div>
+                    <div class="reply" style="display: flex; margin-bottom: 15px" th:if="${l.donationCommentCode == rl.commentCode}" th:each="rl, rlStat : ${donationCommentList}">
+                        <div style="top: 0; margin-right: 5px;">
+                            <img src="https://picpac.kr/common/img/default_profile.png" style="width: 40px; height: 40px; border-radius: 30px;">
+                        </div>
+                        <div style="background: #f9fafb; border-radius: 5px; padding: 10px; width: 100%">
+                            <div>
+                                <div class="reply-user-id" style="font-weight: bold; color: black;" th:text="${rl.memberName}"></div>
+                                <div class="donation-comments" th:text="${rl.commentContent}"></div>
+                                <div class="rlSize" hidden="hidden" th:text="${rlStat.count}"></div>
+                                <div hidden="hidden" th:text="${rl.commentCode}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-12" style="height: 20px"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- popup -->
+    <div id="commentBox">
+        <div class="comment-box-content">
+            <form id="commentAddForm" th:action="@{/user/donation/detail/comment}" method="post">
+                <div style="display: inline-block; font-size: 25px; color: black; font-weight: bold; margin-top: 10px;">응원</div>
+                <div id="commentBoxClose" style="display: inline-block; float: right; font-size: 30px; cursor: pointer">
+                    ⨉
+                </div>
+                <div style="margin-top: 10px">
+                    <textarea name="commentContent" class="comment-text-box" style="width: 100%; height: 200px; resize: none; outline-color: #235FD9; outline-width: 1px; padding: 10px;" minlength="10" maxlength="2000" placeholder="응원의 댓글을 입력해주세요!"></textarea>
+                </div>
+                <span id="commentCounter" style="color: black">(0 / 최소 10글자 이상만 등록 가능합니다.)</span>
+                <div style="background: #fff1f1; border-radius: 5px; padding: 20px; font-size: 12px">
+                    <p>
+                        ⚠️최근 메이커 또는 제3자에 대한 허위사실 유포, 비방 목적의 댓글로 인해 당사자간 법적분쟁이 발생한 사례가 증가하고 있습니다.
+                        악의적 댓글 작성자는 명예훼손, 모욕 등으로 법적 책임을 부담하게 될 수 있다는 점을 유의하여 주시기 바랍니다.
+                    </p>
+                </div>
+                <div style="margin-top: 10px">
+                    <button id="commentAddBtn" type="button" style="background: #235FD9; width: 100%; height: 40px; color: white; font-size: 15px; outline-color: #235FD9; outline-width: 1px">글쓰기</button>
+                </div>
+                <input hidden="hidden" name="donationCode" th:value="${donationCode}">
+            </form>
+        </div>
+    </div>
+
+    <!-- 부가설명을 위한 데이터 -->
+    <div hidden="hidden" id="storyBody" th:utext="${donationInfo.donationContents}" style="color: black; white-space: pre-line"></div>
+</th:block>
+
+</html>
+

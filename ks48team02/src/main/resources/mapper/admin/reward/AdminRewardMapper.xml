@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksmart.ks48team02.admin.mapper.reward.AdminRewardMapper">
+
+    <resultMap id="RewardResultMap" type="RewardProject">
+        <id property="rewardProjectCode" column="reward_project_code"/>
+        <result property="rewardCategoryCode" column="total_cagegory_code"/>
+        <result property="projectJudgementReasonCode" column="project_judgement_reason_code"/>
+        <result property="regMemberId" column="member_id"/>
+        <result property="adminMemberId" column="admin_member_id"/>
+        <result property="storeCode" column="store_code"/>
+        <result property="projectSubject" column="project_subject"/>
+        <result property="projectContents" column="project_contents"/>
+        <result property="rewardLike" column="reward_like"/>
+        <result property="projectThumbnailImage" column="project_thumbnail_image"/>
+        <result property="projectAchievementMoney" column="project_achievement_money"/>
+        <result property="projectGoalMoney" column="project_goal_money"/>
+        <result property="projectAchievementPercent" column="project_achievement_percent"/>
+        <result property="regCompany" column="reg_company"/>
+        <result property="projectRegDate" column="project_reg_date"/>
+        <result property="searchCount" column="search_count"/>
+        <result property="projectJudgmentReason" column="project_judgment_reason_detail"/>
+        <result property="projectJudgementDate" column="project_judgment_date"/>
+        <result property="projectStartDate" column="project_start_date"/>
+        <result property="projectEndDate" column="project_end_date"/>
+        <result property="projectCondition" column="project_condition"/>
+        <result property="storeImage" column="store_image"/>
+        <result property="storeLike" column="like_count"/>
+        <result property="storeMobile" column="contact_info"/>
+        <result property="categoryName" column="category_name"/>
+    </resultMap>
+    <resultMap id="judgmentResultMap" type="RewardJudegmentReson">
+        <id property="projectJudgementCode" column="project_judgement_reason_code"/>
+        <result property="judgementReason" column="judgement_reason"/>
+        <result property="adminMemberId" column="member_id"/>
+        <result property="regDate" column="judgement_reason_reg_date"/>
+    </resultMap>
+    <!--판매자 회원 등록 프로젝트 리스트-->
+    <select id="rewardProjectListNotJudge" resultMap="RewardResultMap" parameterType="hashmap">
+        SELECT
+            r.reward_project_code,
+            r.total_cagegory_code,
+            r.project_judgement_reason_code,
+            r.member_id,
+            r.admin_member_id,
+            r.store_code,
+            r.project_subject,
+            r.project_contents,
+            r.reward_like,
+            r.project_thumbnail_image,
+            r.project_achievement_money,
+            r.project_goal_money,
+            r.project_achievement_percent,
+            r.reg_company,
+            r.project_reg_date,
+            r.search_count,
+            r.project_judgment_reason_detail,
+            r.project_judgment_date,
+            r.project_start_date,
+            r.project_end_date,
+            r.project_condition
+        FROM
+            reward_project AS r
+        WHERE
+            r.project_condition = 0
+        ORDER BY
+            r.project_reg_date DESC
+        <if test="startRowNum > -1">
+            LIMIT #{startRowNum}, #{rowPerPage};
+        </if>
+    </select>
+
+    <!-- 프로젝트 전체 행의 갯수 -->
+    <select id="projectPageCnt" resultType="int">
+        SELECT
+            COUNT(1)
+        FROM
+            reward_project as r
+        WHERE
+            r.project_condition = 0
+    </select>
+
+    <!--리워드 프로젝트 심사 사유 조회-->
+    <select id="judegmentReson" resultMap="judgmentResultMap">
+        SELECT
+            r.project_judgement_reason_code,
+            r.judgement_reason,
+            r.member_id,
+            r.judgement_reason_reg_date
+        FROM
+            reward_project_judgement_reason as r
+    </select>
+
+    <!--리워드 프로젝트 심사 승인, 거절 처리-->
+    <update id="rewardProjectConfirmAndReject" parameterType="String">
+        UPDATE
+            reward_project
+        <if test="judgement == 'confirm'">
+            SET
+                project_condition = 1,
+                admin_member_id = #{adminMemberId}
+        </if>
+        <if test="judgement == 'reject'">
+            SET
+                project_condition = 2,
+                project_judgement_reason_code = #{judgeRejectReasonCode},
+                project_judgment_reason_detail = #{judgeRejectReasonDetail},
+                project_judgment_date = now(),
+                admin_member_id = #{adminMemberId}
+        </if>
+        WHERE
+            reward_project_code = #{rewardProjectCode};
+    </update>
+
+</mapper>

@@ -1,0 +1,62 @@
+@charset "UTF-8";
+
+.project-info-title-area {
+
+}
+.title-td {
+    background: #f0f3fc;
+    color: #191919;
+    text-align: center;
+}
+.orderDeliverBtn {
+    display: inline-block;
+}
+#orderInfoArea .order-option-table {
+    margin-top: 23px;
+}
+.order-option-table td {
+    text-align: center;
+}
+#orderInfoArea input:not([type='checkbox']),
+#paymentInfoDetailBt input,
+#paymentInfoDetailBt select,
+#deliveryInfo input,
+#deliveryInfo select,
+input,
+select{
+    border: 1px solid #eee;
+    padding: 5px 20px !important;
+    line-height: 1;
+}
+#removeBtn,
+#clearBtn {
+    padding: 7px 16px;
+}
+
+.order-total-info {
+    padding: 28px 63px;
+    margin-bottom: 30px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+}
+.order-total-info > * {
+    width: calc(100% / 5);
+}
+#clearBtn,
+#cancleBtn,
+#deliveryRemoveBtn{
+    border: 1px solid #191919;
+}
+#deliveryRemoveBtn:hover {
+    border: 1px solid var(--maincolor)
+}
+#cancleBtn {
+    background: #fff;
+    color: #191919;
+}
+#cancleBtn:hover {
+    color: #fff;
+    background: var(--maincolor);
+    border: 1px solid var(--maincolor)
+}

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- 사용자별 스크립트 작성 -->
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+    <link rel="stylesheet" th:href="@{/admin/css/adminBoardModify.css}">
+    <link rel="stylesheet" th:href="@{/admin/css/contents_style.css}">
+    <link rel="stylesheet" th:href="@{/common/css/common-css.css}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
+    <!-- include libraries(jQuery, bootstrap) -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.11/summernote-bs4.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.11/summernote-bs4.js"></script>
+
+    <style>
+        .title{
+            text-align: center;
+        }
+    </style>
+</head>
+<!--if(confirm('정말 취소하시겠습니까?')){-->
+<!--// 확인 누르면 실행될 내용 작성-->
+<!--} else {-->
+<!--// 취소 누르면 실행될 내용 작성-->
+<!--}-->
+<!-- 사용자 페이지별 javascript file -->
+<body>
+<div class="pop_modify">
+    <div class="ui-header">
+        <table border="1">
+            <tbody>
+            <h1 class="title">공지 사항</h1>
+            <tr>
+                <td class="sidebar">카테고리 유형</td>
+                <td>공지사항</td>
+            </tr>
+            <tr>
+                <td class="sidebar">게시판 이름</td>
+                <td>[서비스 안내] 플로키 서비스 투자 오픈</td>
+            </tr>
+            <tr>
+                <td class="sidebar">세부 내용</td>
+                <td>
+                    <div id="summernote">
+                        <!--    안녕하세요 김플로입니다.-->
+                        <!--    이번에 플로키 크라우드펀딩 사이트를 오픈했습니다.-->
+                        <!--    많은 참여와 성원 부탁드립니다.-->
+                    </div>
+                    <script>
+                        $('#summernote').summernote({
+                            placeholder: '공지사항을 입력 해주세요.',
+                            tabsize: 2,
+                            height: 300,
+                            width: 600
+                        });
+                    </script>
+                </td>
+
+            </tr>
+            <tr>
+                <td class="sidebar">게시 날짜</td>
+                <td>2023-10-18</td>
+            </tr>
+            <tr>
+                <td class="sidebar">관리자 ID</td>
+                <td>id001</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="option">
+            <a th:href="@{#}" class="cancel submitBtn">취소</a>
+            <a th:href="@{#}" class="edit submitBtn">수정</a>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    // 취소 버튼 누르면 알림창
+    $('.cancel').click(function (){
+        if(confirm('정말 취소하시겠습니까?')){
+            // 확인 누르면 실행될 내용 작성
+            // 창이 사라진다.
+            console.log(11);
+            window.close();
+        }
+    });
+
+    $(document).ready(function(){
+
+        console.log(111);
+    })
+
+</script>
+
+
+</body>
+
+
+</html>

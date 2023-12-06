@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:fragment="orderInfoArea">
+    <div class="project-info-title-area">
+        <div class="project-info-title">
+            <h5>주문 코드</h5>
+            <p th:text="${OrderInfoById.orderCode}" style="color: var(--maincolor);">주문 코드</p>
+        </div>
+        <div class="info-more-btn" th:switch="${orderPartition}">
+            <a th:case="rwd" class="more-btn" target="_blank" th:href="@{/user/reward/detail(rewardProjectCode=${OrderInfoById.goodsCode})}" style="padding: 7px 10px 9px 19px;">
+                <span style="color: #fff !important;">공고 상세 보기</span>
+            </a>
+            <a th:case="don" class="more-btn" target="_blank" th:href="@{/user/donation/detail(donationCode=${OrderInfoById.goodsCode})}" style="padding: 7px 10px 9px 19px;">
+                <span style="color: #fff !important;">공고 상세 보기</span>
+            </a>
+            <a th:case="inv" class="more-btn" target="_blank" th:href="@{/user/investment/detail/main(investmentCode=${OrderInfoById.goodsCode})}" style="padding: 7px 10px 9px 19px;">
+                <span style="color: #fff !important;">공고 상세 보기</span>
+            </a>
+        </div>
+    </div>
+
+
+    <form id="orderInfoDetail" method="get">
+        <!-- 주문 기본 정보 start -->
+        <table class="settlement-log application-info-detail" style="border:none; margin-bottom: 10px;">
+            <tbody>
+            <!-- contents -->
+            <tr>
+                <td>
+                    주문 일자
+                </td>
+                <td colspan="4" th:text="${OrderInfoById.orderApplicationDate}"> </td>
+            </tr>
+            <tr>
+                <td>
+                    주문 공고
+                </td>
+                <td colspan="4" th:text="${OrderInfoById.orderFundingName}"></td>
+            </tr>
+            <tr>
+                <td>
+                    주문 상태
+                </td>
+                <td colspan="4" th:text="${OrderInfoById.orderCategoryDetail}"></td>
+            </tr>
+            <tr>
+                <td>
+                    주문자
+                </td>
+                <td colspan="4" th:text="${OrderInfoById.orderName}"></td>
+            </tr>
+            <!-- 체크 포인트 : 환불 교환 신청 여러개일 때.. 처리-->
+            <tr>
+                <td>
+                    주문 확정 일시
+                </td>
+                <td th:text="${(OrderInfoById.orderConfirmDate == null)?'-':OrderInfoById.orderConfirmDate}"></td>
+                <td class="title-td" style=" width: 13%;">
+                    주문 취소 일시
+                </td>
+                <td colspan="2" th:text="${(OrderInfoById.orderCancellDate == null)?'-':OrderInfoById.orderCancellDate}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <!-- 주문 기본 정보 end -->
+        <!-- 리워드 주문 옵션 start -->
+        <th:block th:if="${orderPartition.equals('rwd')}" th:include="common/fragments/orderDetailInfoFragments :: orderOptionFragments">
+
+        </th:block>
+        <!-- 리워드 주문 옵션 end -->
+
+    </form>
+</th:block>
+
+<th:block th:fragment="orderOptionFragments">
+
+    <table class="order-option-table settlement-log">
+        <tr class="sub-table-area sub-table sub-table-tr" style="height: auto;">
+            <td class="sub-title-td" style="height: 35px; width:13%;">주문 옵션</td>
+            <td class="title-td" style="height: 35px; width: 5%"><input id="allSelectBtn" type="checkbox"></td>
+            <td class="title-td" style="height: 35px; width: 50%">옵션명</td>
+            <td class="title-td" style="height: 35px; width: 8%">갯수</td>
+            <td class="title-td" style="height: 35px; width: 10%">단가</td>
+            <td class="title-td" style="height: 35px; width: 20%">총 금액</td>
+        </tr>
+        <!-- option contents -->
+        <tr class="option-info-tr" th:each="l : ${getRewardOptionByOrderCode}">
+            <td style="height: 35px; background: #fff; width: 20px;">
+                <input type="checkbox" name="selectList">
+            </td>
+            <td style="height: 35px; text-align: left !important;">
+                <select name="orderOption" style="width: 90%;">
+                    <th:block th:each="ol : ${getRewardOptionByCode}">
+                        <option th:value="${ol.rewardOptionCode}" th:selected="${ol.rewardOptionCode} == ${l.rewardOptionCode}">
+                            [[${ol.optionName}]]
+                        </option>
+                    </th:block>
+                </select>
+            </td>
+            <td style="height: 35px; ">
+                <input type="number" min="1" max="9999" th:value="${l.orderOptionAmount}">
+            </td>
+            <td style="height: 35px; "><span>[[${l.optionPrice}]]</span>원</td>
+            <td style="height: 35px; "><span>[[${l.orderOptionAmount * l.optionPrice}]]</span>원</td>
+        </tr>
+
+
+
+
+    </table>
+    <div class="btn-area">
+        <ul>
+            <li>
+                <button id="removeBtn" class="submitBtn" type="button" onclick="confirmBtnFn(event.target)">수정</button>
+            </li>
+            <li>
+                <button id="clearBtn" class="submitBtn" type="button" onclick="confirmBtnFn(event.target)">삭제</button>
+            </li>
+        </ul>
+    </div>
+</th:block>
+
+</html>

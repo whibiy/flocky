@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <!-- Link Swiper's CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"/>
+    <link rel="stylesheet" th:href="@{/user/css/swiper-event-css.css}"/>
+    <link rel="stylesheet" th:href="@{/user/css/main_style.css}"/>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
+          integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+
+    <!-- include summernote css/js -->
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+
+    <style>
+        .info-contents-area {
+            display: none; /*진열안함*/
+        }
+
+        /* 탭 활성화 버튼 css control */
+        .list-group li.active {
+            background: var(--maincolor);
+        }
+    </style>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <!-- 	  	<script th:src="@{user/js/swiper-slide-event.js}"></script> -->
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/locales/bootstrap-datepicker.ko.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+
+</th:block>
+
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+
+    <script type="text/javascript">
+        $(function () {
+
+            //유효성 검사를 위한 validationCheck 함수.
+            function validationCheck(data) {
+                let isValid = true;
+
+                //1.인수 값이 객체일 경우
+                if (typeof data == 'object') {
+
+                    $.each(data, function (idx, item) {
+                        let checkValue = $(this).val();
+
+                        if ($(item).attr('id') == 'donationContents') {
+                            let noteIsEmpty = $('#donationContents').summernote('isEmpty');
+                            console.log(noteIsEmpty);
+
+                            if ($('#donationContents').summernote('isEmpty')) {
+                                isValid = false;
+                                let eleId = $(this).attr('id');
+                                let cate = $(`label[for="${eleId}"]`).text();
+                                alert(`${cate} 필수 입력 항목입니다.`);
+                                $('#donationContents').summernote('focus');
+                                return isValid;
+                            }
+                        } else {
+                            if (checkValue === null || checkValue === '' || checkValue === 'undefined') {
+                                isValid = false;
+                                let eleId = $(this).attr('id');
+                                let cate = $(`label[for="${eleId}"]`).text();
+                                alert(`${cate} 필수 입력 항목입니다.`);
+                                $(this).focus();
+                                return isValid;
+                            }
+                        }
+                    });
+                    //2.인수 값이 객체가 아니고 String일 경우
+                } else {
+                    if (data === null || data === '' || data === 'undefined') {
+                        isValid = false;
+                    }
+                }
+                return isValid;
+            }
+
+            //Swiper 생성자 함수
+            let swiper = function () {
+
+                new Swiper(".contents-area", {
+                    slidesPerView: 3,
+                    spaceBetween: 20,
+                    navigation: {
+                        nextEl: ".swiper-button-next",
+                        prevEl: ".swiper-button-prev",
+                    },
+                });
+            }
+
+            //왼쪽 탭 선택 시 화면전환
+            $('.list-group li').click(function () {
+                $('.list-group li').removeClass('active');
+                $(this).addClass('active');
+                let clickBunDataTab = $(this).attr('data-tab');
+                $('.info-contents-area').hide();
+                $('#' + clickBunDataTab).show();
+            });
+
+
+            //다음 단계 버튼 클릭시 화면전환, 빈 값 있는지 유효성 검사.
+            $(document).on('click', '.nextBtn', function () {
+                let validCheck = $(this).parents('.info-contents-area').find('input, select, #donationContents').not('#modalSearchTagAdd').not('input[class*=note]').not('input[type="checkbox"]');
+                console.log(validCheck)
+                let isValid = validationCheck(validCheck);
+
+                console.log(isValid);
+                if (isValid) {
+                    let dataTab = $(this).parents('.info-contents-area').attr('id');
+                    let nextDataTab = $(this).parents('.info-contents-area').next().attr('id');
+                    $(`li[data-tab=${dataTab}]`).removeClass('active');
+                    $(`li[data-tab=${nextDataTab}]`).addClass('active');
+                    $(this).parents('.info-contents-area').hide();
+                    $(this).parents('.info-contents-area').next().show();
+                }
+            });
+
+
+            //이전 단계 버튼 클릭시 화면전환
+            $('.prevBtn').click(function () {
+                let dataTab = $(this).parents('.info-contents-area').attr('id');
+                let prevDataTab = $(this).parents('.info-contents-area').prev().attr('id');
+                $(`li[data-tab=${dataTab}]`).removeClass('active');
+                $(`li[data-tab=${prevDataTab}]`).addClass('active');
+                $(this).parents('.info-contents-area').hide();
+                $(this).parents('.info-contents-area').prev().show();
+            });
+
+            let projectStartDate = new Date();
+            projectStartDate.setDate(projectStartDate.getDate() + 7)
+            //데이트피커 객체 생성
+            $('#deliverStartDate, #donationEndDate').datepicker({
+                format: "yyyy-mm-dd",
+                startDate: projectStartDate,
+                language: "ko",
+                autoclose: true
+            });
+
+            //썸네일 이미지 추가 시, 이미지 표시
+            $('#thumbnailImage').change(function () {
+                if ($(this).val() != null) {
+                    $('.img-thumbnail').css('display', 'block');
+                    setImageFromFile(this, '.img-thumbnail');
+                }
+            });
+
+            function setImageFromFile(input, expression) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $(expression).attr('src', e.target.result);
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+            //초기화 버튼 클릭 시 추가된 슬라이더 폼 모두 삭제
+            $('#rewardInitializeBtn').click(function () {
+                $('.swiper-slide').remove();
+            });
+
+            //검색 태그 추가 버튼 클릭시 모달 창 열기
+            $('#modalOpenBtn').click(function (e) {
+                e.preventDefault();
+                $('#modalSearchTag').modal("show");
+            });
+
+            //모달 창 닫기
+            $('#modalCloseBtn').click(function () {
+                $('#modalSearchTag').modal("hide");
+            });
+
+            //모달 창 추가 버튼 누를 시 검색태그 추가
+            $('#modalActionBtn').click(function () {
+                let addTag = $('#modalSearchTagAdd').val();
+
+                if (validationCheck(addTag)) {
+                    let addTagVal = `#${addTag} `;
+                    let searchTag = $('#searchTag').val() + addTagVal;
+                    $('#searchTag').val(searchTag);
+                    $('#modalSearchTagAdd').val('');
+                }
+                $('#modalSearchTag').modal("hide");
+            });
+
+            //금액 입력하는 input 태그 0원 이하로 입력하지 못하게
+            $('input[type="number"]').change(function () {
+                let inputValue = $(this).val();
+                if (inputValue <= 0) {
+                    $(this).val(1);
+                }
+            });
+
+            //추가된 리워드 폼에서 삭제 버튼 클릭 시 폼 삭제
+            $(document).on('click', '.delBtn', function () {
+                $(this).parents('.swiper-slide').remove();
+
+            });
+
+            //추가된 리워드 폼에서 수정 버튼 클릭 시 폼 삭제 후 리워드 추가 폼에 수정할 데이터 입력
+            $(document).on('click', '.modifyBtn', function () {
+                let rewardSubject = $(this).parent().prev().find('.rewardSebjectH').text();
+                let rewardPrice = $(this).siblings('.rewardPriceInput').val();
+                let rewardDelever = $(this).siblings('.rewardDeleverInput').val();
+                let rewardContents = $(this).siblings('.rewardContents').val();
+
+                $('#rewardSubject').val(rewardSubject);
+                $('#rewardPrice').val(Number(rewardPrice.replaceAll(',', '').replaceAll('원', '')));
+                $('#deliverStartDate').val(rewardDelever);
+                $('#rewardContents').val(rewardContents);
+
+                $(this).parents('.swiper-slide').remove();
+
+            });
+
+            //summerNote TextArea 안에있는 이미지 저장위한 코드
+            $('#donationContents').summernote({
+                height: 500,                 // 에디터 높이
+                minHeight: null,             // 최소 높이
+                maxHeight: null,             // 최대 높이
+                focus: true,                  // 에디터 로딩후 포커스를 맞출지 여부
+                lang: "ko-KR",					// 한글 설정
+                placeholder: '최대 2048자까지 쓸 수 있습니다',	//placeholder 설정
+                callbacks: {	//여기 부분이 이미지를 첨부하는 부분
+                    onImageUpload : function(files) {
+                        uploadSummernoteImageFile(files[0],this);
+                    },
+                    onMediaDelete: function ($target, editor, $editable) {
+                        if (confirm('이미지를 삭제 하시겠습니까?')) {
+                            var deletedImageUrl = $target
+                                .attr('src')
+                                .split('/')
+                                .pop()
+
+                            // ajax 함수 호출
+                            deleteSummernoteImageFile(deletedImageUrl)
+                        }
+                    },
+                    onPaste: function (e) {
+                        var clipboardData = e.originalEvent.clipboardData;
+                        if (clipboardData && clipboardData.items && clipboardData.items.length) {
+                            var item = clipboardData.items[0];
+                            if (item.kind === 'file' && item.type.indexOf('image/') !== -1) {
+                                e.preventDefault();
+                            }
+                        }
+                    }
+                }
+            });
+            /**
+             * 이미지 파일 업로드
+             */
+            let imagesName = [];
+            function uploadSummernoteImageFile(file, editor) {
+                data = new FormData();
+                data.append("file", file);
+                $.ajax({
+                    data : data,
+                    type : "POST",
+                    url : "/user/projectRegistration/uploadSummernoteImageFile",
+                    contentType : false,
+                    processData : false,
+                    success : function(data) {
+                        //항상 업로드된 파일의 url이 있어야 한다.
+                        $(editor).summernote('insertImage', data.url);
+                        imagesName.push(data.filename);
+                    }
+                });
+            }
+
+            /**
+             * 이미지 삭제
+             */
+            function deleteSummernoteImageFile(imageName) {
+                data = new FormData()
+                data.append('file', imageName)
+                $.ajax({
+                    data: data,
+                    type: 'POST',
+                    url: 'deleteSummernoteImageFile',
+                    contentType: false,
+                    enctype: 'multipart/form-data',
+                    processData: false,
+                })
+            }
+
+            // summernote 드래그 & 드랍 구현
+            $("div.note-editable").on('drop',function(e){
+                for(i=0; i< e.originalEvent.dataTransfer.files.length; i++){
+                    uploadSummernoteImageFile(e.originalEvent.dataTransfer.files[i],$("#donationContents")[0]);
+                }
+                e.preventDefault();
+            })
+
+            // 썸네일 이미지 저장 구현
+            $('#confirmBtn').click(function( ) {
+                if($('#thumbnailImage').val() == '' || typeof $('#thumbnailImage').val() == 'undefined' || $('#thumbnailImage').val() == null){
+                    alert('썸네일을 넣어주세요!');
+                    return;
+                }
+
+                $('#confirmBtn').css('display', 'none');
+                $('#confimMessage').css('display', 'block');
+                $('#thumbnailImage').css('display', 'none');
+                var formData = new FormData();	//FormData 객체 생성
+                var inputFile = $("input[type='file']"); //input 태그의 type이 file인것을 찾아서 inputFile이라는 변수로 지정
+                var files = inputFile[0].files;
+                //files : 선택한 모든 파일을 나열하는 FileList 객체입니다.
+                //multiple 특성을 지정하지 않닸다면 두 개 이상의 파일을 포함하지 않습니다.
+                for (var i = 0; i < files.length; i++) {
+                    console.log(files[i]);
+                    formData.append("file", files[i]);//키,값으로 append
+                }
+
+                //실제 업로드 부분
+                //upload ajax
+                $.ajax({
+                    url: '/user/projectRegistration/uploadSummernoteImageFile',	//경로
+                    processData: false,	//기본값은 true
+                    //ajax 통신을 통해 데이터를 전송할 때, 기본적으로 key와 value값을 Query String으로 변환해서 보냅니다.
+                    contentType: false,	// multipart/form-data타입을 사용하기위해 false 로 지정합니다.
+                    data: formData,
+                    type: 'POST',
+                    dataType:'json',
+                    success: function(result){
+                        console.log(result.fileName);
+                        $('#donationImage').val(result.fileName); // 이미지 이름 DB 에 저장
+                    },
+                    error: function(jqXHR, textStatus, errorThrown){	//오류 메시지 판정
+                        console.log(textStatus);
+                    }
+
+                }); //$.ajax
+            });
+
+            $('.submitBtn').click(function (){
+               const $submitBtn = $(this).submit();
+               if ($('#donationContents').summernote('isEmpty')){
+                   alert('프로젝트 스토리를 작성해 주세요!');
+                   return false;
+               }else{
+                   if(confirm('프로젝트를 등록하시겠습니까??')){
+                       $submitBtn.submit();
+                   }else{
+                       return false;
+                   }
+               }
+
+            });
+
+        }); // end
+    </script>
+
+
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <!-- main swiper slide start -->
+
+    <div class="py-3 text-center bg-light">
+        <h2>기부 프로젝트 등록</h2>
+    </div>
+    <br><br>
+
+    <div class="main-section container">
+        <div class="row">
+            <div class="col-lg-2 order-md-first">
+                <!--      <div class="col-md-5 col-lg-4 order-md-last">-->
+                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-primary">&nbsp;&nbsp;등록 목차</span>
+                </h4>
+                <ul class="list-group mb-3">
+                    <li data-tab="defaultInfo" class="active list-group-item d-flex justify-content-between lh-sm">
+                        <h6 class="my-0">1.기본정보</h6>
+                    </li>
+                    <li data-tab="storyInfo" class="list-group-item d-flex justify-content-between lh-sm">
+                        <h6 class="my-0">2.스토리</h6>
+                    </li>
+                </ul>
+            </div>
+
+            <form class="col-lg-10" id="addDonationForm" th:action="@{/user/projectRegistration/donation}" method="post">
+                <!-- defaultInfo area -->
+                <div id="defaultInfo" class="info-contents-area" style="display: block;">
+                    <h4 class="mb-2 fw-bord">기부 프로젝트는 순수비영리민간법인 혹은 단체이어야 합니다.</h4>
+                    <h5 class="mb-2 fw-bord"> 공익사업을 주 사업 내용으로 하며, 아래의 단체 유형에 해당되어야 합니다.</h5>
+                    <h6>  - 소외•취약계층의 삶의 질 향상과 변화의 기회를 제공하는 사회복지시설<br>
+                        - 시민참여를 통해 지역사회 변화와 공익을 추구하는 시민사회단체<br>
+                        - 환경, 복지, 보건의료, 교육, 문화, 주거, 고용 등의 영역에서 활동하는 비영리민간단체<br>
+                        - 그 외 공익사업을 주 사업으로 하여 운영하고 있는 민간단체 <br></h6>
+                    <br><br>
+                    <!-- 세션에서 로그인 한 아이디 가져오기 -->
+                    <input type="hidden" class="form-control" id="memberId" name="memberId" th:value="${session.SID}">
+
+                    <div class="row">
+
+                        <div class="col-8">
+                            <label for="totalCategoryCode" class="form-label fw-bord text-dark">카테고리를 선택해 주세요</label>
+                            <br>
+                            <select id="totalCategoryCode" name="totalCategoryCode" class="">
+                                <option value="">==선택==</option>
+                                <option th:if="${categoryList != null}" th:each="l : ${categoryList}" th:text="${l.categoryName}" th:value="${l.totalCategoryCode}"></option>
+                            </select>
+                            <br><br>
+
+                            <label for="donationSubject" class="form-label fw-bord text-dark">프로젝트의 제목을 적어주세요</label>
+                            <input type="text" class="form-control" id="donationSubject" name="donationSubject" placeholder="제목을 입력해 주세요.">
+                            <br>
+
+                            <label for="donationGoalMoney" class="form-label fw-bord text-dark">목표 금액을 적어주세요</label>
+                            <input type="number" class="form-control" id="donationGoalMoney" name="donationGoalMoney" placeholder="목표 금액을 입력해주세요.">
+                            <br>
+
+                            <div class="mb-3">
+                                <label for="thumbnailImage" class="form-label fw-bord text-dark">썸네일 이미지를 등록해주세요</label>
+                                <!--                                <div class=" banner-content" style="background-color: #7D7D7D">썸네일 이미지</div>-->
+                                <br>
+                                <div class="border border-secondary mb-lg-1" style="width: 355px; height: 205px;">
+                                    <img src="" class="img-thumbnail" alt="썸네일이미지" style="height: 200px; width: 350px; display: none;">
+                                </div>
+
+                                <!--                <input type="file" accept="image/png, image/jpeg" multiple>-->
+                                <input class="form-control" id="thumbnailImage" type="file" accept="image/*">
+                            </div>
+                            <label for="donationImage">썸네일 확정을 해주세요</label>
+                            <input id="donationImage" name="donationImage" style="display: none">
+                            <div class="mb-3">
+                                <button id="confirmBtn" type="button" style="border-radius: 5px; background-color: #0b44d7; color: whitesmoke; padding: 5px">썸네일 확정</button>
+                            </div>
+                            <div id="confimMessage" style="background: #ddfffc; border-radius: 5px; padding: 10px; font-size: 12px; color: black; display: none">
+                                <p>
+                                    <b>썸네일이 확정 되었습니다!</b><br>
+                                </p>
+                            </div>
+
+                            <br>
+
+                            <!-- 검색태그 추가 Modal-->
+                            <div class="modal fade" id="modalSearchTag" tabindex="-1" role="dialog"
+                                 aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">검색 키워드 추가</h5>
+                                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">X</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <label for="modalSearchTagAdd" class="text-danger"> 하나의 검색 태그씩 추가해
+                                                주세요.</label>
+                                            <div class="input-group input-group-sm mb-3">
+                                                <span class="input-group-text" id="inputGroup-sizing-sm">태그</span>
+                                                <input type="text" id="modalSearchTagAdd" class="form-control"
+                                                       aria-label="Sizing example input"
+                                                       aria-describedby="inputGroup-sizing-sm">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-primary" id="modalActionBtn">추가
+                                            </button>
+                                            <button type="button" class="btn btn-secondary" id="modalCloseBtn">취소
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+
+                        <div class="col-8 text-dark">
+                            <label class="form-label fw-bord text-dark" for="donationEndDate">프로젝트 마감 날짜를 입력해주세요.</label>
+                            <p>프로젝트 심사부터 리워드 제작 기간 등 전체 일정을 고려해 설정해 주세요.</p>
+                            <br>
+                            <div style="background: #fff1f1; border-radius: 5px; padding: 10px; font-size: 12px">
+                                <p>
+                                    <b>⚠️프로젝트 심사(요건확인, 콘텐츠 확인)</b><br>
+                                    심사가 끝나면 기부 프로젝트를 공개할 수 있어요. 프로젝트 특성이나 완성도에 따라 걸리는 시간은 달라져요.
+                                    <br>
+                                    <b>⚠️프로젝트 진행(공개~종료)</b><br>
+                                    공개부터 종료까지 보통 30일 정도 진행해요. 프로젝트 상황에 따라 자유롭게 선택할 수 있지만<br>
+                                    프로젝트가 승인되고 나면 바꿀 수 없어요.
+                                    <br>
+                                    <b>⚠️프로젝트 종료</b><br>
+                                    프로젝트를 성공적으로 종료하면 기부 프로젝트 현황을 업데이트 해주셔야 합니다.</p>
+                            </div>
+                            <br>
+                            <span>
+                                마감 일자 : <input type="text" id="donationEndDate" name="donationEndDate" readonly="readonly">
+                            </span>
+                            <br>
+
+                        </div>
+
+                        <div class="col-8">
+                            <br><br>
+                            <button class="nextBtn w-80 btn btn-primary btn-lg" type="button">다음단계</button>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+                </div>
+
+                <!-- storyInfo area -->
+
+                <div id="storyInfo" class="info-contents-area">
+
+                    <h5 class="mb-2 fw-bord">프로젝트 소개 영상과 이미지를 등록해주세요</h5>
+                    <h6 class="mb-2">영상과 이미지는 아래 작성란에 추가 해 주세요!</h6>
+                    <br><br>
+
+
+                    <div class="row g">
+                        <div class="col-10">
+                            <div class="mb-3">
+                                <label for="donationContents" class="form-label">프로젝트 스토리를 적어주세요</label>
+                                <textarea id="donationContents" name="donationContents"></textarea>
+                            </div>
+
+                            <br><br>
+                            <button class="prevBtn w-80 btn btn-secondary btn-lg" type="button">이전단계</button>
+                            <button class="submitBtn w-80 btn btn-primary btn-lg" type="submit">제출하기</button>
+
+                        </div>
+                    </div>
+
+
+                    <hr class="my-4">
+
+
+                </div>
+
+                    <hr class="my-4">
+
+            </form>
+        </div>
+    </div>
+
+    <br><br><br><br><br><br>
+
+
+</th:block>
+</html>

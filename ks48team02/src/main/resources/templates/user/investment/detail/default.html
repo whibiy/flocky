@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <title th:text="${title}"></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Amatic+SC:400,700&display=swap" rel="stylesheet"> -->
+    <link rel="shortcut icon" th:href="@{/common/images/favicon.png}">
+    <link rel="stylesheet" th:href="@{/user/css/open-iconic-bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/user/css/animate.css}">
+    <link rel="stylesheet" th:href="@{/common/css/font/font.css}">
+
+    <!-- <link rel="stylesheet" th:href="@{user/css/owl.carousel.min.css}">  -->
+    <link rel="stylesheet" th:href="@{/user/css/owl.theme.default.min.css}">
+    <link rel="stylesheet" th:href="@{/user/css/magnific-popup.css}">
+
+    <link rel="stylesheet" th:href="@{/user/css/aos.css}">
+
+    <link rel="stylesheet" th:href="@{/user/css/ionicons.min.css}">
+
+    <link rel="stylesheet" th:href="@{/user/css/bootstrap-datepicker.css}">
+    <link rel="stylesheet" th:href="@{/user/css/jquery.timepicker.css}">
+
+
+    <link rel="stylesheet" th:href="@{/user/css/flaticon.css}">
+    <link rel="stylesheet" th:href="@{/user/css/icomoon.css}">
+    <link rel="stylesheet" th:href="@{/user/css/style.css}">
+
+    <!-- Link Swiper's CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    <link rel="stylesheet" th:href="@{/user/css/swiper-event-css.css}" />
+    <link rel="stylesheet" th:href="@{/user/css/main_style.css}" />
+    <style>
+        .swiper {
+            width: 100%;
+            height: 100%;
+        }
+        .swiper-slide img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .story-body{
+            overflow: hidden;
+        }
+        #investmentBtn {
+            width: 300px;
+            height: 90px;
+
+            /* 상자 디자인 큰틀*/
+            margin-bottom: 30px;
+            border: 0px;
+            background-color: #E4EBF5;
+            outline-color: #235FD9;
+            outline-width: 1px;
+
+            /* 그림자 */
+            border-radius: 10px;
+            box-shadow:.8rem .5rem 1.4rem  #BEC5D0, -.3rem -.4rem .8rem #FBFBFB;
+            /* box-shadow:-.2rem -.2rem 1.8rem white, .8rem .8rem 1.4rem  #AAB7CB; */
+
+            /* 글씨 */
+            color: #333333;
+            font-size: 1.7em;
+            font-weight: bold;
+
+            animation-name: keybtn-language;
+            animation-duration: .2s;
+
+        }
+        /*버튼 눌리는 효과*/
+        #investmentBtn:active {
+            box-shadow: inset -.3rem -.1rem 1.4rem  #FBFBFB, inset .3rem .4rem .8rem #BEC5D0;
+            cursor: pointer;
+        }
+
+    </style>
+
+</head>
+<body class="goto-here">
+<!-- header start -->
+<div th:replace="~{user/fragments/header :: topBannerFragment}"></div>
+<div th:replace="~{user/fragments/header :: headerNavFragment}"></div>
+<div th:replace="~{user/investment/detail/fragments/header :: headerNavFragment}"></div>
+<!-- END nav -->
+<!-- header end -->
+
+
+<!-- main swiper slide area  -->
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-7">
+            <th:block layout:fragment="customContents">
+
+            </th:block>
+        </div>
+        <div th:replace="~{user/investment/detail/fragments/aside :: asideFragments}">
+
+        </div>
+    </div>
+</div>
+
+<section id="investProject" class="content-wrap">
+    <div class="main-section container">
+        <h3 class="main-title">투자 추천 프로젝트</h3>
+        <!-- Swiper -->
+        <div class="swiper mySwiper contents-area">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div class="slide-thumb">
+
+                    </div>
+                    <div class="description">
+                        <div class="product-main-title">내 손안의 스마트한 스튜디오, 저스트모바일 셔터그립2</div>
+                        <div class="product-detail-info">
+                            <span class="funding-percent">350%</span>
+                            <span class="category">테크·가전</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="slide-thumb">
+
+                    </div>
+                    <div class="description">
+                        <div class="product-main-title">내 손안의 스마트한 스튜디오, 저스트모바일 셔터그립2</div>
+                        <div class="product-detail-info">
+                            <span class="funding-percent">350%</span>
+                            <span class="category">테크·가전</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="slide-thumb">
+
+                    </div>
+                    <div class="description">
+                        <div class="product-main-title">내 손안의 스마트한 스튜디오, 저스트모바일 셔터그립2</div>
+                        <div class="product-detail-info">
+                            <span class="funding-percent">350%</span>
+                            <span class="category">테크·가전</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="slide-thumb">
+
+                    </div>
+                    <div class="description">
+                        <div class="product-main-title">내 손안의 스마트한 스튜디오, 저스트모바일 셔터그립2</div>
+                        <div class="product-detail-info">
+                            <span class="funding-percent">350%</span>
+                            <span class="category">테크·가전</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="slide-thumb">
+
+                    </div>
+                    <div class="description">
+                        <div class="product-main-title">내 손안의 스마트한 스튜디오, 저스트모바일 셔터그립2</div>
+                        <div class="product-detail-info">
+                            <span class="funding-percent">350%</span>
+                            <span class="category">테크·가전</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="slide-thumb">
+
+                    </div>
+                    <div class="description">
+                        <div class="product-main-title">내 손안의 스마트한 스튜디오, 저스트모바일 셔터그립2</div>
+                        <div class="product-detail-info">
+                            <span class="funding-percent">350%</span>
+                            <span class="category">테크·가전</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="slide-thumb">
+
+                    </div>
+                    <div class="description">
+                        <div class="product-main-title">내 손안의 스마트한 스튜디오, 저스트모바일 셔터그립2</div>
+                        <div class="product-detail-info">
+                            <span class="funding-percent">350%</span>
+                            <span class="category">테크·가전</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="slide-thumb">
+
+                    </div>
+                    <div class="description">
+                        <div class="product-main-title">내 손안의 스마트한 스튜디오, 저스트모바일 셔터그립2</div>
+                        <div class="product-detail-info">
+                            <span class="funding-percent">350%</span>
+                            <span class="category">테크·가전</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="slide-thumb">
+
+                    </div>
+                    <div class="description">
+                        <div class="product-main-title">내 손안의 스마트한 스튜디오, 저스트모바일 셔터그립2</div>
+                        <div class="product-detail-info">
+                            <span class="funding-percent">350%</span>
+                            <span class="category">테크·가전</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="slide-thumb">
+
+                    </div>
+                    <div class="description">
+                        <div class="product-main-title">내 손안의 스마트한 스튜디오, 저스트모바일 셔터그립2</div>
+                        <div class="product-detail-info">
+                            <span class="funding-percent">350%</span>
+                            <span class="category">테크·가전</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="slide-thumb">
+
+                    </div>
+                    <div class="description">
+                        <div class="product-main-title">내 손안의 스마트한 스튜디오, 저스트모바일 셔터그립2</div>
+                        <div class="product-detail-info">
+                            <span class="funding-percent">350%</span>
+                            <span class="category">테크·가전</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="slide-thumb">
+
+                    </div>
+                    <div class="description">
+                        <div class="product-main-title">내 손안의 스마트한 스튜디오, 저스트모바일 셔터그립2</div>
+                        <div class="product-detail-info">
+                            <span class="funding-percent">350%</span>
+                            <span class="category">테크·가전</span>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+
+</section>
+
+<!--  footer start  -->
+<footer th:replace="~{user/fragments/footer :: footerFragment}"></footer>
+<!-- footer end -->
+
+
+<!-- loader -->
+<div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+
+
+
+<!-- Custom Theme Scripts -->
+<script th:src="@{/user/js/jquery.min.js}"></script>
+<script th:src="@{/user/js/jquery-migrate-3.0.1.min.js}"></script>
+<script th:src="@{/user/js/popper.min.js}"></script>
+<script th:src="@{/user/js/bootstrap.min.js}"></script>
+<script th:src="@{/user/js/jquery.easing.1.3.js}"></script>
+<script th:src="@{/user/js/jquery.waypoints.min.js}"></script>
+<script th:src="@{/user/js/jquery.stellar.min.js}"></script>
+<script th:src="@{/user/js/owl.carousel.min.js}"></script>
+<script th:src="@{/user/js/jquery.magnific-popup.min.js}"></script>
+<script th:src="@{/user/js/aos.js}"></script>
+<script th:src="@{/user/js/jquery.animateNumber.min.js}"></script>
+<script th:src="@{/user/js/bootstrap-datepicker.js}"></script>
+<script th:src="@{/user/js/scrollax.min.js}"></script>
+<!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script> -->
+<script th:src="@{/user/js/google-map.js}"></script>
+<script th:src="@{/user/js/main.js}"></script>
+
+<!-- 사용자별 스크립트 파일 -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+
+</th:block>
+
+<script>
+    $(document).ready(function () {
+        // 현재 페이지 URL 또는 다른 방법으로 현재 화면을 식별하고 해당 메뉴 항목을 활성화합니다.
+        var currentPath = window.location.pathname;
+
+        if (currentPath === '/user/investment/detail/main') {
+            $('#story').addClass('active');
+        } else if (currentPath === '/user/investment/detail/news') {
+            $('#news').addClass('active');
+        } else if (currentPath === '/user/investment/detail/comment') {
+            $('#comments').addClass('active');
+        } else if (currentPath === '/user/investment/detail/investor') {
+            $('#investor').addClass('active');
+        }/* else if (/!* 다른 페이지의 경로 *!/) {
+            // 다른 페이지에 해당하는 메뉴 항목을 활성화
+        }*/
+
+    });
+    // scroll header controller
+    $(window).on('scroll', function(){
+        let hasScrolledClass = $('.navbar').hasClass('scrolled');
+        if(hasScrolledClass){
+            $('.navbar').not('.invest_nav').hide();
+        } else {
+            $('.navbar').not('.invest_nav').show();
+        }
+    });
+</script>
+
+</body>
+</html>
+
+
+
+
+

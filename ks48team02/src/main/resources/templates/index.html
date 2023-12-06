@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>project infomation</title>
+	<link rel="stylesheet" th:href="@{/common/css/intro-css.css}">
+	<link rel="stylesheet" th:href="@{/common/css/common-css.css}">
+	<link rel="stylesheet" th:href="@{/common/css/font/font.css}">
+	<style>
+		#wrap {
+			margin: 50px 0;
+
+		}
+		* {
+			text-align: center;
+			margin: 0;
+			padding: 0;
+		}
+		.info-title-area h3 {
+			color: var(--maincolor);
+		}
+		table, tr, td {
+			border: 1px solid var(--borderColor);
+			border-collapse : collapse;
+			font-size: 13px;
+		}
+		td {
+			padding: 20px;
+		}
+		li {
+			margin: 5px 0;
+		}
+		ul, li,
+		ul p, ul h5 {
+			text-align : left;
+
+		}
+		ul p {
+			color: #858585;
+		}
+		.sub-list {
+			padding-left: 30px;
+		}
+		.sub-list li {
+			color: #adadad;
+			font-weight: 300;
+		}
+		ul h5 {
+			font-size: 14px;
+			margin: 5px 0;
+		}
+		.info-table {
+			width: 600px;
+			margin: 0 auto;
+		}
+		.table-th {
+			background: #f5f6fa;
+			width: 20%;
+			font-weight: 700;
+		}
+		#title {
+			font-size: 42px;
+			line-height: 1.2;
+			margin: 15px 0 35px;
+			color: #191919;
+			font-weight: 800;
+		}
+		.menu-title {
+			font-size: 16px;
+			margin: 10px 0 10px;
+			display: block;
+			text-align: left;
+			font-weight: 700;
+		}
+		.title-li {
+			margin-bottom: 20px;
+		}
+	</style>
+</head>
+<body>
+	<div id="wrap">
+		<div class="info-title-area">
+			<h3 >한국스마트정보교육원 48기 2팀</h3>
+			<h1 id="title">
+				문화·예술 산업 크리에이터를 위한
+				<br>
+				크라우드 펀딩 플랫폼 프로젝트
+			</h1>
+		</div>
+
+
+	<table class="info-table"  style="margin-top: 15px;">
+		<tbody>
+			<tr>
+				<td class="table-th">
+					관리자 계정
+
+				</td>
+				<td class="table-th">
+					판매자 계정
+				</td>
+				<td class="table-th">
+					구매자 계정
+				</td>
+			</tr>
+			<tr>
+				<td style="color: #858585;">
+					아이디 : id001<br>
+					비밀번호 : pw001<br>
+				</td>
+				<td style="color: #858585;">
+					아이디 : id003<br>
+					비밀번호 : pw003<br>
+				</td>
+				<td style="color: #858585;">
+					아이디 : id005<br>
+					비밀번호 : pw005<br>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<table class="info-table" style="margin-top: 30px;">
+		<tbody>
+			<tr>
+				<td class="table-th">
+					전슬지 (팀장)
+				</td>
+				<td colspan="2">
+					<ul style="padding-left:15px;">
+						<li class="title-li"><a class="menu-title" href="./user" target="_blank ">메인화면 (index)</a></li>
+						<li class="title-li">
+							<a class="menu-title" href="./admin" target="_blank">관리자 어드민 메인화면</a>
+							<H5>1. 주문 관리</H5>
+							<p>플로키 사이트 전체 주문 관리 페이지</p>
+							<ul class="sub-list">
+								<li>주문 목록</li>
+								<li>배송 관리</li>
+								<li>교환 환불 신청 관리</li>
+								<li>자동 환불 신청 관리</li>
+								<li>주문 확정 목록</li>
+							</ul>
+							<BR>
+							<H5>2. 통계 관리</H5>
+							<p>플로키 사이트 전체 통계를 확인할 수 있는 화면</p>
+							<ul class="sub-list">
+								<li>통계 대시보드</li>
+								<li>일일 매출 통계</li>
+								<li>월별 매출 통계</li>
+								<li>연 매출 통계</li>
+							</ul>
+							<BR>
+							<H5>3. 정산 관리</H5>
+							<p>판매자들이 신청한 정산 관리 화면</p>
+							<ul class="sub-list">
+								<li>정산 신청 현황</li>
+							</ul>
+						</li>
+						<li class="title-li">
+							<a class="menu-title" href="./seller" target="_blank">판매자 어드민 메인화면</a>
+							<H5>1. 주문 관리</H5>
+							<p>플로키 사이트 전체 주문 관리 페이지</p>
+							<ul class="sub-list">
+								<li>주문 목록</li>
+								<li>배송 관리</li>
+								<li>교환 환불 신청 관리</li>
+								<li>자동 환불 신청 관리</li>
+								<li>주문 확정 목록</li>
+							</ul>
+							<BR>
+							<H5>2. 통계 관리</H5>
+							<p>플로키 사이트 전체 통계를 확인할 수 있는 화면</p>
+							<ul class="sub-list">
+								<li>통계 대시보드</li>
+								<li>일일 매출 통계</li>
+								<li>월별 매출 통계</li>
+								<li>연 매출 통계</li>
+							</ul>
+							<BR>
+							<H5>3. 정산 관리</H5>
+							<p>판매자들이 신청한 정산 관리 화면</p>
+							<ul class="sub-list">
+								<li>정산 신청 현황</li>
+							</ul>
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<td class="table-th">
+					강오진
+				</td>
+				<td colspan="2">
+					<ul>
+						<p>관리자 투자 펀딩 페이지</p>
+
+						<li><a href="./admin/investment/search/investment" target="_blank">! 관리자 투자 펀딩 공고 페이지</a></li>
+						<li><a href="./admin/investment/search/judge" target="_blank">! 관리자 투자 펀딩 심사요청 페이지</a></li>
+						<li><a href="./admin/investment/search/corporate-value" target="_blank">! 관리자 기업가치 평가 페이지</a></li>
+						<li><a href="./admin/investment/search/law-satistify" target="_blank">! 관리자 자본시장법 범위충족기준 페이지</a>
+						</li>
+						<li><a href="./admin/investment/search/incongruity-sectors" target="_blank">! 관리자 부적합 업종 페이지</a>
+						</li>
+
+						<p>판매자 투자 펀딩 페이지[판매자 로그인 필요]</p>
+
+						<li><a href="./seller/investment/invest-main" target="_blank">! 판매자 프로젝트 목록 페이지</a></li>
+						<li><a href="./seller/investment/search/judge" target="_blank">! 판매자 투자펀딩 심사요청 페이지</a></li>
+						<li><a href="./seller/investment/search/after-fund-revenue" target="_blank">! 판매자 투자후 기업정보 공개
+							페이지</a>
+						</li>
+						<li><a href="./seller/investment/search/after-invest-division" target="_blank">! 판매자 투자 후 분배 페이지</a>
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<td class="table-th">
+					김상민
+				</td>
+				<td colspan="2">
+					<ul>
+						<p>프로세스 요약 [구매자 리워드 메인 페이지 -> 구매자 리워드 상세 페이지-> 리워드 주문 페이지(구매자 로그인, 주문할 리워드 선택) -> 리워드 결제 페이지(배송정보,약관동의) -> 결제 진행 -> 리워드 결제완료 페이지] </p>
+						<li><a href="./user/reward" target="_blank">!리워드 메인 페이지</a></li>
+						<li><a href="./user/reward/detail?rewardProjectCode=RWD_20231128_1&searchCnt=true" target="_blank">!리워드 상세 페이지</a></li>
+						<li><a href="./user/reward/order?rewardProjectCode=RWD_20231128_1" target="_blank">!리워드 주문 페이지</a></li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<td class="table-th">
+					김시원
+				</td>
+				<td colspan="2">
+					<ul>
+						<p>프로세스 요약 [판매자 프로젝트 등록 페이지[판매자 로그인 필요] -> 관리자 심사요청 승인 페이지 -> 관리자 페이지에서 프로젝트 시작[관리자 로그인 필요] -> 투자 메인 페이지 -> 투자 상세 페이지 -> 투자 진행 -> 완료</p>
+						<li><a href="./user/projectRegistration" target="_blank">! 투자 등록 페이지</a></li>
+						<li><a href="./user/investment" target="_blank">! 투자 메인 페이지</a></li>
+						<li><a href="./user/investment/detail/main?investmentCode=inv_20231128_0001" target="_blank">! 투자 상세 페이지</a></li>
+						<li><a href="./user/investment/order" target="_blank">! 투자 주문 페이지</a></li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<td class="table-th">
+					김정민
+				</td>
+				<td colspan="2">
+					<ul>
+						<p>프로세스 요약 [판매자 프로젝트 등록 페이지[판매자 로그인 필요] -> 관리자 심사 승인 페이지 -> 판매자 페이지에서 프로젝트 시작[판매자 로그인 필요] -> 구매자 구매[구매자 로그인 필요]</p>
+						<li><a href="./user/donation" target="_blank">! 기부 메인 화면</a></li>
+						<li><a href="./user/donation/detail?donationCode=don_20231117_0001" target="_blank">! 기부 상세 화면[스토리, 새소식, 기부금 사용현황, 댓글 작성 // 댓글 작성은 구매자 로그인 필요]</a></li>
+						<li><p>! 기부 상세 화면[기부금 모금하기] -> [ 상세 페이지에서 구매자로 로그인 후 모금하기 클릭 ] <br>
+							-> 기부금 모금하기에서 결제할 Flover가 현재 나의 Flover보다 없으면 !기부 재화 충전 페이지로 이동 [ 구매자 로그인 필요 ] 재화충전 KaKaoPay API 연동</p></li>
+						<li><a href="./user/projectRegistration/donation" target="_blank">! 기부 프로젝트 등록 [ 등록 시 판매자 로그인 필요 ]</a></li>
+						<li><a href="./seller/donation/products" target="_blank">! 기부 프로젝트 목록 [ 판매자 로그인 필요 ]</a></li>
+						<li><a href="./seller/donation/news" target="_blank">! 기부 프로젝트 새소식 관리 [ 판매자 로그인 필요 ]</a></li>
+						<li><a href="./seller/donation/condition" target="_blank">! 기부 프로젝트 진행현황 관리 [ 판매자 로그인 필요 ]</a></li>
+						<li><a href="./admin/projectManagement" target="_blank">! 관리자 페이지 프로젝트 관리 </a></li>
+						<li><a href="./admin/donation/judgement" target="_blank">! 관리자 페이지 (심사 관리 -> 기부 심사 관리) </a></li>
+						<li><a href="./user/mypage" target="_blank">! 마이페이지 [기부 취소, 기부 내역, 기부 현황, 기부 상세] < 구매자 로그인 필요 ></a></li>
+
+					</ul>
+
+				</td>
+			</tr>
+			<tr>
+				<td class="table-th">
+					김진현
+				</td>
+				<td colspan="2">
+					<ul>
+						<li><a href="./user/mypage" target="_blank">! 마이페이지(쿠폰)(진현)</a></li>
+						<li><a href="./user/board" target="_blank">! 공지사항,이벤트 통합 (진현)</a></li>
+						<li><a href="./user/inquiry" target="_blank">! 1:1문의 (진현)</a></li>
+						<li><a href="./user/inquiry/report" target="_blank">! 신고하기 팝업 (진현)</a></li>
+						<li><a href="./admin/site/category" target="_blank">! 관리자 사이트(카테고리) (진현)</a></li>
+						<li><a href="./admin/board/main" target="_blank">! 관리자 게시판 관리 (진현)</a></li>
+						<li><a href="./admin/inquiry/main" target="_blank">! 관리자 문의관리 (진현)</a></li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<td class="table-th">
+					홍설아
+				</td>
+				<td colspan="2">
+					<ul>
+						<li><a href="./user/account/login" target="_blank">!로그인(설아) </a></li>
+						<li><a href="./user/account" target="_blank">!회원가입 (설아)</a></li>
+						<li><a href="./user/mypage" target="_blank">#마이페이지</a></li>
+						<li><a href="./admin/user/loginLog" target="_blank">!로그인 내역 조회 (설아)</a></li>
+					</ul>
+				</td>
+			</tr>
+
+		</tbody>
+	</table>
+	</div>
+</body>
+</html>

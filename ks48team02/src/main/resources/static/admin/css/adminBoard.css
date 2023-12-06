@@ -1,0 +1,40 @@
+@charset "UTF-8";
+form{
+    flex-basis: 600px;
+    background-color: #FFFFFF;
+    padding: 30px 25px 25px 30px;
+    border-radius: 16px;
+    box-shadow: 0px 0px 8px rgba(0,0,0,0.16);
+}
+.addBtnArea{
+    text-align: right;
+}
+.top{
+    border: 1px solid #dee1e8;
+    background-color: #f0f3fc;
+}
+.modify{
+    display: inline-block;
+    width: 40px;
+    text-align: center;
+    border: 1px solid black;
+    border-radius: 20px 20px 20px 20px;
+    font-size: 13px;
+    background-color: black;
+    color: #EEE;
+    transition: background-color 0.3s;
+    /*margin-right: 20px;*/
+
+}
+.modify:hover{
+    background-color: var(--maincolor);
+    color: #EEEEEE;
+}
+.delete{
+    display: inline-block;
+    width: 40px;
+    text-align: center;
+    border: 1px solid #e5dddd;
+    border-radius: 20px 20px 20px 20px;
+    font-size: 13px;
+}

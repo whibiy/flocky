@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layout/default}">
+<head>
+  <meta charset="UTF-8">
+  <title>플로키 공지사항 1</title>
+  <link rel="stylesheet" th:href="@{/user/css/boardStyle.css}">
+</head>
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- html 사용자 조각 작성 -->
+<th:block layout:fragment="customContents">
+  <form id="fowardForm" method="get">
+    <input type="hidden" id="returnURL" name="returnURL" />
+  </form>
+  <input type="hidden" id="loginCheck" value="false">
+    <div class="ui-header">
+      <h2 class="title">[서비스 안내] 플로키 서비스 오픈</h2>
+    </div>
+
+  <div class="Profile" style="">
+    <div class="ProfileImage">
+
+    </div>
+    <span class="user-info">
+      김플로
+      <br>
+      2023.10.18
+    </span>
+
+  </div>
+
+  <div class="comment">
+    <p>안녕하세요 김플로입니다. </p>
+    <p>이번에 플로키 크라우드펀딩 사이트를 오픈했습니다.</p>
+    <p>많은 참여와 성원 부탁드립니다.</p>
+  </div>
+</th:block>
+</html>

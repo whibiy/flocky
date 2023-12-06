@@ -1,0 +1,11 @@
+@charset "UTF-8";
+form{
+    flex-basis: 400px;
+    background-color: #FFFFFF;
+    padding: 30px 25px 25px 30px;
+    border-radius: 16px;
+    box-shadow: 0px 0px 8px rgba(0,0,0,0.16);
+}
+caption{
+    display: none;
+}

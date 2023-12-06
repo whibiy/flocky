@@ -1,0 +1,49 @@
+@charset "UTF-8";
+.pop_wrap{
+    width: 500px;
+    margin: 0 auto;
+}
+.report .title{
+    text-align: center;
+    margin: 20px;
+    border-bottom: 1px solid #EEE;
+}
+.comment{
+    border-bottom: 1px solid #EEE;
+}
+.report_area{
+    padding: 14px 30px 19px;
+}
+.report_area dl{
+    display: flex;
+}
+.report_connt{
+
+    border-bottom: 1px solid #EEE;
+}
+li{
+    border: 1px solid #EEE;
+    list-style: none;
+    padding: 15px 20px
+}
+.btnRepprt{
+    display: block;
+    font-size: 20px;
+    width: 100%;
+    height: 50px;
+    border-radius: 6px;
+    border: 1px solid var(--maincolor);
+}
+.list{
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+.report_reason{
+    margin: 0;
+}
+textarea{
+    width: 100%;
+    height: 50px;
+}
+

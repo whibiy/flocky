@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{seller/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <script th:src="@{/common/js/admin-commonJs.js}"></script>
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+
+
+        function submitValidation (){
+            let $checkedEles = $('.settlement-log input:not(#allSelectBtn):checked');
+            console.log($checkedEles, '<--');
+            if($checkedEles.length == 0) alert('공고를 한 개 이상 선택해주세요');
+            else location.href = '/seller/settlement/addSettlement/info';
+        }
+    </script>
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+
+        <!-- search form fragments start -->
+        <th:block th:replace="~{common/fragments/searchFormFragments :: searchFormFragments}"></th:block>
+        <!-- search form fragments end -->
+        <div class="title-wrap">
+            <h4 class="admin-content-title">정산 신청 가능 프로젝트 목록</h4>
+        </div>
+        <div class="admin-content-wrapper">
+            <!-- select are -->
+            <div class="data-info">
+                <div class="list-count-area">
+                    <ul>
+                        <li>프로젝트 총 <span class="count-data total-list">0</span>건</li>
+                        <li>선택 항목 총 <span class="count-data select-list-count">0</span>건</li>
+                    </ul>
+                </div>
+                <div class="list-count-selector">
+                    <select name="orderby">
+                        <option value="regist_d">등록일 역순</option>
+                        <option value="regist_a">등록일 순</option>
+                        <option>-----------------</option>
+                        <option value="project_name_d">프로젝트명 역순</option>
+                        <option value="project_name_a">프로젝트명 역순</option>
+                    </select>
+                    <select name="count-select">
+                        <option value="15">15개씩 보기</option>
+                        <option value="20">20개씩 보기</option>
+                        <option value="30">30개씩 보기</option>
+                    </select>
+                </div>
+            </div>
+            <!-- contents area -->
+            <form>
+                <table class="settlement-log">
+                    <thead>
+                    <tr>
+                        <th>
+                            <input type="checkbox" name="allSelect" id="allSelectBtn">
+                        </th>
+                        <th>공고 코드</th>
+                        <th style="width:8%;">스토어명</th>
+                        <th style="width:8%;">프로젝트<br>분류</th>
+                        <th >프로젝트 명</th>
+                        <th style="width:9%;">
+                            펀딩 목표 금액
+                        </th>
+                        <th style="width:15%;">
+                            펀딩 달성 금액
+                        </th>
+                        <th>달성률</th>
+                        <th style="width:12%;">공고마감일자</th>
+                        <th style="width:8%;">정산신청</th>
+                    </tr>
+
+                    </thead>
+                    <tbody>
+                        <!-- 조회 결과 없음 -->
+                        <tr th:if="${getSettPrjList == null || #arrays.length(getSettPrjList) == 0}">
+                            <td colspan="10" style="text-align: center; padding: 30px 0;">검색 결과가 없습니다.</td>
+                        </tr>
+                        <!-- 조회 결과 contents -->
+                        <tr th:unless="${getSettPrjList == null || #arrays.length(getSettPrjList) == 0}" th:each="l :${getSettPrjList}">
+                            <td>
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td th:switch="${l.projectPartition}">
+                                <a th:case="리워드" class="detail-link" th:href="@{/user/reward/detail(rewardProjectCode=${l.projectCode})}">[[${l.projectCode}]]</a>
+                                <a th:case="기부" class="detail-link" th:href="@{/user/donation/detail(donationCode=${l.projectCode})}">[[${l.projectCode}]]</a>
+                                <a th:case="투자" class="detail-link" th:href="@{/user/investment/detail/main(investmentCode=${l.projectCode})}">[[${l.projectCode}]]</a>
+                            </td>
+
+                            <td class="table-data-center">
+                                [[${l.storeName}]]
+                            </td>
+                            <td class="table-data-center">
+                                [[${l.projectPartition}]]
+                            </td>
+                            <td>
+                                [[${l.subject}]]
+                            </td>
+                            <td>
+                                <div style="float:left;"><span class="settlement-pay">[[${l.projectGoalMoney}]]</span> 원</div>
+                            </td>
+                            <td>
+                                <div style="float:left;"><span class="settlement-pay">[[${l.projectAchievementMoney}]]</span> 원</div>
+
+                            </td>
+                            <td class="table-data-center">
+                                <span class="settlement-pay">[[${l.projectAchievementPercent}]]</span> %
+                            </td>
+                            <td class="table-data-center">
+                                [[${l.projectEndDate}]]
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/seller/settlement/addSettlement/info(projectCode=${l.projectCode}, projectPartition=${l.projectPartition})}">신청</a>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </form>
+            <!-- list pager -->
+            <div class="board-page-area">
+                <div class="list-controller-inner">
+                    <ul>
+                        <li class="link-active"><a th:href="@{#}">1</a></li>
+                        <li><a th:href="@{#}">2</a></li>
+                        <li><a th:href="@{#}">3</a></li>
+                        <li><a th:href="@{#}">4</a></li>
+                        <li><a th:href="@{#}">5</a></li>
+                        <li><a th:href="@{#}">6</a></li>
+                    </ul>
+                    <div class="list-btn-area">
+                        <button class="prev-transfer">
+                            <span>prev</span>
+                        </button>
+                        <button class="next-transfer">
+                            <span>next</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+<!--        <div class="btn-area">-->
+<!--            <ul>-->
+<!--                <li>-->
+<!--                    <button id="orderBackBtn" class="submitBtn" type="button" onclick="submitValidation()">정산 신청</button>-->
+<!--                </li>-->
+<!--            </ul>-->
+<!--        </div>-->
+
+
+</th:block>
+</body>
+</html>

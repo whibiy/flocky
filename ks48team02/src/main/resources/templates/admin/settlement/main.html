@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+        // 기간 선택 min value setting
+        $('input[name="amDateSettStartDate"]').on('change', function(){
+            let startDate = $(this).val();
+            $('input[name="amDateSettEndDate"]').prop('min',startDate);
+        });
+
+
+
+        function startDate(dateObj) {
+            const dateLimit = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            let startDateValue = "";
+
+            let idxNum = nowDateSet.getMonth() - 2;
+
+            if (idxNum < 0) {
+                startDateValue += nowDateSet.getFullYear() - 1;
+                idxNum = 12 + idxNum;
+                startDateValue += "-";
+            } else {
+                startDateValue += nowDateSet.getFullYear();
+                startDateValue += "-";
+            }
+
+            if (dateLimit[nowDateSet.getMonth()] > dateLimit[idxNum - 1]) {
+                startDateValue += String(idxNum).padStart(2, '0');
+                startDateValue += "-";
+                startDateValue += "28";
+            } else {
+                startDateValue += String(idxNum).padStart(2, '0');
+                startDateValue += "-";
+                startDateValue += String(nowDateSet.getDate()).padStart(2, '0');
+            }
+            return startDateValue;
+        }
+
+        let startDateValue = startDate(nowDateSet);
+        let endDateValue = `${nowDateSet.getFullYear()}-${String(nowDateSet.getMonth() + 1).padStart(2, '0')}-${String(nowDateSet.getDate()).padStart(2, '0')}`;
+
+        console.log(startDateValue, '<-- start value');
+        console.log(endDateValue, '<-- end value');
+
+        $('input[name="amDateSettStartDate"]').val(startDateValue);
+        $('input[name="amDateSettEndDate"]').val(endDateValue);
+
+    </script>
+</th:block>
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <div class="admin-wrapper"> <!-- 수정 -->
+        <!-- settlement info header -->
+        <div th:replace="~{admin/fragments/settlement_info_header :: settlementInfoHeader}">
+
+        </div>
+        <!-- contents area -->
+        <div class="admin-content-wrapper form-table">
+            <form id="amYearChartForm" method="get">
+                <table class="partition-select">
+                    <tbody>
+                    <tr>
+                        <td>
+                            기간
+                        </td>
+                        <td>
+                            <input type="date" name="amDateSettStartDate">
+                            <span> - </span>
+                            <input type="date" name="amDateSettEndDate">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            프로젝트 분류
+                        </td>
+                        <td>
+                            <select id="amProjectSelect" name="amProjectSelect">
+                                <option value="">=== 프로젝트 분류를 선택해주세요 ===</option>
+                                <option value="total">전체 프로젝트</option>
+                                <option value="reward">리워드 프로젝트</option>
+                                <option value="donation">기부 프로젝트</option>
+                                <option value="investment">투자 프로젝트</option>
+                            </select>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="btn-area">
+                    <button type="button" class="submitBtn">검색</button>
+                </div>
+            </form>
+        </div>
+        <div class="title-wrap">
+            <h4 class="admin-content-title">정산 신청 목록</h4>
+            <div class="btnArea">
+                <button type="button" class="printBtn"><span>액셀 다운로드</span></button>
+            </div>
+        </div>
+        <div class="admin-content-wrapper">
+            <div class="data-info">
+                <div class="list-count-area">
+                    <ul>
+                        <li>정산 신청 총 <span class="count-data total-list">0</span>건</li>
+                        <li>선택 항목 총 <span class="count-data select-list-count">0</span>건</li>
+                    </ul>
+                </div>
+                <div class="list-count-selector">
+                    <select name="orderby">
+                        <option value="regist_d">등록일 역순</option>
+                        <option value="regist_a">등록일 순</option>
+                        <option>-----------------</option>
+                        <option value="project_name_d">프로젝트명 역순</option>
+                        <option value="project_name_a">프로젝트명 역순</option>
+                        <option>-----------------</option>
+                        <option value="appli_user_name_d">신청아이디 역순</option>
+                        <option value="appli_user_name_a">신청아이디 순</option>
+                    </select>
+                    <select name="count-select">
+                        <option value="15">15개씩 보기</option>
+                        <option value="20">20개씩 보기</option>
+                        <option value="30">30개씩 보기</option>
+                    </select>
+                </div>
+            </div>
+            <form>
+
+                <table class="settlement-log">
+                    <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox" name="allSelect" id="allSelectBtn">
+                            </th>
+                            <th style="width:8%;">정산신청코드</th>
+                            <th style="width:8%;">프로젝트<br>분류</th>
+                            <th style="width:20%;">프로젝트 명</th>
+                            <th>신청<br>아이디</th>
+                            <th style="width:15%;">
+                                정산 예정 금액
+                            </th>
+                            <th style="width:10%;">정산 예정일</th>
+                            <th style="width:10%;">정산 완료일</th>
+                            <th>처리 현황</th>
+                            <th>담당자</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- not contents -->
+                        <tr style="display:none;">
+                            <td colspan="10" style="text-align: center; padding: 30px 0;">검색 결과가 없습니다.</td>
+                        </tr>
+                        <!-- contents -->
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/admin/settlement/remove}">ORD20231022-000001</a>
+                            </td>
+                            <td class="table-data-center">
+                                리워드
+                            </td>
+                            <td>
+                                [프로젝트]프로젝트명 입니다요
+                            </td>
+                            <td class="table-data-center">
+                                id020
+                            </td>
+                            <td>
+                                <div style="float:left;"><span class="settlement-pay">150,000,000</span> 원</div>
+                            </td>
+                            <td class="table-data-center">
+                                2023-10-20
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                처리중
+                            </td>
+                            <td class="table-data-center">
+                                id001
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/admin/settlement/remove}">ORD20231022-000001</a>
+                            </td>
+                            <td class="table-data-center">
+                                리워드
+                            </td>
+                            <td>
+                                [프로젝트]프로젝트명 입니다요
+                            </td>
+                            <td class="table-data-center">
+                                id020
+                            </td>
+                            <td>
+                                <div style="float:left;"><span class="settlement-pay">150,000,000</span> 원</div>
+                            </td>
+                            <td class="table-data-center">
+                                2023-10-20
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                처리중
+                            </td>
+                            <td class="table-data-center">
+                                id001
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/admin/settlement/remove}">ORD20231022-000001</a>
+                            </td>
+                            <td class="table-data-center">
+                                리워드
+                            </td>
+                            <td>
+                                [프로젝트]프로젝트명 입니다요
+                            </td>
+                            <td class="table-data-center">
+                                id020
+                            </td>
+                            <td>
+                                <div style="float:left;"><span class="settlement-pay">150,000,000</span> 원</div>
+                            </td>
+                            <td class="table-data-center">
+                                2023-10-20
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                처리중
+                            </td>
+                            <td class="table-data-center">
+                                id001
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/admin/settlement/remove}">ORD20231022-000001</a>
+                            </td>
+                            <td class="table-data-center">
+                                리워드
+                            </td>
+                            <td>
+                                [프로젝트]프로젝트명 입니다요
+                            </td>
+                            <td class="table-data-center">
+                                id020
+                            </td>
+                            <td>
+                                <div style="float:left;"><span class="settlement-pay">150,000,000</span> 원</div>
+                            </td>
+                            <td class="table-data-center">
+                                2023-10-20
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                처리중
+                            </td>
+                            <td class="table-data-center">
+                                id001
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/admin/settlement/remove}">ORD20231022-000001</a>
+                            </td>
+                            <td class="table-data-center">
+                                리워드
+                            </td>
+                            <td>
+                                [프로젝트]프로젝트명 입니다요
+                            </td>
+                            <td class="table-data-center">
+                                id020
+                            </td>
+                            <td>
+                                <div style="float:left;"><span class="settlement-pay">150,000,000</span> 원</div>
+                            </td>
+                            <td class="table-data-center">
+                                2023-10-20
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                처리중
+                            </td>
+                            <td class="table-data-center">
+                                id001
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/admin/settlement/remove}">ORD20231022-000001</a>
+                            </td>
+                            <td class="table-data-center">
+                                리워드
+                            </td>
+                            <td>
+                                [프로젝트]프로젝트명 입니다요
+                            </td>
+                            <td class="table-data-center">
+                                id020
+                            </td>
+                            <td>
+                                <div style="float:left;"><span class="settlement-pay">150,000,000</span> 원</div>
+                            </td>
+                            <td class="table-data-center">
+                                2023-10-20
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                처리중
+                            </td>
+                            <td class="table-data-center">
+                                id001
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/admin/settlement/remove}">ORD20231022-000001</a>
+                            </td>
+                            <td class="table-data-center">
+                                리워드
+                            </td>
+                            <td>
+                                [프로젝트]프로젝트명 입니다요
+                            </td>
+                            <td class="table-data-center">
+                                id020
+                            </td>
+                            <td>
+                                <div style="float:left;"><span class="settlement-pay">150,000,000</span> 원</div>
+                            </td>
+                            <td class="table-data-center">
+                                2023-10-20
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                처리중
+                            </td>
+                            <td class="table-data-center">
+                                id001
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/admin/settlement/remove}">ORD20231022-000001</a>
+                            </td>
+                            <td class="table-data-center">
+                                리워드
+                            </td>
+                            <td>
+                                [프로젝트]프로젝트명 입니다요
+                            </td>
+                            <td class="table-data-center">
+                                id020
+                            </td>
+                            <td>
+                                <div style="float:left;"><span class="settlement-pay">150,000,000</span> 원</div>
+                            </td>
+                            <td class="table-data-center">
+                                2023-10-20
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                처리중
+                            </td>
+                            <td class="table-data-center">
+                                id001
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/admin/settlement/remove}">ORD20231022-000001</a>
+                            </td>
+                            <td class="table-data-center">
+                                리워드
+                            </td>
+                            <td>
+                                [프로젝트]프로젝트명 입니다요
+                            </td>
+                            <td class="table-data-center">
+                                id020
+                            </td>
+                            <td>
+                                <div style="float:left;"><span class="settlement-pay">150,000,000</span> 원</div>
+                            </td>
+                            <td class="table-data-center">
+                                2023-10-20
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                처리중
+                            </td>
+                            <td class="table-data-center">
+                                id001
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/admin/settlement/remove}">ORD20231022-000001</a>
+                            </td>
+                            <td class="table-data-center">
+                                리워드
+                            </td>
+                            <td>
+                                [프로젝트]프로젝트명 입니다요
+                            </td>
+                            <td class="table-data-center">
+                                id020
+                            </td>
+                            <td>
+                                <div style="float:left;"><span class="settlement-pay">150,000,000</span> 원</div>
+                            </td>
+                            <td class="table-data-center">
+                                2023-10-20
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                처리중
+                            </td>
+                            <td class="table-data-center">
+                                id001
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/admin/settlement/remove}">ORD20231022-000001</a>
+                            </td>
+                            <td class="table-data-center">
+                                리워드
+                            </td>
+                            <td>
+                                [프로젝트]프로젝트명 입니다요
+                            </td>
+                            <td class="table-data-center">
+                                id020
+                            </td>
+                            <td>
+                                <div style="float:left;"><span class="settlement-pay">150,000,000</span> 원</div>
+                            </td>
+                            <td class="table-data-center">
+                                2023-10-20
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                처리중
+                            </td>
+                            <td class="table-data-center">
+                                id001
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/admin/settlement/remove}">ORD20231022-000001</a>
+                            </td>
+                            <td class="table-data-center">
+                                리워드
+                            </td>
+                            <td>
+                                [프로젝트]프로젝트명 입니다요
+                            </td>
+                            <td class="table-data-center">
+                                id020
+                            </td>
+                            <td>
+                                <div style="float:left;"><span class="settlement-pay">150,000,000</span> 원</div>
+                            </td>
+                            <td class="table-data-center">
+                                2023-10-20
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                처리중
+                            </td>
+                            <td class="table-data-center">
+                                id001
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/admin/settlement/remove}">ORD20231022-000001</a>
+                            </td>
+                            <td class="table-data-center">
+                                리워드
+                            </td>
+                            <td>
+                                [프로젝트]프로젝트명 입니다요
+                            </td>
+                            <td class="table-data-center">
+                                id020
+                            </td>
+                            <td>
+                                <div style="float:left;"><span class="settlement-pay">150,000,000</span> 원</div>
+                            </td>
+                            <td class="table-data-center">
+                                2023-10-20
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                처리중
+                            </td>
+                            <td class="table-data-center">
+                                id001
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/admin/settlement/remove}">ORD20231022-000001</a>
+                            </td>
+                            <td class="table-data-center">
+                                리워드
+                            </td>
+                            <td>
+                                [프로젝트]프로젝트명 입니다요
+                            </td>
+                            <td class="table-data-center">
+                                id020
+                            </td>
+                            <td>
+                                <div style="float:left;"><span class="settlement-pay">150,000,000</span> 원</div>
+                            </td>
+                            <td class="table-data-center">
+                                2023-10-20
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                처리중
+                            </td>
+                            <td class="table-data-center">
+                                id001
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/admin/settlement/remove}">ORD20231022-000001</a>
+                            </td>
+                            <td class="table-data-center">
+                                리워드
+                            </td>
+                            <td>
+                                [프로젝트]프로젝트명 입니다요
+                            </td>
+                            <td class="table-data-center">
+                                id020
+                            </td>
+                            <td>
+                                <div style="float:left;"><span class="settlement-pay">150,000,000</span> 원</div>
+                            </td>
+                            <td class="table-data-center">
+                                2023-10-20
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                처리중
+                            </td>
+                            <td class="table-data-center">
+                                id001
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+            <!-- list pager -->
+            <div class="board-page-area">
+                <div class="list-controller-inner">
+                    <ul>
+                        <li class="link-active"><a th:href="@{#}">1</a></li>
+                        <li><a th:href="@{#}">2</a></li>
+                        <li><a th:href="@{#}">3</a></li>
+                        <li><a th:href="@{#}">4</a></li>
+                        <li><a th:href="@{#}">5</a></li>
+                        <li><a th:href="@{#}">6</a></li>
+                    </ul>
+                    <div class="list-btn-area">
+                        <button class="prev-transfer">
+                            <span>prev</span>
+                        </button>
+                        <button class="next-transfer">
+                            <span>next</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</th:block>
+</body>
+</html>

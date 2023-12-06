@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+
+
+        <div class="sett-total-data admin-content-wrapper form-table" th:fragment="settlementInfoHeader">
+            <div class="sett-total-item">
+                <h5>오늘 들어온 정산 신청</h5>
+                <div class="sett-total-item-data"><a class="today-add-count" th:href="@{/admin/settlement/todayList}" data-value="15">0</a>건</div>
+            </div>
+            <div class="sett-total-item">
+                <h5>처리중</h5>
+                <div class="sett-total-item-data"><a class="progress-add-count" th:href="@{/admin/settlement/inProgressList}" data-value="112">0</a>건</div>
+            </div>
+            <div class="sett-total-item">
+                <h5>오늘 처리 완료</h5>
+                <div class="sett-total-item-data"><a class="progress-completed-count" th:href="@{/admin/settlement/completedList}" data-value="5">0</a>건</div>
+            </div>
+            <div class="sett-total-item">
+                <h5>정산 보류</h5>
+                <div class="sett-total-item-data"><a class="progress-error-count" th:href="@{/admin/settlement/reservationList}" data-value="1">0</a>건</div>
+            </div>
+        </div>
+
+</html>

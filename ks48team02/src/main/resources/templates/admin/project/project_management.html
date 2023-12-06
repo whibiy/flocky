@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+    <style>
+        .table-data-center-modify{
+            text-align: center;
+            color: blue;
+            text-decoration: underline;
+        }
+        .board-page-area ul li.active a {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+    <script type="text/javascript" th:src="@{/user/js/tableToExcel.js}"></script>
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+
+        function sortItemClickedStyle(element) {
+            const listItems = document.querySelectorAll("#sort-item-wrap li");
+
+            for (const listItem of listItems) {
+                listItem.classList.remove("selected");
+            }
+
+            element.classList.add("selected");
+        }
+        function cateItemClickedStyle(element) {
+            const listItems = document.querySelectorAll("#category-wrap li");
+
+            for (const listItem of listItems) {
+                listItem.classList.remove("selected");
+            }
+
+            element.classList.add("selected");
+        }
+
+        let projectTotal = 0;
+        // 조건에 맞는 tr들만 모아 놓음
+        function twoSort(classification, reason) {
+            const $trEles = [];
+            $('.settlement-log tbody tr').each(function() {
+                const $cfEle = $(this).find('.project-classification'); // 분류
+                const $jrEle = $(this).find('.judge-reason'); // 현황
+
+                if ($cfEle.text().trim() == classification.trim() && $jrEle.text().trim() == reason.trim()) {
+                    $trEles.push($(this));
+                }
+            });
+            if($trEles.length == 0){
+                $('table.settlement-log tbody tr.not-contents').show();
+            }else{
+                $trEles.forEach(function($trEle) {
+                    $trEle.show();
+                });
+            }
+
+            projectTotal = $trEles.length;
+        }
+
+
+        // 셀렉트 박스에서 선택값을 가져오는 함수
+        function getSelectedValues() {
+            const $selectedValue1 = $('.project-classification-select').val(); // 프로젝트 분류
+            const $selectedValue2 = $('.project-select').val(); // 프로젝트 현황
+            return { classification: $selectedValue1, status: $selectedValue2 };
+        }
+
+        // 테이블을 필터링하는 함수
+        function filterTable() {
+            const selectedValues = getSelectedValues();
+
+            // 모든 <tr> 요소를 숨깁니다.
+            $('table.settlement-log tbody tr').hide();
+
+            if(selectedValues.classification == 0 && selectedValues.status == 0){
+                $('table.settlement-log tbody tr').show();
+                projectTotal = $('table.settlement-log tbody tr').length -1;
+                // 프로젝트가 1개도 없을 때 검색 결과가 없습니다 값을 띄워주는 기능
+                if($('table.settlement-log tbody tr').length == 1){
+                    $('table.settlement-log tbody tr.not-contents').show();
+                    projectTotal = 0;
+                }else{
+                    $('table.settlement-log tbody tr.not-contents').hide();
+                }
+            }else if(selectedValues.classification == 0 && selectedValues.status == 1){
+                $(`table.settlement-log tbody tr .judge-reason:contains("심사승인")`).closest('tr').show();
+                projectTotal = $(`table.settlement-log tbody tr .judge-reason:contains("심사승인")`).closest('tr').length;
+            }else if(selectedValues.classification == 0 && selectedValues.status == 2){
+                $(`table.settlement-log tbody tr .judge-reason:contains("심사반려")`).closest('tr').show();
+                projectTotal = $(`table.settlement-log tbody tr .judge-reason:contains("심사반려")`).closest('tr').length;
+            }else if(selectedValues.classification == 0 && selectedValues.status == 3){
+                $(`table.settlement-log tbody tr .judge-reason:contains("심사중")`).closest('tr').show();
+                projectTotal = $(`table.settlement-log tbody tr .judge-reason:contains("심사중")`).closest('tr').length;
+            }else if(selectedValues.classification == 0 && selectedValues.status == 4){
+                $(`table.settlement-log tbody tr .judge-reason:contains("진행중")`).closest('tr').show();
+                projectTotal = $(`table.settlement-log tbody tr .judge-reason:contains("진행중")`).closest('tr').length;
+            }else if(selectedValues.classification == 0 && selectedValues.status == 5){
+                $(`table.settlement-log tbody tr .judge-reason:contains("성공")`).closest('tr').show();
+                projectTotal = $(`table.settlement-log tbody tr .judge-reason:contains("성공")`).closest('tr').length;
+            }else if(selectedValues.classification == 0 && selectedValues.status == 6){
+                $(`table.settlement-log tbody tr .judge-reason:contains("실패")`).closest('tr').show();
+                projectTotal = $(`table.settlement-log tbody tr .judge-reason:contains("실패")`).closest('tr').length;
+            }else if(selectedValues.classification == 1 && selectedValues.status == 0){
+                $(`table.settlement-log tbody tr .project-classification:contains("리워드")`).closest('tr').show();
+                projectTotal = $(`table.settlement-log tbody tr .project-classification:contains("리워드")`).closest('tr').length;
+            }else if(selectedValues.classification == 1 && selectedValues.status == 1){
+                twoSort('리워드', '심사승인');
+            }else if(selectedValues.classification == 1 && selectedValues.status == 2){
+                twoSort('리워드', '심사반려');
+            }else if(selectedValues.classification == 1 && selectedValues.status == 3){
+                twoSort('리워드', '심사중');
+            }else if(selectedValues.classification == 1 && selectedValues.status == 4){
+                twoSort('리워드', '진행중');
+            }else if(selectedValues.classification == 1 && selectedValues.status == 5){
+                twoSort('리워드', '성공');
+            }else if(selectedValues.classification == 1 && selectedValues.status == 6){
+                twoSort('리워드', '실패');
+            }else if(selectedValues.classification == 2 && selectedValues.status == 0){
+                $(`table.settlement-log tbody tr .project-classification:contains("기부")`).closest('tr').show();
+                projectTotal = $(`table.settlement-log tbody tr .project-classification:contains("기부")`).closest('tr').length;
+            }else if(selectedValues.classification == 2 && selectedValues.status == 1){
+                twoSort('기부', '심사승인');
+            }else if(selectedValues.classification == 2 && selectedValues.status == 2){
+                twoSort('기부', '심사반려');
+            }else if(selectedValues.classification == 2 && selectedValues.status == 3){
+                twoSort('기부', '심사중');
+            }else if(selectedValues.classification == 2 && selectedValues.status == 4){
+                twoSort('기부', '진행중');
+            }else if(selectedValues.classification == 2 && selectedValues.status == 5){
+                twoSort('기부', '성공');
+            }else if(selectedValues.classification == 2 && selectedValues.status == 6){
+                twoSort('기부', '실패');
+            }else if(selectedValues.classification == 3 && selectedValues.status == 0){
+                $(`table.settlement-log tbody tr .project-classification:contains("투자")`).closest('tr').show();
+                projectTotal = $(`table.settlement-log tbody tr .project-classification:contains("투자")`).closest('tr').length;
+            }else if(selectedValues.classification == 3 && selectedValues.status == 1){
+                twoSort('투자', '심사승인');
+            }else if(selectedValues.classification == 3 && selectedValues.status == 2){
+                twoSort('투자', '심사반려');
+            }else if(selectedValues.classification == 3 && selectedValues.status == 3){
+                twoSort('투자', '심사중');
+            }else if(selectedValues.classification == 3 && selectedValues.status == 4){
+                twoSort('투자', '진행중');
+            }else if(selectedValues.classification == 3 && selectedValues.status == 5){
+                twoSort('투자', '성공');
+            }else if(selectedValues.classification == 3 && selectedValues.status == 6){
+                twoSort('투자', '실패');
+            }
+        }
+
+        // 셀렉트 박스 변경 이벤트 핸들러
+        $('.project-classification-select, .project-select').on('change', function () {
+            filterTable();
+            // 총 프로젝트 개수 띄우기
+            $('.total-list').text(projectTotal);
+        });
+
+        // 목록 진입 시 프로젝트가 1개도 없을 때 검색 결과가 없습니다 값을 띄워주기 위해 설정 (초기화)
+        if($('table.settlement-log tbody tr').length == 1){
+            $('table.settlement-log tbody tr.not-contents').show();
+        }else{
+            $('table.settlement-log tbody tr.not-contents').hide();
+        }
+
+        // 총 프로젝트 개수 초기화
+        $('.total-list').text($('table.settlement-log tbody tr').length -1);
+
+        $('.printBtn').click(function(){
+            const settlementLog = tableToJson('.settlement-log');
+            const fileName = $('.settlement-log').data('listName');
+            console.log(settlementLog)
+            exportExcel(settlementLog, fileName);
+        });
+
+        $('.project-classification').each(function (){
+            let projectCf = $(this).prev().text().slice(0, 3);
+            if(projectCf == 'don'){
+                $(this).text('기부');
+            }else if (projectCf == 'rwd'){
+                $(this).text('리워드');
+            }else{
+                $(this).text('투자');
+            }
+        });
+
+        $('.judge-reason').each(function (){
+           if($(this).text() == '0'){
+               $(this).text('심사대기');
+           }else if ($(this).text() == '1'){
+               $(this).text('심사승인');
+           }else if ($(this).text() == '2'){
+               $(this).text('심사반려');
+           }else if ($(this).text() == '3'){
+               $(this).text('진행중');
+           }else if ($(this).text() == '4'){
+               $(this).text('성공');
+           }else if ($(this).text() == '5'){
+               $(this).text('실패');
+           }
+
+        });
+
+        $('.current-goal-money').each(function (){
+            let curGoalMoney = $(this).text();
+            $(this).text(curGoalMoney.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+        });
+
+        $('.goal-money').each(function (){
+            let curGoalMoney = $(this).text();
+            $(this).text(curGoalMoney.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+        });
+
+        const itemsPerPage = 10; // 페이지당 보여줄 행 수
+        let currentPage = 1; // 현재 페이지
+        const allItems = $('.settlement-log tbody tr'); // 모든 행
+
+        function showItemsForPage(page) {
+            allItems.hide(); // 모든 행 숨김
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            allItems.slice(startIndex, endIndex).show(); // 해당 페이지의 행들 보여줌
+
+            // 행이 없는 경우 "검색 결과가 없습니다." 메시지 표시/숨김
+            if ($('.settlement-log tbody tr:visible').length === 1) {
+                $('.not-contents').show();
+            } else {
+                $('.not-contents').hide();
+            }
+        }
+
+        function updatePagination() {
+            const totalItems = allItems.length; // 전체 행의 수
+            const totalPages = Math.ceil(totalItems / itemsPerPage); // 전체 페이지 수
+            const pagination = $('.board-page-area ul');
+
+            pagination.empty();
+            for (let i = 1; i <= totalPages; i++) {
+                const listItem = $('<li><a href="#">' + i + '</a></li>');
+                if (i === currentPage) {
+                    listItem.addClass('active'); // 현재 페이지 버튼에 클래스 추가
+                }
+                listItem.on('click', function() {
+                    currentPage = i;
+                    showItemsForPage(currentPage);
+                    updatePagination();
+                });
+                pagination.append(listItem);
+            }
+
+            const prevButton = $('.prev-transfer');
+            const nextButton = $('.next-transfer');
+
+            if (currentPage > 1) {
+                prevButton.show();
+            } else {
+                prevButton.hide();
+            }
+
+            if (currentPage < totalPages) {
+                nextButton.show();
+            } else {
+                nextButton.hide();
+            }
+        }
+
+        $('.prev-transfer').on('click', function() {
+            if (currentPage > 1) {
+                currentPage--;
+                showItemsForPage(currentPage);
+                updatePagination();
+            }
+        });
+
+        $('.next-transfer').on('click', function() {
+            const totalItems = allItems.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                showItemsForPage(currentPage);
+                updatePagination();
+            }
+        });
+
+        showItemsForPage(currentPage);
+        updatePagination();
+
+    </script>
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <div class="title-wrap">
+        <h4 class="admin-content-title">현재 프로젝트 목록</h4>
+        <div class="btnArea">
+            <button type="button" class="printBtn"><span>액셀 다운로드</span></button>
+        </div>
+    </div>
+    <div class="admin-content-wrapper">
+        <div class="data-info">
+            <div class="list-count-area">
+                <ul>
+                    <li>프로젝트 목록 총 <span class="count-data total-list">0</span>건</li>
+                </ul>
+            </div>
+            <div class="list-count-selector">
+                <select class="project-classification-select">
+                    <option value="0">전체</option>
+                    <option value="1">리워드</option>
+                    <option value="2">기부</option>
+                    <option value="3">투자</option>
+                </select>
+                <select class="project-select">
+                    <option value="0">전체 프로젝트</option>
+                    <option value="1">심사승인된 프로젝트</option>
+                    <option value="2">심사반려된 프로젝트</option>
+                    <option value="3">심사중인 프로젝트</option>
+                    <option value="4">진행중인 프로젝트</option>
+                    <option value="5">성공한 프로젝트</option>
+                    <option value="6">실패한 프로젝트</option>
+                </select>
+            </div>
+        </div>
+        <form>
+
+            <table cellspacing="0" class="settlement-log" data-list-name="프로젝트전체현황">
+                <thead>
+                <tr>
+                    <th style="width:8%;">프로젝트코드</th>
+                    <th style="width:8%;">프로젝트</br>분류</th>
+                    <th style="width:8%;">프로젝트</br>현황</th>
+                    <th style="width:8%;">신청 아이디</th>
+                    <th style="width:20%;">프로젝트 명</th>
+                    <th style="width:8%;">
+                        스토어 명
+                    </th>
+                    <th style="width:15%;">
+                        프로젝트 현재 달성 금액
+                    </th>
+                    <th style="width:15%;">
+                        프로젝트 목표 금액
+                    </th>
+                    <th style="width:10%;">공고 등록일자</th>
+                    <th style="width:10%;">공고 마감일자</th>
+                    <th>담당자</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                <!-- not contents -->
+                <tr class="not-contents">
+                    <td colspan="11" style="text-align: center; padding: 30px 0;">검색 결과가 없습니다.</td>
+                </tr>
+                <!-- contents -->
+                <tr th:each="l : ${allProjectListList}">
+                    <td class="table-data-center" th:text="${l.projectCode}">
+                        ORD20231022-000001
+                    </td>
+                    <td class="table-data-center project-classification">
+
+                    </td>
+                    <td class="table-data-center judge-reason" th:text="${l.projectCondition}">
+                        심사승인
+                    </td>
+                    <td class="table-data-center application-id" th:text="${l.memberId}">
+                        id001
+                    </td>
+                    <td th:text="${l.projectSubject}">
+                        [프로젝트]프로젝트명 입니다요
+                    </td>
+                    <td class="table-data-center project-name" th:text="${l.storeName}">
+                        (주)CJ
+                    </td>
+                    <td>
+                        <div style="float:left;"><span class="current-goal-money" th:text="${l.projectAchievementMoney}"></span> 원</div>
+                    </td>
+                    <td >
+                        <div style="float:left;"><span class="goal-money" th:text="${l.projectGoalMoney}"></span> 원</div>
+                    </td>
+                    <td class="table-data-center" th:text="${l.projectRegDate}">
+                        2023-10-20
+                    </td>
+                    <td class="table-data-center" th:text="${l.projectEndDate}">
+                        2023-11-20
+                    </td>
+                    <td class="table-data-center" th:text="${l.adminId}">
+                        id001
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+        </form>
+
+
+        <!-- list pager -->
+        <div class="board-page-area">
+            <div class="list-controller-inner">
+                <ul>
+                    <li class="link-active"><a th:href="@{#}">1</a></li>
+                    <li><a th:href="@{#}">2</a></li>
+                    <li><a th:href="@{#}">3</a></li>
+                    <li><a th:href="@{#}">4</a></li>
+                    <li><a th:href="@{#}">5</a></li>
+                    <li><a th:href="@{#}">6</a></li>
+                </ul>
+                <div class="list-btn-area">
+                    <button class="prev-transfer">
+                        <span>prev</span>
+                    </button>
+                    <button class="next-transfer">
+                        <span>next</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+</th:block>
+
+</body>
+</html>

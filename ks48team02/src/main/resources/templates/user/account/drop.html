@@ -1,0 +1,303 @@
+<!doctype html>
+<!-- 회원 탈퇴 화면-->
+
+<html xmlns:th="http://www.thymeleaf.org/" lang="ko"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layout/semi_default}">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>회원 탈퇴 페이지</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+
+        #PageWrapper {
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+            align-items: center;
+        }
+
+        #dropContainer {
+            background-color: white;
+            width: 500px;
+            margin:30px;
+            margin-top:80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-logo .top-left-conts {
+            position: absolute;
+            left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @media (max-width: 800px){
+            .navbar.navbar-expand-lg.ftco_navbar.ftco-navbar-light, .py-1.bg-primary {
+                display: none;
+            }
+        }
+
+        .login-logo .user-connection-menu {
+            display: none;
+        }
+
+        /* 탈퇴 동의 체크박스 */
+        .form-check-label {
+            color: grey;
+            font-weight: normal;
+        }
+
+        #drop-title, .drop-check, #solve-problem, .mb-3{
+            padding: 10px;
+
+        }
+
+        /* 확인사항 */
+        #dropTerm dt, #solve-problem{
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        #dropTerm dd{
+            font-size: 13px;
+            color: darkgery;
+            margin: 10px;;
+
+        }
+
+        .solid-bolder{
+            border: 1px solid grey;
+        }
+
+        .agree-check{
+            margin-left: 20px;
+            margin-bottom:50px;
+        }
+
+        .modal-body detail{
+        }
+
+        /*  검은 버튼  */
+        .submitBtn_black {
+            background: #191919;
+            padding: 7px 23px;
+            transition: all .4s;
+            color: #fff;
+            display: inline-block;
+            text-decoration: none;
+            border: 1px solid #191919;
+            font-size: 12px;
+            transition: background 0.3s;
+            margin-left: 7px;
+        }
+
+        .submitBtn_black:hover {
+            background: var(--maincolor);
+            border: 1px solid var(--maincolor);
+        }
+
+        /* 흰 버튼 */
+        .submitBtn_white {
+            background: #fff;
+            padding: 7px 23px;
+            transition: all .4s;
+            color: #191919;
+            display: inline-block;
+            text-decoration: none;
+            border: 1px solid #191919;
+            font-size: 12px;
+            transition: background 0.3s;
+            margin-left: 10px;
+        }
+
+        .submitBtn_white:hover {
+            background: var(--maincolor);
+            border: 1px solid var(--maincolor);
+            color: #fff;
+        }
+
+        .submitBtn_black:disabled{
+            background:lightgrey;
+            border: 1px solid lightgrey;
+        }
+    </style>
+</head>
+
+<body>
+
+<!--사용자별 html 코드-->
+<th:block layout:fragment="customContents">
+    <div id="PageWrapper">
+        <div id="dropContainer">
+            <h1 style="font-weight:550; margin-bottom: 30px;">회원 탈퇴</h1>
+            <div id="drop-title">
+                <h2 >서비스 이용에 불편함이 있으셨나요?</h2>
+
+                <div id="solve-problem">
+                    <a th:href="@{/user/inquiry}" style="color:#235FD9;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-arrow-down-right-square-fill" viewBox="0 0 16 16">
+                            <path d="M14 16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12zM5.904 5.197 10 9.293V6.525a.5.5 0 0 1 1 0V10.5a.5.5 0 0 1-.5.5H6.525a.5.5 0 0 1 0-1h2.768L5.197 5.904a.5.5 0 0 1 .707-.707z"/>
+                        </svg> 불편사항 문의하러 가기 </a>
+                </div>
+            </div>
+
+            <div class="drop-check">
+                <h2>탈퇴 전 확인 사항</h2>
+                <p style="color:red; font-size:15px;">진행 중인 프로젝트가 있는 경우, 탈퇴가 불가합니다.</p>
+
+                <div id="dropTerm">
+                    <dl>
+                        <dt>탈퇴 후 1개월 내 재가입 제한</dt>
+                        <dd>탈퇴 후 3개월 내 동일 아이디(이메일)로 재가입 불가</dd>
+                        <div class="h4 pb-2 mb-4 text-danger border-bottom border-grey"></div>
+                        <dt>탈퇴 후 개인 정보 일괄 삭제</dt>
+                        <dd>참여한/찜한/개설 중인 프로젝트 일괄 삭제</dd>
+                        <dd>쿠폰, 포인트 등 개인 정보 일괄 삭제</dd>
+                        <dd>※ 펀딩이 종료된 프로젝트는 삭제되지 않습니다</dd>
+                        <div class="h4 pb-2 mb-4 text-danger border-bottom border-grey"></div>
+                        <dt>미상환 투자금 환급 불이익 감수</dt>
+                        <dd>아직 상환되지 않은 투자금이 있을때, 투자금을 돌려받지 못할 불이익과 위험 감수</dd>
+                    </dl>
+                </div>
+                <div class="h4 pb-2 mb-4 text-danger border-bottom border-grey"></div>
+                <div class="agree-check">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="checkTerm">
+                        <label class="form-check-label" for="checkTerm" >탈퇴 유의사항을 확인했습니다. </label>
+                        <div id="check-alert" class="form-text" style="color:red; font-size:13px;"></div>
+                    </div>
+                </div>
+
+
+                <div>
+                    <h2>본인 확인</h2>
+                    <div class="mb-3">
+                        <label for="checkPassword" class="form-label">비밀번호 확인</label>
+                        <input type="password" class="form-control" id="checkPassword" readonly="readonly">
+                        <div id="pw-alert" class="form-text" style="color:red; font-size:13px;"></div>
+
+                        <!-- 모달 트리거 버튼   -->
+                        <div style="display: flex; justify-content: flex-end;">
+                            <button
+                                    type="button"
+                                    id="drop-btn"
+                                    class="submitBtn_black"
+                                    data-toggle="modal"
+                                    data-target="#exampleModal"
+                                    style="" disabled >탈퇴하기</button>
+                        </div>
+
+
+                    </div>
+
+                    <!-- 모달팝업 -->
+                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+
+                                <!-- 팝업창 내용 -->
+                                <div class="modal-body detail">
+                                    <p>정말로 탈퇴하시겠습니까?</p>
+
+                                </div>
+
+                                <div class="modal-footer" >
+
+                                    <button type="button" class="submitBtn_white" data-dismiss="modal">취소</button>
+
+                                    <form th:action="@{/user/account/inactivate}" method="POST">
+                                        <input type="hidden" id="loginId" value="${loginId}" />
+                                        <button type="submit" class="submitBtn_black" >확인</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+        <!--   end dropContainer   -->
+
+    </div>
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script th:inline="javascript">
+        let msg = [[${msg}]];
+
+
+
+        /* 비밀번호 입력란 focusout 이벤트리스너 설정 (비밀번호 일지 확인 검사 : ajax) */
+        const $loginId = document.getElementById('loginId');
+        const $inputPw = document.getElementById('checkPassword'); // 비밀번호 확인 입력란
+
+        const $pwAlert = document.getElementById('pw-alert');
+
+        // 비밀번호 입력란 input 이벤트 리스너
+        $inputPw.addEventListener('input',()=>{
+            $.ajax({
+                url : '/user/account/pwCheck',
+                method : 'POST',
+                data : {'memberPw' : $inputPw.value },
+                dataType : 'json'
+            })
+                .done(function (response){
+                    if(response) { // 비밀번호 일치시 버튼 비활성화 풀기
+                        document.getElementById('drop-btn').disabled = false;
+                        $pwAlert.textContent ='';
+                    }else{
+                        $pwAlert.textContent = '비밀번호가 일치하지 않습니다';
+                    }
+                })
+
+                .fail(function (jqXHR, textStatus){
+                    alert('통신 중 오류가 발생하였습니다');
+                    console.log(`Request failed: ${textStatus}`);
+                })
+        })
+
+        // 비밀번호 입력란 click 이벤트 리스너
+        $inputPw.addEventListener('focus', (event)=>{
+            // 체크박스 체크 여부에 따라 비밀번호 입력란 readonly 설정/해제 + 경고문구 설정/해제
+            if(document.getElementById('checkTerm').checked){
+                event.target.readOnly = false;
+                $pwAlert.textContent = '';
+            }else{
+                $pwAlert.textContent = '탈퇴 유의사항을 확인해 주세요.';
+            }
+        })
+
+
+        // 탈퇴하기 클릭이벤트 리스너
+        document.getElementById('drop-btn').addEventListener('click',()=>{
+
+        })
+
+        /* 모달에서 확인 클릭 이벤트리스너 설정 */
+
+    </script>
+
+</th:block>
+
+<!-- 사용자별 스크립트 파일 -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+</body>

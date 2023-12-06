@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <!-- Link Swiper's CSS -->
+    <style>
+        .category-button {
+            border: none;
+            border-radius: 25px; /* 라운드 처리 반경을 조정합니다. */
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .category-li{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-left: 20px;
+        }
+        .selected {
+            font-weight: bold;
+            color: black;
+        }
+        ul.d-flex li:hover {
+            cursor: pointer;
+        }
+        .donation-item-box{
+            width: 350px;
+            height: 300px;
+            cursor: pointer;
+        }
+        .donation-item-first-child{
+            background: grey;
+            width: 350px;
+            height: 200px;
+            border-radius: 5px;
+        }
+        .donation-item-first-child img{
+            width: 100%;
+            height: 100%;
+            border-radius: 5px;
+        }
+        .donation-item-second-child{
+            width: 350px;
+            height: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .donation-item-third-child{
+            width: 350px;
+            height: auto;
+            font-weight: bolder;
+            color: black;
+            font-size: 15px;
+        }
+        .donation-item-fourth-child{
+            width: 350px;
+            height: auto;
+        }
+        .donation-item-span-first{
+            font-weight: bold;
+            font-size: 20px;
+            color: #235FD9;
+        }
+        .donation-item-span-second{
+            margin-left: 5px;
+        }
+        .donation-item-span-third-parent{
+            margin-left: auto;
+            color: #235FD9;
+            background: #cce5ff;
+            font-size: 12px;
+            padding: 2px;
+            border-radius: 5px;
+        }
+        .donation-item-third-child a:link{
+            text-decoration: none;
+        }
+        .donation-item-third-child a:visited{
+            color: black;
+            text-decoration: none;
+        }
+        .donation-item-third-child a:hover{
+            color: blue; text-decoration: underline;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    <link rel="stylesheet" th:href="@{/user/css/swiper-event-css.css}" />
+
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <!-- 	  	<script th:src="@{user/js/swiper-slide-event.js}"></script> -->
+
+</th:block>
+
+
+<!-- 사용자별 스크립트 작성 -->
+
+<th:block layout:fragment="customJsCode">
+
+
+    <script>
+
+        function sortItemClickedStyle(element) {
+            const listItems = document.querySelectorAll("#sort-item-wrap li");
+
+            for (const listItem of listItems) {
+                listItem.classList.remove("selected");
+            }
+
+            element.classList.add("selected");
+
+            switch (element.textContent) {
+                case '마감임박순':{
+
+                    // donation-item-box 클래스를 가진 요소들을 선택합니다.
+                    const boxes = document.querySelectorAll('.donation-item-box');
+                    const proceeding = [];
+                    const progressEnded = [];
+
+                    boxes.forEach(function(box) {
+                        var fifthSpan = box.querySelector('.donation-item-span-fifth');
+                        if (fifthSpan && fifthSpan.textContent.trim() == '3') {
+                            proceeding.push(box);
+                        }else{
+                            progressEnded.push(box);
+                        }
+                    });
+
+                    // 선택된 요소들을 배열로 변환하여 정렬합니다.
+                    var sortedBoxes = proceeding.sort(function(a, b) {
+                        // 각 요소 내부의 donation-item-span-third 클래스를 가진 요소의 값을 비교합니다.
+                        var spanA = a.querySelector('.donation-item-span-third');
+                        var spanB = b.querySelector('.donation-item-span-third');
+
+                        if (spanA && spanB) {
+                            var valueA = parseInt(spanA.textContent) || 0; // 숫자가 아닌 경우 0으로 처리
+                            var valueB = parseInt(spanB.textContent) || 0; // 숫자가 아닌 경우 0으로 처리
+                            return valueA - valueB;
+                        } else {
+                            // 존재하지 않는 요소에 접근하는 경우, 오류 방지를 위해 기본값 0 반환
+                            return 0;
+                        }
+                    });
+
+                    // 정렬된 요소들을 부모 요소에 추가합니다.
+                    var parentElement = document.querySelector('#itemParent');
+                    sortedBoxes.forEach(function(box) {
+                        parentElement.appendChild(box);
+                    });
+                    progressEnded.forEach(function (box){
+                        parentElement.appendChild(box);
+                    });
+                }
+                    break;
+                case '모집금액순':
+                    // donation-item-box 클래스를 가진 요소들을 선택합니다.
+                    var boxes = document.querySelectorAll('.donation-item-box');
+
+                    // 선택된 요소들을 배열로 변환하여 정렬합니다.
+                    var sortedBoxes = Array.from(boxes).sort(function(a, b) {
+                        // 각 요소 내부의 donation-item-span-second 클래스를 가진 요소의 값을 비교합니다.
+                        var valueA = parseInt(a.querySelector('.donation-item-span-second').textContent);
+                        var valueB = parseInt(b.querySelector('.donation-item-span-second').textContent);
+                        return valueB - valueA;
+                    });
+
+                    // 정렬된 요소들을 부모 요소에 추가합니다.
+                    var parentElement = document.querySelector('#itemParent');
+                    sortedBoxes.forEach(function(box) {
+                        parentElement.appendChild(box);
+                    });
+                    break;
+                case '조회순':
+                    // donation-item-box 클래스를 가진 요소들을 선택합니다.
+                    var boxes = document.querySelectorAll('.donation-item-box');
+
+                    // 선택된 요소들을 배열로 변환하여 정렬합니다.
+                    var sortedBoxes = Array.from(boxes).sort(function(a, b) {
+                        // 각 요소 내부의 donation-item-span-third 클래스를 가진 요소의 값을 비교합니다.
+                        var valueA = parseInt(a.querySelector('.donation-item-span-fourth').textContent);
+                        var valueB = parseInt(b.querySelector('.donation-item-span-fourth').textContent);
+                        return valueB - valueA;
+                    });
+
+                    // 정렬된 요소들을 부모 요소에 추가합니다.
+                    var parentElement = document.querySelector('#itemParent');
+                    sortedBoxes.forEach(function(box) {
+                        parentElement.appendChild(box);
+                    });
+                    break;
+                case '최신순':{
+                    // donation-item-box 클래스를 가진 요소들을 선택합니다.
+                    const boxes = document.querySelectorAll('.donation-item-box');
+                    const proceeding = [];
+                    const progressEnded = [];
+
+                    boxes.forEach(function(box) {
+                        var fifthSpan = box.querySelector('.donation-item-span-fifth');
+                        if (fifthSpan && fifthSpan.textContent.trim() == '3') {
+                            proceeding.push(box);
+                        }else{
+                            progressEnded.push(box);
+                        }
+                    });
+
+                    // 선택된 요소들을 배열로 변환하여 정렬합니다.
+                    var sortedBoxes = proceeding.sort(function(a, b) {
+                        // 각 요소 내부의 donation-item-span-third 클래스를 가진 요소의 값을 비교합니다.
+                        var spanA = a.querySelector('.donation-item-span-third');
+                        var spanB = b.querySelector('.donation-item-span-third');
+
+                        if (spanA && spanB) {
+                            var valueA = parseInt(spanA.textContent) || 0; // 숫자가 아닌 경우 0으로 처리
+                            var valueB = parseInt(spanB.textContent) || 0; // 숫자가 아닌 경우 0으로 처리
+                            return valueB - valueA;
+                        } else {
+                            // 존재하지 않는 요소에 접근하는 경우, 오류 방지를 위해 기본값 0 반환
+                            return 0;
+                        }
+                    });
+
+                    // 정렬된 요소들을 부모 요소에 추가합니다.
+                    var parentElement = document.querySelector('#itemParent');
+                    sortedBoxes.forEach(function(box) {
+                        parentElement.appendChild(box);
+                    });
+                    progressEnded.forEach(function (box){
+                        parentElement.appendChild(box);
+                    });
+                }
+                    break;
+            }
+
+
+
+        }
+        function cateItemClickedStyle(element) {
+            const listItems = document.querySelectorAll("#category-wrap li");
+
+            for (const listItem of listItems) {
+                listItem.classList.remove("selected");
+            }
+            element.classList.add("selected");
+            let $selectedEle = element.querySelector('p');
+            let selectedCategoryName = $selectedEle.textContent;
+            $('#projectCateName').text(selectedCategoryName);
+            $('.donation-item-box').each(function (){
+                let cateName = $(this).children().first().val();
+                if(selectedCategoryName == '전체'){
+                    $(this).css('display' ,'block');
+                }else{
+                    if(cateName == selectedCategoryName) {
+                        $(this).css('display' ,'block');
+
+                    }else{
+                        $(this).css('display', 'none');
+                    }
+                }
+            });
+            $('#selectSort').val(0);
+
+        }
+        // 초기 스타일이 적용되도록 직접 호출
+        document.addEventListener("DOMContentLoaded", function() {
+            const sortItemWrap = document.querySelector("#sort-item-wrap li:first-child");
+            sortItemWrap.classList.add("selected");
+
+            const categoryItemWrap = document.querySelector("#category-wrap li:first-child");
+            categoryItemWrap.classList.add("selected");
+
+            $('.donation-item-span-third').each(function (){
+                let currentDate = new Date();
+                // 비교 대상 날짜 설정
+                let targetDate = new Date($(this).text());
+                // 두 날짜 간의 차이 계산 (밀리초 단위)
+                let timeDifference = targetDate - currentDate;
+                // 차이를 일(day) 단위로 변환
+                let daysRemaining = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+                // 남은 일 수
+                let $condition = $(this).parent().next().next().text();
+
+                if (daysRemaining <= 0 && $condition == 4){
+                    $(this).text('종료:성공');
+                    $(this).next().remove();
+                    $(this).addClass('donation-item-span-third-success');
+                    $(this).removeClass('donation-item-span-third');
+                    // $(this).parent().removeClass('donation-item-span-third-parent');
+                }else if(daysRemaining <= 0 && $condition == 5){
+                    $(this).text('종료:실패');
+                    $(this).addClass('donation-item-span-third-fail');
+                    $(this).next().remove();
+                    $(this).removeClass('donation-item-span-third');
+                    $(this).parent().css('background', 'rgba(255,1,15,0.32)');
+                    $(this).parent().css('color', 'rgba(255,1,15,0.77)');
+
+                }else {
+                    $(this).text(daysRemaining);
+                }
+
+            });
+
+            // donation-item-box 클래스를 가진 요소들을 선택합니다.
+            const boxes = document.querySelectorAll('.donation-item-box');
+            const proceeding = [];
+            const progressEnded = [];
+
+            boxes.forEach(function(box) {
+                var fifthSpan = box.querySelector('.donation-item-span-fifth');
+                if (fifthSpan && fifthSpan.textContent.trim() == '3') {
+                    proceeding.push(box);
+                }else{
+                    progressEnded.push(box);
+                }
+            });
+
+            // 선택된 요소들을 배열로 변환하여 정렬합니다.
+            var sortedBoxes = proceeding.sort(function(a, b) {
+                // 각 요소 내부의 donation-item-span-third 클래스를 가진 요소의 값을 비교합니다.
+                var spanA = a.querySelector('.donation-item-span-third');
+                var spanB = b.querySelector('.donation-item-span-third');
+
+                if (spanA && spanB) {
+                    var valueA = parseInt(spanA.textContent) || 0; // 숫자가 아닌 경우 0으로 처리
+                    var valueB = parseInt(spanB.textContent) || 0; // 숫자가 아닌 경우 0으로 처리
+                    return valueA - valueB;
+                } else {
+                    // 존재하지 않는 요소에 접근하는 경우, 오류 방지를 위해 기본값 0 반환
+                    return 0;
+                }
+            });
+
+            // 정렬된 요소들을 부모 요소에 추가합니다.
+            var parentElement = document.querySelector('#itemParent');
+            sortedBoxes.forEach(function(box) {
+                parentElement.appendChild(box);
+            });
+            progressEnded.forEach(function (box){
+                parentElement.appendChild(box);
+            });
+
+        });
+
+
+
+        $('.donation-item-span-first').each(function (){
+            let goalMoney = parseInt($(this).next().val());
+            let achievementMoney = parseInt($(this).next().next().text());
+
+            let percent = (achievementMoney / goalMoney) * 100;
+            $(this).text(parseInt(percent) + '%');
+        });
+
+        // 달성 금액 설정
+        $('.donation-item-span-second').each(function (){
+            $(this).text($(this).text().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '원');
+        });
+
+        $('#selectSort').change(function (){
+            if($(this).val() == 0){
+                $('.donation-item-box').each(function (){
+                    const $itemBox = $(this);
+                    if ($('#category-wrap').children('.selected').text().trim() == '전체') {
+                        $itemBox.css('display', 'block');
+                    }else if($('#category-wrap').children('.selected').text().trim() == $itemBox.children().first().val()){
+                        $itemBox.css('display', 'block');
+                    }
+
+                });
+            }else if($(this).val() == 1){
+                $('.donation-item-box').each(function (){
+                    const $itemBox = $(this);
+                    $itemBox.css('display', 'block');
+                    if ($('#category-wrap').children('.selected').text().trim() == '전체'){
+                        if ($itemBox.children('.donation-item-second-child').children('.donation-item-span-fifth').text().trim() == '3'){
+                            $itemBox.css('display', 'block');
+                        }else{
+                            $itemBox.css('display', 'none');
+                        }
+                    }else if($('#category-wrap').children('.selected').text().trim() == $itemBox.children().first().val()){
+                        if ($itemBox.children('.donation-item-second-child').children('.donation-item-span-fifth').text().trim() == '3'){
+                            $itemBox.css('display', 'block');
+                        }else{
+                            $itemBox.css('display', 'none');
+                        }
+                    }else{
+                        $itemBox.css('display', 'none');
+                    }
+                });
+            }else if($(this).val() == 2){
+                $('.donation-item-box').each(function (){
+                    const $itemBox = $(this);
+                    $itemBox.css('display', 'block');
+                    if ($('#category-wrap').children('.selected').text().trim() == '전체'){
+                        if ($itemBox.children('.donation-item-second-child').children('.donation-item-span-fifth').text().trim() != '3'){
+                            $itemBox.css('display', 'block');
+                        }else{
+                            $itemBox.css('display', 'none');
+                        }
+                    }else if($('#category-wrap').children('.selected').text().trim() == $itemBox.children().first().val()){
+                        if ($itemBox.children('.donation-item-second-child').children('.donation-item-span-fifth').text().trim() != '3'){
+                            $itemBox.css('display', 'block');
+                        }else{
+                            $itemBox.css('display', 'none');
+                        }
+                    }else{
+                        $itemBox.css('display', 'none');
+                    }
+                });
+            }
+        });
+
+    </script>
+
+</th:block>
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <!-- main swiper slide start -->
+    <th:block th:replace="~{common/fragments/mainSlideFragments :: mainSlide}"></th:block>
+    <!-- main swiper slide end -->
+
+    <!-- category start-->
+    <div style="margin-top: 50px"></div>
+    <div class="container">
+        <ul id="category-wrap" class="d-flex"  style="margin-left: 100px; margin-top: 20px">
+            <li class="category-li" onclick="cateItemClickedStyle(this)">
+                <button class="category-button" style="background-image: url('/user/images/category/clover.png');"></button>
+                <p>전체</p>
+            </li>
+            <li class="category-li" onclick="cateItemClickedStyle(this)">
+                <button class="category-button"
+                        style="background-image: url('/user/images/category/cat.png');
+                        background-position: center top -10px;">
+                </button>
+                <p>동물</p>
+            </li>
+            <li class="category-li" onclick="cateItemClickedStyle(this)">
+                <button class="category-button" style="background-image: url('/user/images/category/earth.png');"></button>
+                <p>지구촌</p>
+            </li>
+            <li class="category-li" onclick="cateItemClickedStyle(this)">
+                <button class="category-button" style="background-image: url('/user/images/category/oldman.png');"></button>
+                <p>어르신</p>
+            </li>
+            <li class="category-li" onclick="cateItemClickedStyle(this)">
+                <button class="category-button" style="background-image: url('/user/images/category/bathchair.png');"></button>
+                <p>장애인</p>
+            </li>
+            <li class="category-li" onclick="cateItemClickedStyle(this)">
+                <button class="category-button" style="background-image: url('/user/images/category/environment.png');"></button>
+                <p>환경</p>
+            </li>
+            <li class="category-li" onclick="cateItemClickedStyle(this)">
+                <button class="category-button" style="background-image: url('/user/images/category/baby.png');"></button>
+                <p>아동.청소년</p>
+            </li>
+            <li class="category-li" onclick="cateItemClickedStyle(this)">
+                <button class="category-button" style="background-image: url('/user/images/category/civil.png');"></button>
+                <p>시민사회</p>
+            </li>
+            <li class="category-li" onclick="cateItemClickedStyle(this)">
+                <button class="category-button" style="background-image: url('/user/images/category/chat.png');"></button>
+                <p>기타</p>
+            </li>
+            <li class="category-li" onclick="cateItemClickedStyle(this)">
+                <button class="category-button" style="background-image: url('/user/images/category/handshake.png');"></button>
+                <p>다문화</p>
+            </li>
+            <li class="category-li" onclick="cateItemClickedStyle(this)">
+                <button class="category-button" style="background-image: url('/user/images/category/famliy.png');">
+                </button>
+                <p>가족.여성</p>
+            </li>
+        </ul>
+    </div>
+    <div style="margin-bottom: 50px"></div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex col">
+                    <p id="projectCateName" style="font-weight: bold; font-size: 20px; margin-bottom: 20px; color: black; margin-left: 5px">전체</p>
+                    <div id="sort-item-wrap" class="d-flex" style="margin-left: auto">
+                        <select id="selectSort" style="margin-right: 10px; border: 0px solid #ccc; background: none; margin-bottom: 20px">
+                            <option value="0">전체</option>
+                            <option value="1">진행중</option>
+                            <option value="2">종료됨</option>
+                        </select>
+                        <ul class="d-flex" style="margin-top: 5px">
+                            <li class="ml-3" onclick="sortItemClickedStyle(this)">마감임박순</li>
+                            <li class="ml-3" onclick="sortItemClickedStyle(this)">모집금액순</li>
+                            <li class="ml-3" onclick="sortItemClickedStyle(this)">조회순</li>
+                            <li class="ml-3" onclick="sortItemClickedStyle(this)">최신순</li>
+                            <!-- <li class="ml-3" onclick="sortItemClickedStyle(this)">인기순</li>-->
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="container" style="width: 100%; height: 100%">
+                    <div id="itemParent" class="row">
+                        <div class="col donation-item-box col-lg-4" th:if="${l.donationCondition == 3 || l.donationCondition == 4 || l.donationCondition == 5}" th:each="l : ${allDonationInfo}"
+                            th:onclick="|location.href='@{/user/donation/detail(donationCode=${l.donationCode})}'|">
+                            <input class="categoryName" hidden="hidden" th:value="${l.categoryName}">
+                            <div class="donation-item-first-child">
+                                <img class="donation-item-third-child-image" th:src="|@{/summernoteImage/}${l.donationImage}|">
+                            </div>
+                            <div class="donation-item-second-child">
+                                <span class="donation-item-span-first"></span>
+                                <input class="donation-item-goalMoney" th:value="${l.donationGoalMoney}" hidden="hidden"/>
+                                <span class="donation-item-span-second" th:text="${l.donationAchievementMoney}"></span>
+                                <div class="donation-item-span-third-parent">
+                                    <span class="donation-item-span-third" th:text="${l.donationEndDate}"></span><span>일 남음</span>
+                                </div>
+                                <span hidden="hidden" class="donation-item-span-fourth" th:text="${l.searchCount}"></span>
+                                <span hidden="hidden" class="donation-item-span-fifth" th:text="${l.donationCondition}"></span>
+                            </div>
+                            <div class="donation-item-third-child">
+                                <p th:text="${l.donationSubject}"></p>
+                            </div>
+                            <div class="donation-item-fourth-child" th:text="${l.storeName}"></div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+</th:block>
+</html>

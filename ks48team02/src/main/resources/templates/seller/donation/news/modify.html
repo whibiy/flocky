@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <!-- Link Swiper's CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    <link rel="stylesheet" th:href="@{/user/css/swiper-event-css.css}" />
+    <link rel="stylesheet" th:href="@{/user/css/main_style.css}" />
+
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        .info-contents-area {
+            display: none; /*진열안함*/
+        }
+        /* 탭 활성화 버튼 css control */
+        .list-group li.active {
+            background: var(--maincolor);
+        }
+        .form-control{
+            width: 355px;
+        }
+    </style>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <!-- 	  	<script th:src="@{user/js/swiper-slide-event.js}"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/locales/bootstrap-datepicker.ko.min.js"></script>
+
+
+</th:block>
+
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+        $(function(){
+
+            //유효성 검사를 위한 validationCheck 함수.
+            function validationCheck(data) {
+                let isValid =true;
+
+                //1.인수 값이 객체일 경우
+                if(typeof data =='object') {
+
+                    $.each(data, function(){
+                        let checkValue = $(this).val();
+                        if(checkValue === null || checkValue === '' || checkValue === 'undefined') {
+                            isValid = false;
+                            let eleId = $(this).attr('id');
+                            let cate = $(`label[for="${eleId}"]`).text();
+                            alert(`${cate} 필수 입력 항목입니다.`);
+                            $(this).focus();
+                            return isValid;
+                        }
+                    });
+                    //2.인수 값이 객체가 아닐 경우
+                }else{
+                    if(data === null || data === '' || data === 'undefined') {
+                        isValid = false;
+                    }
+                }
+                return isValid;
+            }
+
+            let swiper = function(){
+                new Swiper(".contents-area", {
+                    slidesPerView: 3,
+                    spaceBetween: 20,
+                    navigation: {
+                        nextEl: ".swiper-button-next",
+                        prevEl: ".swiper-button-prev",
+                    },
+                });
+            }
+
+            //왼쪽 탭 선택 시 화면전환
+            $('.list-group li').click(function(){
+                $('.list-group li').removeClass('active');
+                $(this).addClass('active');
+                let clickBunDataTab = $(this).attr('data-tab');
+                $('.info-contents-area').hide();
+                $('#'+clickBunDataTab).show();
+            })
+
+            //다음 단계 버튼 클릭시 화면전환
+            $('.nextBtn').click(function(){
+                let dataTab = $(this).parents('.info-contents-area').attr('id');
+                let nextDataTab = $(this).parents('.info-contents-area').next().attr('id');
+                $(`li[data-tab=${dataTab}]`).removeClass('active');
+                $(`li[data-tab=${nextDataTab}]`).addClass('active');
+                $(this).parents('.info-contents-area').hide();
+                $(this).parents('.info-contents-area').next().show();
+            })
+
+            //이전 단계 버튼 클릭시 화면전환
+            $('.prevBtn').click(function(){
+                let dataTab = $(this).parents('.info-contents-area').attr('id');
+                let prevDataTab = $(this).parents('.info-contents-area').prev().attr('id');
+                $(`li[data-tab=${dataTab}]`).removeClass('active');
+                $(`li[data-tab=${prevDataTab}]`).addClass('active');
+                $(this).parents('.info-contents-area').hide();
+                $(this).parents('.info-contents-area').prev().show();
+            })
+
+
+            $('#date-picker').datepicker({
+                format: "yyyy-mm-dd",
+                startDate: "today",
+                language: "ko",
+                autoclose: true,
+                todayHighlight: true
+            })
+
+            $('#date-picker-delever').datepicker({
+                format: "yyyy-mm-dd",
+                startDate: "today",
+                language: "ko",
+                autoclose: true,
+                todayHighlight: true
+            })
+
+            //초기화 버튼 클릭 시 추가된 슬라이더 폼 모두 삭제
+            $('#rewardInitializeBtn').click(function(){
+                $('.swiper-slide').remove();
+                swiper();
+            })
+
+            //검색 태그 추가 버튼 클릭시 모달 창 열기
+            $('#modalOpenBtn').click(function(e){
+                e.preventDefault();
+                $('#modalSearchTag').modal("show");
+            });
+
+            //모달 창 닫기
+            $('#modalCloseBtn').click(function(){
+                $('#modalSearchTag').modal("hide");
+            });
+
+            //모달 창 추가 버튼 누를 시 검색태그 추가
+            $('#modalActionBtn').click(function(){
+                let addTag = `${$('#modalSearchTagAdd').val()},  `;
+                let searchTag = $('#searchTag').val() + addTag;
+
+                $('#searchTag').val(searchTag);
+                $('#modalSearchTagAdd').val('');
+                $('#modalSearchTag').modal("hide");
+
+            });
+
+
+
+        })
+
+        //추가된 리워드 폼에서 삭제 버튼 클릭 시 폼 삭제
+        $(document).on('click', '.delBtn', function(){
+            $(this).parents('.swiper-slide').remove();
+
+            swiper();
+        })
+
+        //추가된 리워드 폼에서 수정 버튼 클릭 시 폼 삭제 후 리워드 추가 폼에 수정할 데이터 입력
+        $(document).on('click', '.modifyBtn', function(){
+            let rewardSubject = $(this).parent().prev().find('.rewardSebjectH').text();
+            let rewardPrice = $(this).siblings('.rewardPriceInput').val();
+            let rewardDelever = $(this).siblings('.rewardDeleverInput').val();
+
+            $('#rewardSubject').val(rewardSubject);
+            $('#rewardPrice').val(rewardPrice.replace('원',''));
+            $('#date-picker-delever').val(rewardDelever);
+
+            $(this).parents('.swiper-slide').remove();
+
+            swiper();
+        })
+
+        //summerNote TextArea 안에있는 이미지 저장위한 코드
+        $('#detailComent').summernote({
+            height: 500,                 // 에디터 높이
+            minHeight: null,             // 최소 높이
+            maxHeight: null,             // 최대 높이
+            focus: true,                  // 에디터 로딩후 포커스를 맞출지 여부
+            lang: "ko-KR",					// 한글 설정
+            placeholder: '최대 2048자까지 쓸 수 있습니다',	//placeholder 설정
+            callbacks: {	//여기 부분이 이미지를 첨부하는 부분
+                onImageUpload : function(files) {
+                    uploadSummernoteImageFile(files[0],this);
+                },
+                onMediaDelete: function ($target, editor, $editable) {
+                    if (confirm('이미지를 삭제 하시겠습니까?')) {
+                        var deletedImageUrl = $target
+                            .attr('src')
+                            .split('/')
+                            .pop()
+
+                        // ajax 함수 호출
+                        deleteSummernoteImageFile(deletedImageUrl)
+                    }
+                },
+                onPaste: function (e) {
+                    var clipboardData = e.originalEvent.clipboardData;
+                    if (clipboardData && clipboardData.items && clipboardData.items.length) {
+                        var item = clipboardData.items[0];
+                        if (item.kind === 'file' && item.type.indexOf('image/') !== -1) {
+                            e.preventDefault();
+                        }
+                    }
+                }
+            }
+        });
+        /**
+         * 이미지 파일 업로드
+         */
+        let imagesName = [];
+        function uploadSummernoteImageFile(file, editor) {
+            data = new FormData();
+            data.append("file", file);
+            $.ajax({
+                data : data,
+                type : "POST",
+                url : "/user/projectRegistration/uploadSummernoteImageFile",
+                contentType : false,
+                processData : false,
+                success : function(data) {
+                    //항상 업로드된 파일의 url이 있어야 한다.
+                    $(editor).summernote('insertImage', data.url);
+                    imagesName.push(data.filename);
+                }
+            });
+        }
+
+        /**
+         * 이미지 삭제
+         */
+        function deleteSummernoteImageFile(imageName) {
+            data = new FormData()
+            data.append('file', imageName)
+            $.ajax({
+                data: data,
+                type: 'POST',
+                url: 'deleteSummernoteImageFile',
+                contentType: false,
+                enctype: 'multipart/form-data',
+                processData: false,
+            })
+        }
+
+        // summernote 드래그 & 드랍 구현
+        $("div.note-editable").on('drop',function(e){
+            for(i=0; i< e.originalEvent.dataTransfer.files.length; i++){
+                uploadSummernoteImageFile(e.originalEvent.dataTransfer.files[i],$("#donationContents")[0]);
+            }
+            e.preventDefault();
+        })
+
+        $('.cancelBtn').click(function (){
+            if(confirm('정말 취소 하시겠습니까?')){
+                window.history.go(-1);
+            }else{
+                return false;
+            }
+        });
+
+        $('#submitBtn').click(function (){
+            if($('#detailSubject').val() == '' || $('#detailSubject').val() == null || typeof $('#detailSubject').val() == 'undefined'){
+                alert('새소식 제목을 입력해 주세요');
+                return false;
+            }
+            if($('#detailComent').summernote('isEmpty')){
+                alert('새소식 내용을 입력해 주세요');
+                return false;
+            }
+            if(confirm('정말 새소식을 작성하시겠습니까?')){
+                $('#addNewsForm').submit();
+            }else{
+                return false;
+            }
+
+        });
+
+
+    </script>
+
+    <script th:inline="javascript">
+        let projectCode =[[${projectCode}]];
+        if(projectCode) {
+            $('#subject').text('리워드 프로젝트 새소식 수정')
+        }
+    </script>
+
+
+
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <!-- main swiper slide start -->
+
+    <div class="py-3 text-center bg-light">
+        <h2 id="subject">기부 프로젝트 새소식 수정</h2>
+    </div>
+    <br><br>
+
+    <div class="main-section container">
+        <div class="row">
+            <div class="col-lg-2 order-md-first">
+                <!--      <div class="col-md-5 col-lg-4 order-md-last">-->
+                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-primary">&nbsp;&nbsp;수정 목차</span>
+                </h4>
+                <ul class="list-group mb-3">
+                    <li data-tab="storyInfo" class="active list-group-item d-flex justify-content-between lh-sm">
+                        <h6 class="my-0">1.새소식 수정</h6>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- storyInfo area -->
+
+            <div id="storyInfo" class="info-contents-area col-lg-10" style="display: block;">
+
+                <h5 class="mb-2 fw-bord">수정 할 새소식을 등록해 주세요!</h5>
+                <br><br>
+
+                <form id="addNewsForm" th:action="@{/seller/donation/news/modify/update}" method="post">
+                    <div class="row g">
+                        <div class="col-10">
+                            <div class="mb-3">
+                                <label for="detailSubject" class="form-label" style="width: 100%">새소식 제목을 적어주세요</label>
+                                <input name="projectCode"
+                                        th:if="${l.newsCode == newsCode}" th:each="l : ${newsList}" th:value="${l.projectCode}" hidden="hidden">
+                                <input class="form-control" id="detailSubject" name="detailSubject" rows="20" style="width: 100%"
+                                       th:if="${l.newsCode == newsCode}" th:each="l : ${newsList}" th:value="${l.newsSubject}"></input>
+                            </div>
+                        </div>
+                        <div class="col-10">
+                            <div class="mb-3">
+                                <label for="detailComent" class="form-label">기부 프로젝트 새소식을 적어주세요</label>
+                                <textarea id="detailComent" name="detailComent" th:if="${nl.newsCode == newsCode}" th:each="nl : ${newsList}" th:utext="${nl.newsContent}"></textarea>
+                            </div>
+                        </div>
+                        <input name="newsCode" hidden="hidden" th:value="${newsCode}">
+                        <div class="col-8">
+                            <br><br>
+                            <button id="submitBtn" class="w-80 btn btn-primary btn-lg" type="button">제출하기</button>
+                            <button class="cancelBtn w-80 btn btn-primary btn-lg" type="button" style="background-color: whitesmoke; color: black; margin-left: 10px">취소하기</button>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                </form>
+            </div>
+
+
+            <hr class="my-4">
+        </div>
+    </div>
+    </div>
+
+    <br><br><br><br><br><br>
+
+
+</th:block>
+</html>

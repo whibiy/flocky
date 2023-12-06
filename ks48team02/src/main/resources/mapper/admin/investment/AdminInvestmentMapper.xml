@@ -1,0 +1,1373 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksmart.ks48team02.admin.mapper.investment.AdminInvestmentMapper">
+
+    <resultMap type="AdminInvestment" id="adminInvestmentListMap">
+        <id property="investmentCode" column="investment_code"/>
+        <result property="memberId" column="member_id"/>
+        <result property="storeCode" column="store_code"/>
+        <result property="investmentRequestJudgeCode" column="investment_request_judge_code"/>
+        <result property="totalCategoryCode" column="total_category_code"/>
+        <result property="memberIdSeller" column="member_id_seller"/>
+        <result property="investmentSubject" column="investment_subject"/>
+        <result property="investmentContent" column="investment_content"/>
+        <result property="investmentImage" column="investment_image"/>
+        <result property="investmentLike" column="investment_like"/>
+        <result property="investmentAmount" column="investment_amount"/>
+        <result property="invInvestmentAchievementMoney" column="invInvestmentAchievementMoney"/>
+        <result property="investAchievementPercent" column="invest_achievement_percent"/>
+        <result property="investmentCompany" column="investment_company"/>
+        <result property="searchCount" column="search_count"/>
+        <result property="investCount" column="invest_count"/>
+        <result property="securitiesClassification" column="securities_classification"/>
+        <result property="investmentDisplayDate" column="investment_display_date"/>
+        <result property="investmentRegDate" column="investment_reg_date"/>
+        <result property="investmentDeadline" column="investment_deadline"/>
+        <result property="investmentReport" column="investment_report"/>
+        <result property="basicFee" column="basic_fee"/>
+        <result property="contractFeeRate" column="contract_fee_rate"/>
+        <result property="contractFile" column="contract_file"/>
+        <result property="investJudgeSituation" column="invest_judge_situation"/>
+
+        <association property="adminInvestmentRequestJudge" javaType="AdminInvestmentRequestJudge">
+            <id property="investmentRequestJudgeCode" column="investment_request_judge_code"/>
+            <result property="lawSatistifyCode" column="law_satistify_code"/>
+            <result property="incongruitySectorsCode" column="incongruity_sectors_code"/>
+            <result property="companyBusinessTypeCode" column="company_business_type_code"/>
+            <result property="corporateValueEvaluationCode" column="corporate_value_evaluation_code"/>
+            <result property="storeCode" column="store_code"/>
+            <result property="investmentRequestSubject" column="investment_request_subject"/>
+            <result property="memberIdSeller" column="member_id_seller"/>
+            <result property="storeName" column="store_name"/>
+            <result property="investmentCompany" column="investment_company"/>
+            <result property="representativeName" column="representative_name"/>
+            <result property="invBusinessType" column="business_type"/>
+            <result property="investmentRequestContent" column="investment_request_content"/>
+            <result property="investmentAchievementMoney" column="investment_achievement_money"/>
+            <result property="lawSatistifyReason" column="law_satistify_reason"/>
+            <result property="businessProfits" column="business_profits"/>
+            <result property="depreciation" column="depreciation"/>
+            <result property="netDebt" column="net_debt"/>
+            <result property="stockNumber" column="stock_number"/>
+            <result property="issueStockNumber" column="issue_stock_number"/>
+            <result property="investmentRequestDate" column="investment_request_date"/>
+            <result property="investJudgeDate" column="invest_judge_date"/>
+            <result property="memberId" column="member_id"/>
+            <result property="investJudgeResult" column="invest_judge_result"/>
+            <result property="todayRequestCnt" column="todayRequestCnt"/>
+            <result property="standbyCnt" column="standbyCnt"/>
+            <result property="todayProceedCnt" column="todayProceedCnt"/>
+            <result property="rejectCnt" column="rejectCnt"/>
+            <result property="cbtBusinessType" column="cbtBusinessType"/>
+        </association>
+
+        <association property="sellerInvestmentContent" javaType="SellerInvestmentContent">
+            <id property="investmentContentCode" column="investment_content_code"/>
+            <result property="memberId" column="member_id"/>
+            <result property="investmentCode" column="investment_code"/>
+            <result property="memberIdAdmin" column="member_id_admin"/>
+            <result property="projectIntroduction" column="project_introduction"/>
+            <result property="investmentIntroductionImage" column="investment_introduction_image"/>
+            <result property="marketAnalysis" column="market_analysis"/>
+            <result property="marketAnalysisImage" column="market_analysis_image"/>
+            <result property="majorFinancialInformation" column="major_financial_information"/>
+            <result property="majorFinancialInformationImage" column="major_financial_information_image"/>
+            <result property="risk" column="risk"/>
+            <result property="riskImage" column="risk_image"/>
+            <result property="majorManpower" column="major_manpower"/>
+            <result property="majorManpowerImage" column="major_manpower_image"/>
+            <result property="patentAwardDetails" column="patent_award_details"/>
+            <result property="patentAwardDetailsImage" column="patent_award_details_image"/>
+            <result property="etcInvestContent" column="etc_invest_content"/>
+            <result property="etcInvestContentImage" column="etc_invest_content_image"/>
+            <result property="registrationDate" column="registration_date"/>
+        </association>
+    </resultMap>
+
+    <resultMap type="AdminInvestmentRequestJudge" id="adminInvestmentRequestJudgeListMap">
+        <id property="investmentRequestJudgeCode" column="investment_request_judge_code"/>
+        <result property="lawSatistifyCode" column="law_satistify_code"/>
+        <result property="incongruitySectorsCode" column="incongruity_sectors_code"/>
+        <result property="companyBusinessTypeCode" column="company_business_type_code"/>
+        <result property="corporateValueEvaluationCode" column="corporate_value_evaluation_code"/>
+        <result property="storeCode" column="store_code"/>
+        <result property="investmentRequestSubject" column="investment_request_subject"/>
+        <result property="memberIdSeller" column="member_id_seller"/>
+        <result property="storeName" column="store_name"/>
+        <result property="investmentCompany" column="investment_company"/>
+        <result property="representativeName" column="representative_name"/>
+        <result property="invBusinessType" column="business_type"/>
+        <result property="investmentRequestContent" column="investment_request_content"/>
+        <result property="investmentAchievementMoney" column="investment_achievement_money"/>
+        <result property="lawSatistifyReason" column="law_satistify_reason"/>
+        <result property="businessProfits" column="business_profits"/>
+        <result property="depreciation" column="depreciation"/>
+        <result property="netDebt" column="net_debt"/>
+        <result property="stockNumber" column="stock_number"/>
+        <result property="issueStockNumber" column="issue_stock_number"/>
+        <result property="investmentRequestDate" column="investment_request_date"/>
+        <result property="investJudgeDate" column="invest_judge_date"/>
+        <result property="memberId" column="member_id"/>
+        <result property="investJudgeResult" column="invest_judge_result"/>
+        <result property="todayRequestCnt" column="todayRequestCnt"/>
+        <result property="standbyCnt" column="standbyCnt"/>
+        <result property="todayProceedCnt" column="todayProceedCnt"/>
+        <result property="rejectCnt" column="rejectCnt"/>
+        <result property="cbtBusinessType" column="cbtBusinessType"/>
+
+        <association property="adminInvestment" javaType="AdminInvestment">
+            <id property="investmentCode" column="investment_code"/>
+            <result property="memberId" column="member_id"/>
+            <result property="storeCode" column="store_code"/>
+            <result property="investmentRequestJudgeCode" column="investment_request_judge_code"/>
+            <result property="totalCategoryCode" column="total_category_code"/>
+            <result property="memberIdSeller" column="member_id_seller"/>
+            <result property="investmentSubject" column="investment_subject"/>
+            <result property="investmentContent" column="investment_content"/>
+            <result property="investmentImage" column="investment_image"/>
+            <result property="investmentLike" column="investment_like"/>
+            <result property="investmentAmount" column="investment_amount"/>
+            <result property="invInvestmentAchievementMoney" column="invInvestmentAchievementMoney"/>
+            <result property="investAchievementPercent" column="invest_achievement_percent"/>
+            <result property="investmentCompany" column="investment_company"/>
+            <result property="searchCount" column="search_count"/>
+            <result property="investCount" column="invest_count"/>
+            <result property="securitiesClassification" column="securities_classification"/>
+            <result property="investmentDisplayDate" column="investment_display_date"/>
+            <result property="investmentRegDate" column="investment_reg_date"/>
+            <result property="investmentDeadline" column="investment_deadline"/>
+            <result property="investmentReport" column="investment_report"/>
+            <result property="basicFee" column="basic_fee"/>
+            <result property="contractFeeRate" column="contract_fee_rate"/>
+            <result property="contractFile" column="contract_file"/>
+            <result property="investJudgeSituation" column="invest_judge_situation"/>
+        </association>
+    </resultMap>
+
+    <resultMap type="AdminLawSatistifyReason" id="adminLawSatistifyReasonListMap">
+        <id property="lawSatistifyCode" column="law_satistify_code"/>
+        <result property="lawSatistifyReason" column="law_satistify_reason"/>
+        <result property="memberId" column="member_id"/>
+        <result property="lawSatistifyWhether" column="law_satistify_whether"/>
+        <result property="codeRegDay" column="code_reg_day"/>
+    </resultMap>
+
+    <resultMap type="AdminIncongruitySectors" id="adminIncongruitySectorsListMap">
+        <id property="incongruitySectorsCode" column="incongruity_sectors_code"/>
+        <result property="incongruitySectorsBusiness" column="incongruity_sectors_business"/>
+        <result property="memberId" column="member_id"/>
+        <result property="incongruitySectorsWhether" column="incongruity_sectors_whether"/>
+        <result property="codeRegDay" column="code_reg_day"/>
+    </resultMap>
+
+    <resultMap type="AdminCorporateValueEvaluation" id="adminCorporateValueEvaluationListMap">
+        <id property="corporateValueEvaluationCode" column="corporate_value_evaluation_code"/>
+        <result property="memberId" column="member_id"/>
+        <result property="operatingProfit" column="operating_profit"/>
+        <result property="depreciation" column="depreciation"/>
+        <result property="ebitda" column="ebitda"/>
+        <result property="evEbitda" column="ev_ebitda"/>
+        <result property="convertEv" column="convert_ev"/>
+        <result property="netDebt" column="net_debt"/>
+        <result property="evaluatedCorpValue" column="evaluated_corp_value"/>
+        <result property="stockNumber" column="stock_number"/>
+        <result property="stockPrice" column="stock_price"/>
+        <result property="corpValueFulfill" column="corp_value_fulfill"/>
+        <result property="corpValueEvaluateDay" column="corp_value_evaluate_day"/>
+
+        <association property="adminInvestmentRequestJudge" javaType="AdminInvestmentRequestJudge">
+            <id property="investmentRequestJudgeCode" column="investment_request_judge_code"/>
+            <result property="lawSatistifyCode" column="law_satistify_code"/>
+            <result property="incongruitySectorsCode" column="incongruity_sectors_code"/>
+            <result property="companyBusinessTypeCode" column="company_business_type_code"/>
+            <result property="corporateValueEvaluationCode" column="corporate_value_evaluation_code"/>
+            <result property="storeCode" column="store_code"/>
+            <result property="investmentRequestSubject" column="investment_request_subject"/>
+            <result property="memberIdSeller" column="member_id_seller"/>
+            <result property="investmentCompany" column="investment_company"/>
+            <result property="invBusinessType" column="business_type"/>
+            <result property="investmentRequestContent" column="investment_request_content"/>
+            <result property="investmentAchievementMoney" column="investment_achievement_money"/>
+            <result property="lawSatistifyReason" column="law_satistify_reason"/>
+            <result property="businessProfits" column="business_profits"/>
+            <result property="depreciation" column="depreciation"/>
+            <result property="netDebt" column="net_debt"/>
+            <result property="stockNumber" column="stock_number"/>
+            <result property="issueStockNumber" column="issue_stock_number"/>
+            <result property="investmentRequestDate" column="investment_request_date"/>
+            <result property="investJudgeDate" column="invest_judge_date"/>
+            <result property="memberId" column="member_id"/>
+            <result property="investJudgeResult" column="invest_judge_result"/>
+            <result property="todayRequestCnt" column="todayRequestCnt"/>
+            <result property="standbyCnt" column="standbyCnt"/>
+            <result property="todayProceedCnt" column="todayProceedCnt"/>
+            <result property="rejectCnt" column="rejectCnt"/>
+            <result property="cbtBusinessType" column="cbtBusinessType"/>
+        </association>
+    </resultMap>
+
+    <resultMap type="SellerInvestmentContent" id="sellerInvestmentContentList">
+        <id property="investmentContentCode" column="investment_content_code"/>
+        <result property="memberId" column="member_id"/>
+        <result property="investmentCode" column="investment_code"/>
+        <result property="memberIdAdmin" column="member_id_admin"/>
+        <result property="projectIntroduction" column="project_introduction"/>
+        <result property="investmentIntroductionImage" column="investment_introduction_image"/>
+        <result property="marketAnalysis" column="market_analysis"/>
+        <result property="marketAnalysisImage" column="market_analysis_image"/>
+        <result property="majorFinancialInformation" column="major_financial_information"/>
+        <result property="majorFinancialInformationImage" column="major_financial_information_image"/>
+        <result property="risk" column="risk"/>
+        <result property="riskImage" column="risk_image"/>
+        <result property="majorManpower" column="major_manpower"/>
+        <result property="majorManpowerImage" column="major_manpower_image"/>
+        <result property="patentAwardDetails" column="patent_award_details"/>
+        <result property="patentAwardDetailsImage" column="patent_award_details_image"/>
+        <result property="etcInvestContent" column="etc_invest_content"/>
+        <result property="etcInvestContentImage" column="etc_invest_content_image"/>
+        <result property="registrationDate" column="registration_date"/>
+    </resultMap>
+
+    <!-- 투자펀딩 공고 목록 조회 -->
+    <select id="getInvestmentList" resultMap="adminInvestmentListMap">
+        /* 투자펀딩 공고 목록 조회 */
+        SELECT
+        i.investment_code,
+        i.investment_request_judge_code,
+        i.member_id_seller,
+        i.investment_subject,
+        i.investment_like,
+        i.investment_amount,
+        i.investment_achievement_money AS invInvestmentAchievementMoney,
+        i.invest_achievement_percent,
+        i.investment_company,
+        i.search_count,
+        i.invest_count,
+        i.securities_classification,
+        i.investment_display_date,
+        i.investment_deadline,
+        i.invest_judge_situation
+        FROM
+        investment AS i
+        <if test="startRowNum > -1">
+            LIMIT #{startRowNum}, #{rowPerPage};
+        </if>
+    </select>
+
+    <!-- 투자펀딩 심사요청 목록 조회 -->
+    <select id="getInvestmentRequestJudgeListOnly" resultMap="adminInvestmentRequestJudgeListMap">
+        /* 투자펀딩 심사요청 목록 조회 */
+        SELECT
+        i.investment_request_judge_code,
+        i.investment_request_subject,
+        i.member_id_seller,
+        s.store_name,
+        s.corporate_name AS corporateName,
+        i.investment_company,
+        s.representative_name,
+        i.investment_achievement_money,
+        i.investment_request_date,
+        i.invest_judge_date,
+        i.member_id,
+        i.invest_judge_result,
+        (SELECT
+        COUNT(i.invest_judge_result)
+        FROM
+        investment_request_judge AS i
+        WHERE
+        DATE_FORMAT(i.invest_judge_date, '%Y-%m-%d') = CURDATE()
+        ) AS todayRequestCnt,
+        (SELECT
+        COUNT(i.invest_judge_result)
+        FROM
+        investment_request_judge AS i
+        WHERE
+        i.invest_judge_result = 0) AS standbyCnt,
+        (SELECT
+        COUNT(i.invest_judge_result)
+        FROM
+        investment_request_judge AS i
+        WHERE
+        (i.invest_judge_result = 1
+        OR
+        i.invest_judge_result = 2)
+        AND
+        DATE_FORMAT(i.invest_judge_date, '%Y-%m-%d') = CURDATE()
+        ) AS todayProceedCnt,
+        (SELECT
+        COUNT(i.invest_judge_result)
+        FROM
+        investment_request_judge AS i
+        WHERE
+        i.invest_judge_result = 2) AS rejectCnt
+        FROM
+        investment_request_judge AS i
+        INNER JOIN
+        store AS s
+        ON
+        i.store_code = s.store_code
+        ORDER BY i.investment_request_judge_code DESC
+    </select>
+
+    <!-- 투자펀딩 공고 전체 행의 갯수 -->
+    <select id="getInvestment" resultType="int">
+        /* 판매자 투자펀딩 공고 전체 행의 갯수 */
+        SELECT
+        COUNT(1)
+        FROM
+        investment;
+    </select>
+
+    <!-- 검색조건에 따른 투자펀딩 공고 목록 조회 -->
+    <select id="getInvestmentListBySearch" resultMap="adminInvestmentListMap">
+        /* 검색조건에 따른 투자펀딩 공고 목록 조회 */
+        SELECT
+        i.investment_code,
+        i.investment_request_judge_code,
+        i.member_id_seller,
+        i.investment_subject,
+        i.investment_like,
+        i.investment_amount,
+        i.investment_achievement_money AS invInvestmentAchievementMoney,
+        i.invest_achievement_percent,
+        i.investment_company,
+        i.search_count,
+        i.invest_count,
+        i.securities_classification,
+        i.investment_display_date,
+        i.investment_deadline,
+        i.invest_judge_situation
+        FROM
+        investment AS i
+        <where>
+            <if test="amDateSettStartDate != null and amDateSettStartDate != ''">
+                DATE_FORMAT(i.investment_request_date, '%Y-%m-%d') >= #{amDateSettStartDate}
+                AND
+            </if>
+            <if test="amDateSettEndDate != null and amDateSettEndDate != ''">
+                #{amDateSettEndDate} >= DATE_FORMAT(i.investment_request_date, '%Y-%m-%d')
+                AND
+            </if>
+            <if test="searchKey != null and searchKey != '' and searchSelectValue != null and searchSelectValue != ''">
+                ${searchKey} = #{searchSelectValue}
+                AND
+            </if>
+            <if test="searchKey != null and searchKey != ''">
+                ${searchKey} LIKE CONCAT('%', #{searchValue}, '%')
+            </if>
+        </where>
+        <if test="startRowNum > -1">
+            LIMIT #{startRowNum}, #{rowPerPage};
+        </if>
+    </select>
+
+    <!-- 특정 투자펀딩 공고 조회 -->
+    <select id="getInvestementByCode" resultMap="adminInvestmentListMap">
+        /* 특정 투자펀딩 공고 조회 */
+        SELECT
+        i.investment_request_judge_code,
+        ir.investment_request_subject,
+        ir.investment_request_content,
+        ir.investment_request_date,
+        ir.investment_achievement_money,
+        ir.business_profits,
+        ir.depreciation,
+        ir.net_debt,
+        ir.issue_stock_number,
+        i.investment_code,
+        i.investment_subject,
+        i.store_code,
+        s.store_name,
+        i.total_category_code,
+        i.investment_company,
+        i.member_id_seller,
+        s.representative_name,
+        ic.investment_content_code,
+        ic.project_introduction,
+        ic.market_analysis,
+        ic.major_financial_information,
+        ic.risk,
+        ic.major_manpower,
+        ic.patent_award_details,
+        ic.etc_invest_content,
+        i.investment_like,
+        i.investment_amount,
+        i.investment_achievement_money AS invInvestmentAchievementMoney,
+        i.invest_achievement_percent,
+        i.search_count,
+        i.invest_count,
+        i.securities_classification,
+        i.investment_display_date,
+        i.investment_reg_date,
+        i.investment_deadline,
+        i.basic_fee,
+        i.contract_fee_rate,
+        i.invest_judge_situation
+        FROM
+        investment AS i
+        INNER JOIN
+        store AS s
+        ON
+        i.store_code = s.store_code
+        INNER JOIN
+        investment_content AS ic
+        ON
+        i.investment_code = ic.investment_code
+        INNER JOIN
+        investment_request_judge AS ir
+        ON
+        i.investment_request_judge_code = ir.investment_request_judge_code
+        WHERE
+        i.investment_code = #{investmentCode};
+    </select>
+
+    <!-- 투자펀딩 심사요청 목록 조회(페이징) -->
+    <select id="getInvestmentRequestJudgeList" resultMap="adminInvestmentRequestJudgeListMap">
+        /* 투자펀딩 심사요청 목록 조회(페이징) */
+        SELECT
+            i.investment_request_judge_code,
+            i.investment_request_subject,
+            i.member_id_seller,
+            s.store_name,
+            s.corporate_name AS corporateName,
+            i.investment_company,
+            s.representative_name,
+            i.investment_achievement_money,
+            i.investment_request_date,
+            i.invest_judge_date,
+            i.member_id,
+            i.invest_judge_result,
+            (SELECT
+            COUNT(i.invest_judge_result)
+            FROM
+            investment_request_judge AS i
+            WHERE
+            DATE_FORMAT(i.invest_judge_date, '%Y-%m-%d') = CURDATE()
+            ) AS todayRequestCnt,
+            (SELECT
+            COUNT(i.invest_judge_result)
+            FROM
+            investment_request_judge AS i
+            WHERE
+            i.invest_judge_result = 0) AS standbyCnt,
+            (SELECT
+            COUNT(i.invest_judge_result)
+            FROM
+            investment_request_judge AS i
+            WHERE
+            (i.invest_judge_result = 1
+            OR
+            i.invest_judge_result = 2)
+            AND
+            DATE_FORMAT(i.invest_judge_date, '%Y-%m-%d') = CURDATE()
+            ) AS todayProceedCnt,
+            (SELECT
+            COUNT(i.invest_judge_result)
+            FROM
+            investment_request_judge AS i
+            WHERE
+            i.invest_judge_result = 2) AS rejectCnt
+        FROM
+            investment_request_judge AS i
+            INNER JOIN
+            store AS s
+            ON
+            i.store_code = s.store_code
+        ORDER BY i.investment_request_judge_code DESC
+        <if test="startRowNum > -1">
+            LIMIT #{startRowNum}, #{rowPerPage};
+        </if>
+    </select>
+
+    <!-- 투자펀딩 심사요청 전체 행의 갯수 -->
+    <select id="getInvestmentRequestJudgeCnt" resultType="int">
+        /* 투자펀딩 심사요청 전체 행의 갯수 */
+        SELECT
+            COUNT(1)
+        FROM
+            investment_request_judge;
+    </select>
+
+    <!-- 검색조건에 따른 투자펀딩 심사요청 목록 조회 -->
+    <select id="getInvestmentRequestJudgeListBySearch" parameterType="String" resultMap="adminInvestmentRequestJudgeListMap">
+        /* 검색조건에 따른 투자펀딩 심사요청 목록 조회 */
+        SELECT
+            i.investment_request_judge_code,
+            i.investment_request_subject,
+            i.member_id_seller,
+            s.store_name,
+            s.corporate_name AS corporateName,
+            i.investment_company,
+            s.representative_name,
+            i.investment_achievement_money,
+            i.investment_request_date,
+            i.invest_judge_date,
+            i.member_id,
+            i.invest_judge_result,
+            (SELECT
+            COUNT(i.invest_judge_result)
+            FROM
+            investment_request_judge AS i
+            WHERE
+            DATE_FORMAT(i.invest_judge_date, '%Y-%m-%d') = CURDATE()
+            ) AS todayRequestCnt,
+            (SELECT
+            COUNT(i.invest_judge_result)
+            FROM
+            investment_request_judge AS i
+            WHERE
+            i.invest_judge_result = 0) AS standbyCnt,
+            (SELECT
+            COUNT(i.invest_judge_result)
+            FROM
+            investment_request_judge AS i
+            WHERE
+            (i.invest_judge_result = 1
+            OR
+            i.invest_judge_result = 2)
+            AND
+            DATE_FORMAT(i.invest_judge_date, '%Y-%m-%d') = CURDATE()
+            ) AS todayProceedCnt,
+            (SELECT
+            COUNT(i.invest_judge_result)
+            FROM
+            investment_request_judge AS i
+            WHERE
+            i.invest_judge_result = 2) AS rejectCnt
+        FROM
+            investment_request_judge AS i
+            INNER JOIN
+            store AS s
+            ON
+            i.store_code = s.store_code
+        <where>
+            <if test="amDateSettStartDate != null and amDateSettStartDate != ''">
+                DATE_FORMAT(i.investment_request_date, '%Y-%m-%d') >= #{amDateSettStartDate}
+                AND
+            </if>
+            <if test="amDateSettEndDate != null and amDateSettEndDate != ''">
+                #{amDateSettEndDate} >= DATE_FORMAT(i.investment_request_date, '%Y-%m-%d')
+                AND
+            </if>
+            <if test="searchKey != null and searchKey != '' and searchSelectValue != null and searchSelectValue != ''">
+                ${searchKey} = #{searchSelectValue}
+                AND
+            </if>
+            <if test="searchKey != null and searchKey != ''">
+                ${searchKey} LIKE CONCAT('%', #{searchValue}, '%')
+            </if>
+        </where>
+        ORDER BY i.investment_request_judge_code DESC
+        <if test="startRowNum > -1">
+            LIMIT #{startRowNum}, #{rowPerPage};
+        </if>
+    </select>
+
+    <!-- 코드에 따른 특정 투자펀딩 심사요청 조회 -->
+    <select id="getInvestmentRequestJudgeByCode" parameterType="String" resultMap="adminInvestmentRequestJudgeListMap">
+        /* 코드에 따른 특정 투자펀딩 심사요청 조회 */
+        SELECT
+            inv.investment_code,
+            inv.investment_subject,
+            inv.investment_achievement_money AS invInvestmentAchievementMoney,
+            inv.investment_amount,
+            inv.invest_achievement_percent,
+            inv.investment_deadline,
+            i.investment_request_judge_code,
+            i.law_satistify_code,
+            l.law_satistify_reason,
+            i.incongruity_sectors_code,
+            i.company_business_type_code,
+            i.corporate_value_evaluation_code,
+            i.store_code,
+            i.investment_request_subject,
+            i.member_id_seller,
+            s.store_name,
+            s.corporate_name AS corporateName,
+            i.investment_company,
+            s.representative_name,
+            c.business_type AS cbtBusinessType,
+            i.investment_request_content,
+            i.investment_achievement_money,
+            i.business_profits,
+            i.depreciation,
+            i.net_debt,
+            i.stock_number,
+            i.issue_stock_number,
+            i.investment_request_date,
+            i.invest_judge_date,
+            i.member_id,
+            i.invest_judge_result
+        FROM
+            investment_request_judge AS i
+            LEFT JOIN
+            investment AS inv
+            ON
+            i.investment_request_judge_code = inv.investment_request_judge_code
+            INNER JOIN
+            store AS s
+            ON
+            i.store_code = s.store_code
+            INNER JOIN
+            company_business_type AS c
+            ON
+            i.company_business_type_code = c.company_business_type_code
+            LEFT JOIN
+            law_satistify_reason AS l
+            ON
+            i.law_satistify_code = l.law_satistify_code
+        WHERE
+            i.investment_request_judge_code = #{investmentRequestJudgeCode};
+    </select>
+
+    <!-- 심사결과에 따른 특정 투자펀딩 심사요청 조회 -->
+    <select id="getInvestmentRequestJudgeByResult" parameterType="String" resultMap="adminInvestmentRequestJudgeListMap">
+        /* 심사결과에 따른 특정 투자펀딩 심사요청 조회 */
+        SELECT
+            i.investment_request_judge_code,
+            i.investment_request_subject,
+            i.member_id_seller,
+            s.store_name,
+            s.corporate_name AS corporateName,
+            i.investment_company,
+            s.representative_name,
+            i.investment_achievement_money,
+            i.investment_request_date,
+            i.invest_judge_date,
+            i.member_id,
+            i.invest_judge_result,
+            (SELECT
+            COUNT(i.invest_judge_result)
+            FROM
+            investment_request_judge AS i
+            WHERE
+            DATE_FORMAT(i.invest_judge_date, '%Y-%m-%d') = CURDATE()
+            ) AS todayRequestCnt,
+            (SELECT
+            COUNT(i.invest_judge_result)
+            FROM
+            investment_request_judge AS i
+            WHERE
+            i.invest_judge_result = 0) AS standbyCnt,
+            (SELECT
+            COUNT(i.invest_judge_result)
+            FROM
+            investment_request_judge AS i
+            WHERE
+            (i.invest_judge_result = 1
+            OR
+            i.invest_judge_result = 2)
+            AND
+            DATE_FORMAT(i.invest_judge_date, '%Y-%m-%d') = CURDATE()
+            ) AS todayProceedCnt,
+            (SELECT
+            COUNT(i.invest_judge_result)
+            FROM
+            investment_request_judge AS i
+            WHERE
+            i.invest_judge_result = 2) AS rejectCnt
+        FROM
+            investment_request_judge AS i
+            INNER JOIN
+            investment AS inv
+            ON
+            i.investment_request_judge_code = inv.investment_request_judge_code
+            INNER JOIN
+            store AS s
+            ON
+            i.store_code = s.store_code
+            INNER JOIN
+            company_business_type AS c
+            ON
+            i.company_business_type_code = c.company_business_type_code
+        WHERE
+            i.invest_judge_result = #{rejectCnt};
+    </select>
+
+    <!-- 자본시장법 범위충족기준 목록 조회 -->
+    <select id="getLawSatistifyList" resultMap="adminLawSatistifyReasonListMap">
+        /* 자본시장법 범위충족기준 목록 조회 */
+        SELECT
+            l.law_satistify_code,
+            l.law_satistify_reason,
+            l.member_id,
+            l.law_satistify_whether,
+            l.code_reg_day
+        FROM
+            law_satistify_reason AS l
+        <if test="startRowNum > -1">
+            LIMIT #{startRowNum}, #{rowPerPage};
+        </if>
+    </select>
+
+    <!-- 자본시장법 범위충족기준 전체 행의 갯수 -->
+    <select id="getLawSatistifyCnt" resultType="int">
+        /* 자본시장법 범위충족기준 전체 행의 갯수 */
+        SELECT
+            COUNT(1)
+        FROM
+            law_satistify_reason;
+    </select>
+
+    <!-- 검색조건에 따른 자본시장법 범위충족기준 목록 조회 -->
+    <select id="getLawSatistifyListBySearch" parameterType="String" resultMap="adminLawSatistifyReasonListMap">
+        /* 검색조건에 따른 자본시장법 범위충족기준 목록 조회 */
+        SELECT
+            l.law_satistify_code,
+            l.law_satistify_reason,
+            l.member_id,
+            l.law_satistify_whether,
+            l.code_reg_day
+        FROM
+            law_satistify_reason AS l
+        <where>
+            <if test="amDateSettStartDate != null and amDateSettStartDate != ''">
+                DATE_FORMAT(l.code_reg_day, '%Y-%m-%d') >= #{amDateSettStartDate}
+                AND
+            </if>
+            <if test="amDateSettEndDate != null and amDateSettEndDate != ''">
+                #{amDateSettEndDate} >= DATE_FORMAT(l.code_reg_day, '%Y-%m-%d')
+                AND
+            </if>
+            <if test="searchKey != null and searchKey != ''">
+                ${searchKey} LIKE CONCAT('%', #{searchValue}, '%')
+            </if>
+        </where>
+        <if test="startRowNum > -1">
+            LIMIT #{startRowNum}, #{rowPerPage};
+        </if>
+    </select>
+
+    <!-- 특정 자본시장 범위충족기준 조회 -->
+    <select id="getLawSatistifyByCode" resultMap="adminLawSatistifyReasonListMap">
+        /* 특정 자본시장 범위충족기준 조회 */
+        SELECT
+            l.law_satistify_code,
+            l.law_satistify_reason,
+            l.member_id,
+            l.law_satistify_whether,
+            l.code_reg_day
+        FROM
+            law_satistify_reason AS l
+        WHERE
+            l.law_satistify_code = #{lawSatistifyCode};
+    </select>
+
+    <!-- 부적합 업종 목록 조회 -->
+    <select id="getIncogruitySectorsList" resultMap="adminIncongruitySectorsListMap">
+        /* 부적합 업종 목록 조회 */
+        SELECT
+            i.incongruity_sectors_code,
+            i.incongruity_sectors_business,
+            i.member_id,
+            i.incongruity_sectors_whether,
+            i.code_reg_day
+        FROM
+            incongruity_sectors AS i
+        <if test="startRowNum > -1">
+            LIMIT #{startRowNum}, #{rowPerPage};
+        </if>
+    </select>
+
+    <!-- 자본시장법 범위충족기준 전체 행의 갯수 -->
+    <select id="getIncogruitySectorsCnt" resultType="int">
+        /* 자본시장법 범위충족기준 전체 행의 갯수 */
+        SELECT
+            COUNT(1)
+        FROM
+            incongruity_sectors;
+    </select>
+
+    <!-- 검색조건에 따른 부적합 업종 목록 조회 -->
+    <select id="getIncogruitySectorsListBySearch" parameterType="String" resultMap="adminIncongruitySectorsListMap">
+        /* 검색조건에 따른 부적합 업종 목록 조회 */
+        SELECT
+            i.incongruity_sectors_code,
+            i.incongruity_sectors_business,
+            i.member_id,
+            i.incongruity_sectors_whether,
+            i.code_reg_day
+        FROM
+            incongruity_sectors AS i
+        <where>
+            <if test="amDateSettStartDate != null and amDateSettStartDate != ''">
+                DATE_FORMAT(i.code_reg_day, '%Y-%m-%d') >= #{amDateSettStartDate}
+                AND
+            </if>
+            <if test="amDateSettEndDate != null and amDateSettEndDate != ''">
+                #{amDateSettEndDate} >= DATE_FORMAT(i.code_reg_day, '%Y-%m-%d')
+                AND
+            </if>
+            <if test="searchKey != null and searchKey != ''">
+                ${searchKey} LIKE CONCAT('%', #{searchValue}, '%')
+            </if>
+        </where>
+        <if test="startRowNum > -1">
+            LIMIT #{startRowNum}, #{rowPerPage};
+        </if>
+    </select>
+
+    <!-- 특정 부적합 업종 조회 -->
+    <select id="getIncogruitySectorsByCode" parameterType="String" resultMap="adminIncongruitySectorsListMap">
+        /* 특정 부적합 업종 조회 */
+        SELECT
+            i.incongruity_sectors_code,
+            i.incongruity_sectors_business,
+            i.member_id,
+            i.incongruity_sectors_whether,
+            i.code_reg_day
+        FROM
+            incongruity_sectors AS i
+        WHERE
+            i.incongruity_sectors_code = #{incongruitySectorsCode};
+    </select>
+
+    <!-- 기업가치 평가결과 목록 조회 -->
+    <select id="getCorporateValueEvaluationList" resultMap="adminCorporateValueEvaluationListMap">
+        /* 기업가치 평가결과 목록 조회 */
+        SELECT
+            i.investment_request_judge_code,
+            i.investment_request_subject,
+            i.member_id_seller,
+            c.corporate_value_evaluation_code,
+            c.member_id,
+            c.evaluated_corp_value,
+            c.stock_price,
+            c.corp_value_fulfill,
+            c.corp_value_evaluate_day,
+            (SELECT
+            COUNT(i.invest_judge_result)
+            FROM
+            investment_request_judge AS i
+            WHERE
+            DATE_FORMAT(i.invest_judge_date, '%Y-%m-%d') = CURDATE()
+            ) AS todayRequestCnt,
+            (SELECT
+            COUNT(i.invest_judge_result)
+            FROM
+            investment_request_judge AS i
+            WHERE
+            i.invest_judge_result = 0) AS standbyCnt,
+            (SELECT
+            COUNT(i.invest_judge_result)
+            FROM
+            investment_request_judge AS i
+            WHERE
+            (i.invest_judge_result = 1
+            OR
+            i.invest_judge_result = 2)
+            AND
+            DATE_FORMAT(i.invest_judge_date, '%Y-%m-%d') = CURDATE()
+            ) AS todayProceedCnt,
+            (SELECT
+            COUNT(i.invest_judge_result)
+            FROM
+            investment_request_judge AS i
+            WHERE
+            i.invest_judge_result = 2) AS rejectCnt
+        FROM
+            investment_request_judge AS i
+            LEFT JOIN
+            corporate_value_evaluation AS c
+            ON
+            c.corporate_value_evaluation_code = i.corporate_value_evaluation_code
+        ORDER BY i.investment_request_judge_code DESC
+        <if test="startRowNum > -1">
+            LIMIT #{startRowNum}, #{rowPerPage};
+        </if>
+    </select>
+
+    <!-- 기업가치 평가결과 전체 행의 갯수 -->
+    <select id="getCorporateValueEvaluation" resultType="int">
+        /* 기업가치 평가결과 전체 행의 갯수 */
+        SELECT
+            COUNT(1)
+        FROM
+            corporate_value_evaluation;
+    </select>
+
+    <!-- 검색조건에 따른 기업가치 평가결과 목록 조회 -->
+    <select id="getCorporateValueEvaluationListBySearch" parameterType="String" resultMap="adminCorporateValueEvaluationListMap">
+        /* 검색조건에 따른 기업가치 평가결과 목록 조회 */
+        SELECT
+            i.investment_request_judge_code,
+            i.investment_request_subject,
+            i.member_id_seller,
+            c.corporate_value_evaluation_code,
+            c.member_id,
+            c.evaluated_corp_value,
+            c.stock_price,
+            c.corp_value_fulfill,
+            c.corp_value_evaluate_day,
+            (SELECT
+            COUNT(i.invest_judge_result)
+            FROM
+            investment_request_judge AS i
+            WHERE
+            DATE_FORMAT(i.invest_judge_date, '%Y-%m-%d') = CURDATE()
+            ) AS todayRequestCnt,
+            (SELECT
+            COUNT(i.invest_judge_result)
+            FROM
+            investment_request_judge AS i
+            WHERE
+            i.invest_judge_result = 0) AS standbyCnt,
+            (SELECT
+            COUNT(i.invest_judge_result)
+            FROM
+            investment_request_judge AS i
+            WHERE
+            (i.invest_judge_result = 1
+            OR
+            i.invest_judge_result = 2)
+            AND
+            DATE_FORMAT(i.invest_judge_date, '%Y-%m-%d') = CURDATE()
+            ) AS todayProceedCnt,
+            (SELECT
+            COUNT(i.invest_judge_result)
+            FROM
+            investment_request_judge AS i
+            WHERE
+            i.invest_judge_result = 2) AS rejectCnt
+        FROM
+            investment_request_judge AS i
+            LEFT JOIN
+            corporate_value_evaluation AS c
+            ON
+            c.corporate_value_evaluation_code = i.corporate_value_evaluation_code
+        <where>
+            <if test="amDateSettStartDate != null and amDateSettStartDate != ''">
+                DATE_FORMAT(c.corp_value_evaluate_day, '%Y-%m-%d') >= #{amDateSettStartDate}
+                AND
+            </if>
+            <if test="amDateSettEndDate != null and amDateSettEndDate != ''">
+                #{amDateSettEndDate} >= DATE_FORMAT(c.corp_value_evaluate_day, '%Y-%m-%d')
+                AND
+            </if>
+            <if test="searchKey != null and searchKey != '' and searchSelectValue != null and searchSelectValue != '' and searchSelectValue != 100 and searchSelectValue != 99">
+                ${searchKey} = #{searchSelectValue}
+            </if>
+            <if test="searchKey != null and searchKey != '' and searchSelectValue == 99">
+                c.corporate_value_evaluation_code IS NULL
+            </if>
+            <if test="searchKey != null and searchKey != '' and searchValue != ''">
+                ${searchKey} LIKE CONCAT('%', #{searchValue}, '%')
+            </if>
+        </where>
+        ORDER BY i.investment_request_judge_code DESC
+        <if test="startRowNum > -1">
+            LIMIT #{startRowNum}, #{rowPerPage};
+        </if>
+    </select>
+
+    <!-- 특정 기업가치 평가결과 조회 -->
+    <select id="getCorporateValueEvaluationByCode" resultMap="adminCorporateValueEvaluationListMap">
+        /* 특정 기업가치 평가결과 조회 */
+        SELECT
+            i.investment_request_judge_code,
+            i.investment_request_subject,
+            i.investment_request_content,
+            i.investment_request_date,
+            i.member_id_seller,
+            i.investment_achievement_money,
+            i.issue_stock_number,
+            c.corporate_value_evaluation_code,
+            c.member_id,
+            c.operating_profit,
+            c.depreciation,
+            c.ebitda,
+            c.ev_ebitda,
+            c.convert_ev,
+            c.net_debt,
+            c.evaluated_corp_value,
+            c.stock_number,
+            c.stock_price,
+            c.corp_value_fulfill,
+            c.corp_value_evaluate_day
+        FROM
+            corporate_value_evaluation AS c
+            INNER JOIN
+            investment_request_judge AS i
+            ON
+            c.corporate_value_evaluation_code = i.corporate_value_evaluation_code
+        WHERE
+            c.corporate_value_evaluation_code = #{corporateValueEvaluationCode};
+    </select>
+
+    <!-- 기업가치 평가결과 등록 -->
+    <insert id="addCorporateValueEvaluation" parameterType="AdminCorporateValueEvaluation">
+        <selectKey keyProperty="corporateValueEvaluationCode" resultType="String" order="BEFORE">
+            /* 기업가치 평가코드 자동증가 */
+            SELECT
+                (CASE
+                WHEN COUNT(c.corporate_value_evaluation_code) = 0 THEN CONCAT('cor_val_', CURDATE()+0, '_0001')
+                WHEN MAX(c.corporate_value_evaluation_code) = CONCAT('cor_val_', CURDATE()+0, '_9999') THEN CONCAT('cor_val_', CURDATE()+0, '_', MAX(CAST(SUBSTRING_INDEX(c.corporate_value_evaluation_code,'_',-1) AS UNSIGNED))+1)
+                ELSE CONCAT('cor_val_', CURDATE()+0, '_', LPAD(MAX(CAST(SUBSTRING_INDEX(c.corporate_value_evaluation_code,'_',-1) AS UNSIGNED))+1, 4, '0'))
+                END) AS corporateValueEvaluationCode
+            FROM
+                corporate_value_evaluation AS c
+            WHERE
+                SUBSTRING_INDEX(SUBSTRING_INDEX(c.corporate_value_evaluation_code, '_', 3), '_', -1) = CURDATE()+0;
+        </selectKey>
+        /* 기업가치 평가결과 등록 */
+        INSERT INTO corporate_value_evaluation
+        (corporate_value_evaluation_code, member_id, operating_profit, depreciation, ebitda, ev_ebitda, convert_ev, net_debt, evaluated_corp_value, stock_number, stock_price, corp_value_fulfill, corp_value_evaluate_day)
+        VALUES
+        (#{corporateValueEvaluationCode}, #{memberId}, #{operatingProfit}, #{depreciation}, #{ebitda}, #{evEbitda}, #{convertEv}, #{netDebt}, #{evaluatedCorpValue}, #{stockNumber}, #{stockPrice}, #{corpValueFulfill} ,NOW());
+    </insert>
+
+    <!-- 기업가치 평과결과 등록 후 심사요청 외래키 수정 -->
+    <update id="modifyInvestmentRequestCorpValueKey" parameterType="AdminInvestmentRequestJudge">
+        <selectKey keyProperty="corporateValueEvaluationCode" resultType="String" order="BEFORE">
+            /* 마지막 기업가치 평가코드 조회 */
+            SELECT
+                MAX(c.corporate_value_evaluation_code) AS corporateValueEvaluationCode
+            FROM
+                corporate_value_evaluation AS c;
+        </selectKey>
+        /* 기업가치 평과결과 등록 후 심사요청 외래키 수정 */
+        UPDATE
+            investment_request_judge
+        SET
+            corporate_value_evaluation_code = #{corporateValueEvaluationCode}
+        WHERE
+            investment_request_judge_code = #{investmentRequestJudgeCode};
+    </update>
+
+    <!-- 자본시장법 범위충족기준 등록 -->
+    <insert id="addLawSatistify" parameterType="AdminLawSatistifyReason">
+        <selectKey keyProperty="lawSatistifyCode" resultType="String" order="BEFORE">
+            /* 자본시장법 범위충족코드 자동증가 */
+            SELECT
+                (CASE
+                WHEN COUNT(l.law_satistify_code) = 0 THEN CONCAT('law_stf_', CURDATE()+0, '_0001')
+                WHEN MAX(l.law_satistify_code) = CONCAT('law_stf_', CURDATE()+0, '_9999') THEN CONCAT('law_stf_', CURDATE()+0, '_', MAX(CAST(SUBSTRING_INDEX(l.law_satistify_code,'_',-1) AS UNSIGNED))+1)
+                ELSE CONCAT('law_stf_', CURDATE()+0, '_', LPAD(MAX(CAST(SUBSTRING_INDEX(l.law_satistify_code,'_',-1) AS UNSIGNED))+1, 4, '0'))
+                END) AS lawSatistifyCode
+            FROM
+                law_satistify_reason AS l
+            WHERE
+                SUBSTRING_INDEX(SUBSTRING_INDEX(l.law_satistify_code, '_', 3), '_', -1) = CURDATE()+0;
+        </selectKey>
+        /* 자본시장법 범위충족기준 등록 */
+        INSERT INTO law_satistify_reason
+            (law_satistify_code, member_id, law_satistify_reason, law_satistify_whether, code_reg_day)
+        VALUES
+            (#{lawSatistifyCode}, #{memberId}, #{lawSatistifyReason}, #{lawSatistifyWhether}, CURRENT_TIMESTAMP());
+    </insert>
+
+    <!-- 부적합 업종 등록 -->
+    <insert id="addIncogruitySector" parameterType="AdminIncongruitySectors">
+        <selectKey keyProperty="incongruitySectorsCode" resultType="String" order="BEFORE">
+            /* 부적합 업종코드 자동증가 */
+            SELECT
+                (CASE
+                WHEN COUNT(i.incongruity_sectors_code) = 0 THEN CONCAT('inc_sec_', CURDATE()+0, '_0001')
+                WHEN MAX(i.incongruity_sectors_code) = CONCAT('inc_sec_', CURDATE()+0, '_9999') THEN CONCAT('inc_sec_', CURDATE()+0, '_', MAX(CAST(SUBSTRING_INDEX(i.incongruity_sectors_code,'_',-1) AS UNSIGNED))+1)
+                ELSE CONCAT('inc_sec_', CURDATE()+0, '_', LPAD(MAX(CAST(SUBSTRING_INDEX(i.incongruity_sectors_code, '_', -1) AS UNSIGNED))+1, 4, '0'))
+                END) AS incongruitySectorsCode
+            FROM
+                incongruity_sectors AS i
+            WHERE
+                SUBSTRING_INDEX(SUBSTRING_INDEX(i.incongruity_sectors_code, '_', 3), '_', -1) = CURDATE()+0;
+        </selectKey>
+        /* 부적합 업종 등록 */
+        INSERT INTO incongruity_sectors
+            (incongruity_sectors_code, member_id, incongruity_sectors_business, incongruity_sectors_whether, code_reg_day)
+        VALUES
+            (#{incongruitySectorsCode}, #{memberId}, #{incongruitySectorsBusiness}, #{incongruitySectorsWhether}, CURRENT_TIMESTAMP());
+    </insert>
+
+    <!-- 투자펀딩 공고 수정 -->
+    <update id="modifyInvestment" parameterType="AdminInvestment">
+        /* 판매자 투자펀딩 공고 수정 */
+        UPDATE investment
+        <set>
+            <if test="investmentSubject != null and investmentSubject != ''">
+                investment_subject = #{investmentSubject},
+            </if>
+            <if test="invInvestmentAchievementMoney != null and invInvestmentAchievementMoney != ''">
+                investment_achievement_money = #{invInvestmentAchievementMoney},
+            </if>
+            <if test="invInvestmentAchievementMoney == 0">
+                investment_achievement_money = #{invInvestmentAchievementMoney},
+            </if>
+            <if test="investmentAmount != null and investmentAmount != ''">
+                investment_amount = #{investmentAmount},
+            </if>
+            <if test="investmentAmount == 0">
+                investment_amount = #{investmentAmount},
+            </if>
+            <if test="securitiesClassification != null and securitiesClassification != ''">
+                securities_classification = #{securitiesClassification},
+            </if>
+            <if test="investJudgeSituation != null and investJudgeSituation != ''">
+                invest_judge_situation = #{investJudgeSituation}
+            </if>
+            <if test="investJudgeSituation == 0">
+                invest_judge_situation = #{investJudgeSituation}
+            </if>
+        </set>
+        WHERE
+        investment_code = #{investmentCode};
+    </update>
+
+    <!-- 투자펀딩 공고 상세 수정 -->
+    <update id="modifyInvestmentContent" parameterType="SellerInvestmentContent">
+        UPDATE investment_content
+        <set>
+            <if test="projectIntroduction != null and projectIntroduction != ''">
+                project_introduction = #{projectIntroduction},
+            </if>
+            <if test="marketAnalysis != null and marketAnalysis != ''">
+                market_analysis = #{marketAnalysis},
+            </if>
+            <if test="majorFinancialInformation != null and majorFinancialInformation != ''">
+                major_financial_information = #{majorFinancialInformation},
+            </if>
+            <if test="risk != null and risk != ''">
+                risk = #{risk},
+            </if>
+            <if test="majorManpower != null and majorManpower != ''">
+                major_manpower = #{majorManpower},
+            </if>
+            <if test="patentAwardDetails != null and patentAwardDetails != ''">
+                patent_award_details = #{patentAwardDetails},
+            </if>
+            <if test="etcInvestContent != null and etcInvestContent != ''">
+                etc_invest_content = #{etcInvestContent}
+            </if>
+        </set>
+        WHERE
+        investment_content_code = #{investmentContentCode};
+    </update>
+
+    <!-- 투자펀딩 심사요청 수정 -->
+    <update id="modifyInvestmentRequestJudge" parameterType="AdminInvestmentRequestJudge">
+        /* 투자펀딩 심사요청 수정 */
+        UPDATE investment_request_judge
+        <set>
+            <if test="investmentRequestJudgeCode != null and investmentRequestJudgeCode != ''">
+                investment_request_judge_code = #{investmentRequestJudgeCode},
+            </if>
+            <if test="lawSatistifyCode != null and lawSatistifyCode != ''">
+                law_satistify_code = #{lawSatistifyCode},
+            </if>
+            <if test="lawSatistifyCode == null or lawSatistifyCode == ''">
+                law_satistify_code = null,
+            </if>
+            <if test="incongruitySectorsCode != null and incongruitySectorsCode != ''">
+                incongruity_sectors_code = #{incongruitySectorsCode},
+            </if>
+            <if test="incongruitySectorsCode == null or incongruitySectorsCode == ''">
+                incongruity_sectors_code = null,
+            </if>
+            <if test="companyBusinessTypeCode != null and companyBusinessTypeCode != ''">
+                company_business_type_code = #{companyBusinessTypeCode},
+            </if>
+            <if test="corporateValueEvaluationCode != null and corporateValueEvaluationCode != ''">
+                corporate_value_evaluation_code = #{corporateValueEvaluationCode},
+            </if>
+            <if test="storeCode != null and storeCode != ''">
+                store_code = #{storeCode},
+            </if>
+            <if test="investmentRequestSubject != null and investmentRequestSubject != ''">
+                investment_request_subject = #{investmentRequestSubject},
+            </if>
+            <if test="memberIdSeller != null and memberIdSeller != ''">
+                member_id_seller = #{memberIdSeller},
+            </if>
+            <if test="memberIdSeller != null and memberIdSeller != ''">
+                member_id_seller = #{memberIdSeller},
+            </if>
+            <if test="investmentCompany != null and investmentCompany != ''">
+                investment_company = #{investmentCompany},
+            </if>
+            <if test="invBusinessType != null and invBusinessType != ''">
+                business_type = #{invBusinessType},
+            </if>
+            <if test="investmentAchievementMoney != null and investmentAchievementMoney != ''">
+                investment_achievement_money = #{investmentAchievementMoney},
+            </if>
+            <if test="businessProfits != null and businessProfits != ''">
+                business_profits = #{businessProfits},
+            </if>
+            <if test="depreciation != null and depreciation != ''">
+                depreciation = #{depreciation},
+            </if>
+            <if test="netDebt != null and netDebt != ''">
+                net_debt = #{netDebt},
+            </if>
+            <if test="netDebt != null and netDebt != ''">
+                net_debt = #{netDebt},
+            </if>
+            <if test="stockNumber != null and stockNumber != ''">
+                stock_number = #{stockNumber},
+            </if>
+            <if test="issueStockNumber != null and issueStockNumber != ''">
+                issue_stock_number = #{issueStockNumber},
+            </if>
+            <if test="investJudgeResult != null and investJudgeResult != ''">
+                invest_judge_result = #{investJudgeResult}
+            </if>
+            <if test="investJudgeResult == 0">
+                invest_judge_result = #{investJudgeResult}
+            </if>
+        </set>
+        WHERE
+            investment_request_judge_code = #{investmentRequestJudgeCode};
+    </update>
+
+    <!-- 자본시장 범위충족기준 수정 -->
+    <update id="modifyLawSatistify" parameterType="AdminLawSatistifyReason">
+        /* 자본시장 범위충족기준 수정 */
+        UPDATE law_satistify_reason
+        <set>
+            <if test="lawSatistifyCode != null and lawSatistifyCode != ''">
+                law_satistify_code = #{lawSatistifyCode},
+            </if>
+            <if test="lawSatistifyReason != null and lawSatistifyReason != ''">
+                law_satistify_reason = #{lawSatistifyReason},
+            </if>
+            <if test="memberId != null and memberId != ''">
+                member_id = #{memberId},
+            </if>
+            <if test="lawSatistifyWhether != null and lawSatistifyWhether != ''">
+                law_satistify_whether = #{lawSatistifyWhether}
+            </if>
+            <if test="lawSatistifyWhether == 0">
+                law_satistify_whether = #{lawSatistifyWhether}
+            </if>
+        </set>
+        WHERE
+            law_satistify_code = #{lawSatistifyCode};
+    </update>
+
+    <!-- 부적합 업종 수정 -->
+    <update id="modifyIncongruitySectors" parameterType="AdminIncongruitySectors">
+        /* 부적합 업종 수정 */
+        UPDATE incongruity_sectors
+        <set>
+            <if test="incongruitySectorsCode != null and incongruitySectorsCode != ''">
+                incongruity_sectors_code = #{incongruitySectorsCode},
+            </if>
+            <if test="incongruitySectorsBusiness != null and incongruitySectorsBusiness != ''">
+                incongruity_sectors_business = #{incongruitySectorsBusiness},
+            </if>
+            <if test="memberId != null and memberId != ''">
+                member_id = #{memberId},
+            </if>
+            <if test="incongruitySectorsWhether != null and incongruitySectorsWhether != ''">
+                incongruity_sectors_whether = #{incongruitySectorsWhether}
+            </if>
+            <if test="incongruitySectorsWhether == 0">
+                incongruity_sectors_whether = #{incongruitySectorsWhether}
+            </if>
+        </set>
+        WHERE
+            incongruity_sectors_code = #{incongruitySectorsCode};
+    </update>
+
+    <!-- 기업가치 평가 결과 수정 -->
+    <update id="modifyCorporateValueEvaluation" parameterType="AdminCorporateValueEvaluation">
+        /* 기업가치 평가 결과 수정 */
+        UPDATE corporate_value_evaluation
+        <set>
+            <if test="memberId != null and memberId != ''">
+                member_id = #{memberId},
+            </if>
+            <if test="operatingProfit != null and operatingProfit != ''">
+                operating_profit = #{operatingProfit},
+            </if>
+            <if test="depreciation != null and depreciation != ''">
+                depreciation = #{depreciation},
+            </if>
+            <if test="ebitda != null and ebitda != ''">
+                ebitda = #{ebitda},
+            </if>
+            <if test="evEbitda != null and evEbitda != ''">
+                ev_ebitda = #{evEbitda},
+            </if>
+            <if test="convertEv != null and convertEv != ''">
+                convert_ev = #{convertEv},
+            </if>
+            <if test="netDebt != null and netDebt != ''">
+                net_debt = #{netDebt},
+            </if>
+            <if test="stockNumber != null and stockNumber != ''">
+                stock_number = #{stockNumber},
+            </if>
+            <if test="stockNumber != null and stockNumber != ''">
+                stock_number = #{stockNumber},
+            </if>
+            <if test="evaluatedCorpValue != null and evaluatedCorpValue != ''">
+                evaluated_corp_value = #{evaluatedCorpValue},
+            </if>
+            <if test="stockPrice != null and stockPrice != ''">
+                stock_price = #{stockPrice},
+            </if>
+            <if test="stockPrice != null and stockPrice != ''">
+                stock_price = #{stockPrice},
+            </if>
+            <if test="corpValueFulfill != null and corpValueFulfill != ''">
+                corp_value_fulfill = #{corpValueFulfill},
+            </if>
+            <if test="corpValueFulfill == 0">
+                corp_value_fulfill = #{corpValueFulfill}
+            </if>
+        </set>
+        WHERE
+            corporate_value_evaluation_code = #{corporateValueEvaluationCode};
+    </update>
+
+    <!-- 투자펀딩 공고 삭제 -->
+    <delete id="removeInvestment" parameterType="String">
+        /* 판매자 투자펀딩 공고 삭제 */
+        DELETE
+        FROM
+        investment
+        WHERE
+        investment_code = #{investmentCode};
+    </delete>
+
+    <!-- 투자펀딩 심사요청 삭제 -->
+    <delete id="removeInvestmentRequestJudge" parameterType="String">
+        /* 투자펀딩 심사요청 삭제 */
+        DELETE
+        FROM
+            investment_request_judge
+        WHERE
+            investment_request_judge_code = #{investmentRequestJudgeCode};
+    </delete>
+
+    <!-- 자본시장 범위충족기준 삭제 -->
+    <delete id="removeLawSatistify" parameterType="String">
+        DELETE
+        FROM
+            law_satistify_reason
+        WHERE
+            law_satistify_code = #{lawSatistifyCode};
+    </delete>
+
+    <!-- 부적합 업종 삭제 -->
+    <delete id="removeIncogruitySectors" parameterType="String">
+        DELETE
+        FROM
+            incongruity_sectors
+        WHERE
+            incongruity_sectors_code = #{incongruitySectorsCode};
+    </delete>
+
+    <!-- 기업가치 평가 결과 삭제 -->
+    <delete id="removeCorporateValueEvaluation" parameterType="String">
+        /* 기업가치 평가 결과 삭제 */
+        DELETE
+        FROM
+            corporate_value_evaluation
+        WHERE
+            corporate_value_evaluation_code = #{corporateValueEvaluationCode};
+    </delete>
+
+</mapper>

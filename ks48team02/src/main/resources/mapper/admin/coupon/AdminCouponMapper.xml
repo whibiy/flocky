@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksmart.ks48team02.admin.mapper.coupon.AdminCouponMapper">
+
+    <!--쿠폰 resultMap-->
+    <resultMap id="CouponResultMap" type="Coupon">
+        <id property="couponCode" column="coupon_code"/>
+        <result property="memberId" column="member_id"/>
+        <result property="couponSerialNumber" column="coupon_serial_number"/>
+        <result property="couponName" column="coupon_name"/>
+        <result property="couponDiscountRate" column="coupon_discount_rate"/>
+        <result property="couponDiscountAmount" column="coupon_discount_amount"/>
+        <result property="couponStock" column="coupon_stock"/>
+        <result property="numberCouponsRemaining" column="number_coupons_remaining"/>
+        <result property="couponValidPeriod" column="coupon_valid_period"/>
+        <result property="couponTermsUse" column="coupon_terms_use"/>
+
+        <association property="memberCoupon" javaType="MemberCoupon">
+            <id property="couponIssueCode" column="coupon_issue_code"></id>
+            <result property="couponMemberId" column="member_id"></result>
+            <result property="couponCode" column="coupon_code"></result>
+            <result property="couponRegDate" column="coupon_reg_dateTime"></result>
+            <result property="couponEndDate" column="coupon_end_date"></result>
+            <result property="couponUsed" column="coupon_used"></result>
+        </association>
+    </resultMap>
+
+<!--    쿠폰 삭제-->
+    <delete id="deleteCoupon" parameterType="Coupon">
+        delete
+        from
+        coupon_details as c
+        where
+        c.coupon_code = #{couponCode};
+    </delete>
+
+<!--    쿠폰 수정-->
+    <update id="updateCoupon" parameterType="Coupon">
+        update
+        coupon_details
+        set
+        coupon_serial_number = #{couponSerialNumber},
+        coupon_name = #{couponName},
+        coupon_discount_rate = #{couponDiscountRate},
+        coupon_discount_amount = #{couponDiscountAmount},
+        coupon_stock = #{couponStock},
+        number_coupons_remaining = #{numberCouponsRemaining},
+        coupon_valid_period = #{couponValidPeriod},
+        coupon_terms_use = #{couponTermsUse}
+        where
+        coupon_code = #{couponCode};
+    </update>
+
+
+<!--    쿠폰 등록-->
+    <insert id="insertCoupon" parameterType="Coupon">
+        INSERT INTO coupon_details
+        (
+        coupon_code,
+        coupon_serial_number,
+        coupon_name,
+        coupon_discount_rate,
+        coupon_discount_amount,
+        coupon_stock,
+        number_coupons_remaining,
+        coupon_valid_period,
+        coupon_terms_use
+        )
+        SELECT
+        CONCAT('coup_',LPAD(COUNT(coupon_code) + 1, 4, '0')),
+        #{couponSerialNumber},
+        #{couponName},
+        #{couponDiscountRate},
+        #{couponDiscountAmount},
+        #{couponStock},
+        #{numberCouponsRemaining},
+        #{couponValidPeriod},
+        #{couponTermsUse}
+        FROM
+        coupon_details;
+    </insert>
+
+    <!--전체 쿠폰 조회-->
+    <select id="getCouponList" resultType="Coupon">
+        select
+            c.coupon_code as couponCode,
+            c.member_id as memberId,
+            c.coupon_serial_number as couponSerialNumber,
+            c.coupon_name as couponName,
+            c.coupon_discount_rate as couponDiscountRate,
+            c.coupon_discount_amount as couponDiscountAmount,
+            c.coupon_stock as couponStock,
+            c.number_coupons_remaining as numberCouponsRemaining,
+            c.coupon_valid_period as couponValidPeriod,
+            c.coupon_terms_use as couponTermsUse
+        from
+            coupon_details as c;
+    </select>
+
+    <!--회원별 보유 쿠폰 조회-->
+    <select id="MemberHaveCouponById" resultMap="CouponResultMap" parameterType="String">
+        SELECT
+            c.coupon_code,
+            c.coupon_name,
+            c.coupon_discount_rate,
+            c.coupon_discount_amount,
+            mc.coupon_issue_code,
+            mc.coupon_reg_dateTime,
+            mc.coupon_end_date,
+            mc.coupon_used
+        FROM
+            coupon_details	AS c
+        INNER JOIN
+            member_coupon AS mc
+        ON
+            c.coupon_code = mc.coupon_code
+        INNER JOIN
+            member AS m
+        ON
+            mc.member_id = m.member_id
+        WHERE
+            m.member_id = #{memberId} AND mc.coupon_end_date >= CURDATE() AND mc.coupon_used = 0;
+    </select>
+
+    <!--수정 쿠폰 정보 쿠폰 코드로 조회-->
+    <select id="getCouponCodeById" parameterType="String" resultMap="CouponResultMap" >
+        /*  수정 특정 쿠폰 조회*/
+        select
+            c.coupon_code,
+            c.coupon_serial_number,
+            c.coupon_name,
+            c.coupon_discount_rate,
+            c.coupon_discount_amount,
+            c.coupon_stock,
+            c.number_coupons_remaining,
+            c.coupon_valid_period,
+            c.coupon_terms_use
+        from
+            coupon_details as c
+        where
+            c.coupon_code = #{couponCode};
+    </select>
+</mapper>

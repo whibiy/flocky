@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <script th:src="@{/common/js/ajaxJs.js}"></script>
+    <script th:src="@{/common/js/admin-commonJs.js}"></script>
+    <script th:src="@{/admin/js/userManagement/userManage.js}"></script>
+</th:block>
+
+<!-- 사용자별 컨텐츠 -->
+<th:block layout:fragment="customContents">
+    <div class="admin-content-wrapper form-table">
+        <table class="partition-select">
+            <tbody>
+            <tr th:if="${paramActive != 'noActive'}">
+                <td>
+                    분류
+                </td>
+                <td class="order-category-select" style="height: auto !important;">
+                    <ul>
+                        <li>
+                            <input id="choose-all" type="checkbox" name="don">
+                            <label for="choose-all">전체</label>
+                        </li>
+                        <li>
+                            <input class="choose-one" id="unreg_inactive" type="checkbox" name="rwd" checked>
+                            <label for="unreg_inactive">활성 계정</label>
+                        </li>
+                        <li>
+                            <input class="choose-one" id="unreg_active" type="checkbox" name="don">
+                            <label for="unreg_active">비활성 계정</label>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    검색 키워드
+                </td>
+                <td class="member-category-select">
+                    <select name="sellerSearchKey">
+                        <option value="total">전체</option>
+                        <option value="seller">일반 판매자</option>
+                        <option value="representative">대표 판매자</option>
+                        <option value="employee">직원 판매자 </option>
+                        <option value="orderFundingName">구매자</option>
+                    </select>
+                    <input type="text" style="padding: 5px; width: 250px;" name="userSearchable">
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="btn-area">
+            <button type="button" class="orderSearchBtn submitBtn">검색</button>
+        </div>
+    </div>
+
+    <!-------------------------- 검색 결과 ---------------------------------->
+    <div class="title-wrap">
+        <h4 class="admin-content-title">회원 목록</h4>
+    </div>
+    <div class="admin-content-wrapper" style="overflow-x: hidden;">
+        <div>
+            <!-- select area -->
+            <div class="data-info">
+                <div class="list-count-area">
+                    <ul>
+                        <li>검색 결과 <span class="count-data total-list">0</span>건</li>
+                    </ul>
+                </div>
+                <div class="list-count-selector">
+                    <select name="orderby">
+                        <option value="order_a">최신 가입일순</option>
+                        <option value="orderCompleted">가입일 역순</option>
+                    </select>
+                    <select name="count-select">
+                        <option value="15">15개씩 보기</option>
+                        <option value="20">20개씩 보기</option>
+                        <option value="30">30개씩 보기</option>
+                    </select>
+                </div>
+            </div>
+            <!-- contents area -->
+            <table class="settlement-log">
+                <thead>
+                <tr>
+                    <th style="width:5%;">
+                        <input type="checkbox" name="allSelect" id="allSelectBtn">
+                    </th>
+                   <!-- <th style="width:12%;">회원 유형 코드</th>-->
+                    <th style="width:10%;">ID</th>
+                    <th style="width:6%;">이름</th>
+                    <th style="width:20%;">이메일</th>
+                    <th style="width:10%;">휴대폰 번호</th>
+                    <th style="width:10%;">가입 일자</th>
+                   <!-- <th style="width:10%;">탈퇴 여부</th>
+                    <th style="width:10%;">탈퇴 일자</th>-->
+                </tr>
+                </thead>
+                <tbody>
+                <!-- 조회 결과 없음 -->
+                <tr th:if="${memberList == null}">
+                    <td colspan="10" style="text-align: center; padding: 30px 0;">검색 결과가 없습니다.</td>
+                </tr>
+                <!-- 조회 결과 contents -->
+                <tr th:nuless="${memberList == null}" th:each="l : ${memberList}">
+                    <td class="table-data-center">
+                        <input type="checkbox" name="selectList">
+                    </td>
+                    <td th:text="${l.member.memberId}" class="table-data-center">ID</td>
+                    <td th:text="${l.member.memberName}"  class="table-data-center">이름</td>
+                    <td th:text="${l.member.memberEmail}"  class="table-data-center">이메일</td>
+                    <td th:text="${l.member.memberContactInfo}">휴대폰 번호</td>
+                    <td th:text="${l.member.memberRegDate}"  class="table-data-center">가입일자</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+
+    </script>
+</th:block>
+</html>

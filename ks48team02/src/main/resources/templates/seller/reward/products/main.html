@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{seller/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+    <style>
+        .table-data-center-modify{
+            text-align: center;
+            color: blue;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+
+
+        //프로젝트 시작 버튼 누를 시 ajax 요청.
+        $(document).on('click', '.startBtn' ,function(){
+
+            let rewardProjectCode = $(this).parents('.rewardProject').find('.rewardProjectCode').text();
+            $.ajax({
+                method : "POST",
+                url: "/seller/reward/products/startProject",
+                data : {rewardProjectCode : rewardProjectCode},
+                dataType : "text",
+                success: function (){
+                    location.href = '/seller/reward/products';
+                },
+                error: function (error){
+                    console.log("AJAX 요청 실패")
+                }
+            });
+        })
+        $('.project-select').change(function(){
+            console.log($(this).val());
+            let projectCondition = $(this).val();
+            location.href = `/seller/reward/products?projectCondition=${projectCondition}`;
+        })
+
+    </script>
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <div class="title-wrap">
+        <h4 class="admin-content-title">현재 프로젝트 목록</h4>
+    </div>
+    <div class="admin-content-wrapper">
+        <div class="data-info">
+            <div class="list-count-area">
+                <ul>
+                    <li>프로젝트 목록 총 <span class="text-primary" th:text="${rowCnt}"></span> 건</li>
+                </ul>
+            </div>
+            <div class="list-count-selector">
+                <select class="project-select">
+                    <option value="" th:selected="${projectCondition} == null">전체 프로젝트</option>
+                    <option value="0" th:selected="${projectCondition} == 0">심사 대기중</option>
+                    <option value="1" th:selected="${projectCondition} == 1">심사 승인</option>
+                    <option value="2" th:selected="${projectCondition} == 2">심사 반려</option>
+                    <option value="3" th:selected="${projectCondition} == 3">진행중인</option>
+                    <option value="4" th:selected="${projectCondition} == 4">성공 프로젝트</option>
+                    <option value="5" th:selected="${projectCondition} == 5">실패 프로젝트</option>
+                </select>
+            </div>
+        </div>
+        <form>
+
+            <table class="settlement-log">
+                <thead>
+                <tr>
+                    <th style="width:8%;">프로젝트코드</th>
+                    <th style="width:8%;">프로젝트</br>현황</th>
+                    <th style="width:20%;">프로젝트 명</th>
+                    <th style="width:15%;">
+                        프로젝트 현재 달성 금액
+                    </th>
+                    <th style="width:15%;">
+                        프로젝트 목표 금액
+                    </th>
+                    <th style="width:10%;">공고 등록일자</th>
+                    <th style="width:10%;">공고 마감일자</th>
+                    <th style="width:10%;">공고 시작일자</th>
+                    <th>프로젝트</br>수정</th>
+                    <th style="width:10%;">심사사유</th>
+                    <th>담당자</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                <!-- not contents -->
+                <tr th:if="${#lists.size(projectList) == 0}" class="not-contents">
+                    <td colspan="11" style="text-align: center; padding: 30px 0;">검색 결과가 없습니다.</td>
+                </tr>
+                <!-- contents -->
+                    <tr class="rewardProject" th:unless="${#lists.size(projectList) == 0}" th:each="l : ${projectList}"
+                        th:onclick="|location.href='@{/user/reward/detail(rewardProjectCode=${l.rewardProjectCode})}'|">
+                        <td class="rewardProjectCode" th:text="${l.rewardProjectCode}"></td>
+                        <td class="rewardProjectCondition" th:if="${l.projectCondition == 0}">심사 대기중</td>
+                        <td class="rewardProjectCondition" th:if="${l.projectCondition == 1}">심사 승인</td>
+                        <td class="rewardProjectCondition" th:if="${l.projectCondition == 2}">심사 반려</td>
+                        <td class="rewardProjectCondition" th:if="${l.projectCondition == 3}">프로젝트 진행 중</td>
+                        <td class="rewardProjectCondition" th:if="${l.projectCondition == 4}">프로젝트 성공</td>
+                        <td class="rewardProjectCondition" th:if="${l.projectCondition == 5}">프로젝트 실패</td>
+                        <td th:text="${l.projectSubject}"></td>
+                        <td>
+                            <div style="float:left;"><span class="current-goal-money" th:text="|${#numbers.formatInteger(l.projectAchievementMoney,0,'COMMA')} 원|"></span></div>
+                        </td>
+                        <td>
+                            <div style="float:left;"><span class="goal-money" th:text="|${#numbers.formatInteger(l.projectGoalMoney,0,'COMMA')} 원|"></span> </div>
+                        </td>
+                        <td class="table-data-center" th:text="${l.projectRegDate}"></td>
+                        <td class="table-data-center" th:text="${#strings.substring(l.projectEndDate,0,10)}"></td>
+                        <td class="table-data-center start-project-date" th:if="${l.projectCondition == 1}">
+                            <button type="button" class="startBtn" style=" background-color: #235fd9; border-radius: 5px; color: whitesmoke; padding: 5px">프로젝트 시작</button>
+                        </td>
+                        <td class="table-data-center start-project-date" th:if="${l.projectCondition == 0} OR ${l.projectCondition == 2}">-</td>
+                        <td class="table-data-center start-project-date" th:if="${l.projectCondition >= 3}" th:text="${l.projectStartDate}"></td>
+                        <td class="table-data-center-modify">
+                            <a th:if="${l.projectCondition} == 0 OR ${l.projectCondition} == 2" th:href="@{/seller/reward/products/modify(rewardProjectCode=${l.rewardProjectCode})}">수정</a>
+                            <a th:unless="${l.projectCondition} == 0 OR ${l.projectCondition} == 2" style="text-decoration-color : red ; color : red;">수정불가</a>
+                        </td>
+                        <td class="table-data-center judgement-reason" th:if="${l.projectJudgmentReason == null}">-</td>
+                        <td class="table-data-center judgement-reason" th:unless="${l.projectJudgmentReason == null}" th:text="${l.projectJudgmentReason}">
+                        </td>
+                        <td class="table-data-center" th:if="${l.adminMemberId == null}">-</td>
+                        <td class="table-data-center" th:unless="${l.adminMemberId == null}" th:text="${l.adminMemberId}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+
+
+        <!-- list pager -->
+        <div class="board-page-area">
+            <div class="list-controller-inner">
+                <ul>
+                    <th:block th:if="${#lists.size(projectList) != 0}" th:each="num : ${#numbers.sequence(startPageNum, endPageNum)}">
+                        <li class="link-active">
+                            <a th:if="${num != currentPage}"
+                               th:href="@{/seller/reward/products(projectCondition=${projectCondition},currentPage=${num})}">[[${'[' + num + ']'}]]</a>
+                            <a th:unless="${num != currentPage}" th:text="${num}"></a>
+                        </li>
+                    </th:block>
+                </ul>
+                <div class="list-btn-area">
+                    <button class="prev-transfer" th:if="${currentPage > 1}"
+                            th:onclick="|location.href='@{/seller/reward/products(projectCondition=${projectCondition},currentPage=${currentPage - 1})}'|">
+                        <span>prev</span>
+                    </button>
+                    <button class="prev-transfer" th:unless="${currentPage > 1}">
+                        <span>prev</span>
+                    </button>
+                    <button class="next-transfer" th:if="${currentPage < lastPage}"
+                            th:onclick="|location.href='@{/seller/reward/products(projectCondition=${projectCondition},currentPage=${currentPage + 1})}'|">
+                        <span>next</span>
+                    </button>
+                    <button class="next-transfer" th:unless="${currentPage < lastPage}">
+                        <span>next</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+</th:block>
+</body>
+</html>

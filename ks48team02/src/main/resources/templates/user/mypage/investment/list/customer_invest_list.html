@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <!-- Link Swiper's CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    <link rel="stylesheet" th:href="@{/user/css/swiper-event-css.css}" />
+
+
+    <link href="https://www.crowdnet.or.kr/css/contents.css?t=1698291183518" type="text/css" rel="stylesheet">
+    <link href="https://www.crowdnet.or.kr/css/all.css" type="text/css" rel="stylesheet">
+
+
+    <style>
+        .container .fund_box02 .fund_top02 .fnd_tit a {
+            overflow: auto;
+            text-overflow: inherit;
+            white-space: normal;
+
+        }
+        .container .fund_box02 .fund_top02 .fnd_tit a::after {
+            display: none;
+        }
+        .container .fund_box02 .fund_top02 .fnd_tit {
+            padding-right: 80px;
+        }
+    </style>
+
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <!-- 	  	<script th:src="@{user/js/swiper-slide-event.js}"></script> -->
+
+
+
+
+
+</th:block>
+
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+
+
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <div class="container">
+        <div class="cont_box">
+            <div class="option_box">
+                <div class="lta"><span id="wq_uuid_122" class="w2span ">투자 펀딩 후 진행정보 목록</span></div>
+            </div>
+            <div style="padding-top:0;border-top:0;" class="ly_card column2">
+                <ul>
+                    <li class="_LIST_ITEM">
+                        <div class="fund_box02">
+                            <div class="fund_top02">
+                                <div  class="fnd_tit">
+                                    <a>마케팅 전문기업이 만든 스페셜티 커피 온라인 플랫폼, 커핑커피</a>
+                                    <div class="rta">
+                                        <div style="display:none;float:left" class="">
+                                            <span class="w2span scl"></span>
+                                        </div><span style="margin-left:0" class="w2span  success">성공</span>
+                                    </div>
+                                </div>
+                                <div class="fnd_cont">
+                                    <p  style="overflow-wrap: break-word;">세종아이콘</p>
+                                </div>
+                                <div class="fnd_date">
+                                    <dl class="">
+                                        <dt >청약기간</dt>
+                                        <dd >2023-08-29~2023-10-20</dd>
+                                    </dl>
+                                    <dl class="">
+                                        <dt >모집가액</dt>
+                                        <dd >20,000,000 원</dd>
+                                    </dl>
+                                    <dl class="">
+                                        <dt >청약금액</dt>
+                                        <dd >16,000,000 원</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                            <div class="fund_cont02">
+                                <div class="fnd_inner">
+                                    <div class="fnd_cell"><strong class="fnd_ico01">업종</strong><em >전문기술</em></div>
+                                    <div class="fnd_cell"><strong class="fnd_ico02">청약률</strong><em >80%</em></div>
+                                    <div class="fnd_cell"><strong class="fnd_ico03">청약자수</strong><em >6명</em></div>
+                                </div>
+                                <div class="btn_box center">
+                                    <a th:href="@{/user/investment/view/customer-invest}" class="btn_middle blue">상세보기</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="_LIST_ITEM">
+                        <div class="fund_box02">
+                            <div class="fund_top02">
+                                <div  class="fnd_tit">
+                                    <a>마케팅 전문기업이 만든 스페셜티 커피 온라인 플랫폼, 커핑커피</a>
+                                    <div class="rta">
+                                        <div style="display:none;float:left" class="">
+                                            <span class="w2span scl"></span>
+                                        </div><span style="margin-left:0" class="w2span  success">성공</span>
+                                    </div>
+                                </div>
+                                <div class="fnd_cont">
+                                    <p  style="overflow-wrap: break-word;">세종아이콘</p>
+                                </div>
+                                <div class="fnd_date">
+                                    <dl class="">
+                                        <dt >청약기간</dt>
+                                        <dd >2023-08-29~2023-10-20</dd>
+                                    </dl>
+                                    <dl class="">
+                                        <dt >모집가액</dt>
+                                        <dd >20,000,000 원</dd>
+                                    </dl>
+                                    <dl class="">
+                                        <dt >청약금액</dt>
+                                        <dd >16,000,000 원</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                            <div class="fund_cont02">
+                                <div class="fnd_inner">
+                                    <div class="fnd_cell"><strong class="fnd_ico01">업종</strong><em >전문기술</em></div>
+                                    <div class="fnd_cell"><strong class="fnd_ico02">청약률</strong><em >80%</em></div>
+                                    <div class="fnd_cell"><strong class="fnd_ico03">청약자수</strong><em >6명</em></div>
+                                </div>
+                                <div class="btn_box center">
+                                    <a th:href="@{/user/investment/view/customer-invest}" class="btn_middle blue">상세보기</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-lg-12" style="height: 50px"></div>
+            <!--<div id="wq_uuid_136" class="grp_page_list">
+                <div id="pageList" class="w2pageList w2pageList_pagePrev_last w2pageList_prev_last page_list" aria-hidden="false" style="display: block; visibility: visible;">
+                    <ul class="w2pageList_ul">
+                        <li id="pageList_prevPage_btn" class="w2pageList_control_pagePrev w2pageList_col_prevPage" style="background-image: none; visibility: hidden;"><a href="#pageList_prevPage_btn"><img src="/img/btn/btn_page_first.png" alt="첫 페이지"></a></li>
+                        <li id="pageList_prev_btn" class="w2pageList_control_prev w2pageList_col_prev" style="background-image: none; visibility: hidden;"><a href="#pageList_prev_btn"><img src="/img/btn/btn_page_prev.png" alt="이전 페이지"></a></li>
+                        <li class="w2pageList_li_label"><a id="pageList_page_1" href="#pageList_page_1" class="w2pageList_control_label w2pageList_label_selected" index="1">1</a></li>
+                        <li class="w2pageList_li_label"><a id="pageList_page_2" href="#pageList_page_2" class="w2pageList_control_label w2pageList_label" index="2">2</a></li>
+                        <li class="w2pageList_li_label"><a id="pageList_page_3" href="#pageList_page_3" class="w2pageList_control_label w2pageList_label" index="3">3</a></li>
+                        <li class="w2pageList_li_label"><a id="pageList_page_4" href="#pageList_page_4" class="w2pageList_control_label w2pageList_label" index="4">4</a></li>
+                        <li class="w2pageList_li_label"><a id="pageList_page_5" href="#pageList_page_5" class="w2pageList_control_label w2pageList_label" index="5">5</a></li>
+                        <li class="w2pageList_li_label"><a id="pageList_page_6" href="#pageList_page_6" class="w2pageList_control_label w2pageList_label" index="6">6</a></li>
+                        <li class="w2pageList_li_label"><a id="pageList_page_7" href="#pageList_page_7" class="w2pageList_control_label w2pageList_label" index="7">7</a></li>
+                        <li class="w2pageList_li_label"><a id="pageList_page_8" href="#pageList_page_8" class="w2pageList_control_label w2pageList_label" index="8">8</a></li>
+                        <li class="w2pageList_li_label"><a id="pageList_page_9" href="#pageList_page_9" class="w2pageList_control_label w2pageList_label" index="9">9</a></li>
+                        <li class="w2pageList_li_label"><a id="pageList_page_10" href="#pageList_page_10" class="w2pageList_control_label w2pageList_label" index="10">10</a></li>
+                        <li id="pageList_next_btn" class="w2pageList_control_next w2pageList_col_next" style="background-image: none; visibility: visible;" '=""><a href="#pageList_next_btn"><img src="/img/btn/btn_page_next.png" alt="다음 페이지"></a></li><li id="pageList_nextPage_btn" class="w2pageList_control_pageNext w2pageList_col_nextPage" style="background-image: none; visibility: visible;" '=""><a href="#pageList_nextPage_btn"><img src="/img/btn/btn_page_last.png" alt="마지막 페이지"></a></li>
+                    </ul>
+                </div>
+            </div>-->
+        </div>
+    </div>
+</th:block>
+</html>

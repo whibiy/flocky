@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/donation/detail/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+    <style>
+        .donation-new-box{
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+        var swiper = new Swiper(".mySwiper", {
+            spaceBetween: 30,    // 슬라이드 사이 여백
+            slidesPerView : 'auto', // 한 슬라이드에 보여줄 갯수
+            centeredSlides: true,    //센터모드
+            autoplay: {     //자동슬라이드 (false-비활성화)
+                delay: 2500, // 시간 설정
+                disableOnInteraction: false, // false-스와이프 후 자동 재생
+            },
+            loop : false,   // 슬라이드 반복 여부
+            loopAdditionalSlides : 1,
+            // 슬라이드 반복 시 마지막 슬라이드에서 다음 슬라이드가 보여지지 않는 현상 수정
+            pagination: { // 호출(pager) 여부
+                el: ".swiper-pagination", //버튼을 담을 태그 설정
+                clickable: true, // 버튼 클릭 여부
+            },
+            navigation: {   // 버튼
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+        });
+        let donationContentsSwiperSlide = new Swiper("#donationProject .contents-area", {
+            slidesPerView: 3,
+            spaceBetween: 12,
+            navigation: {
+                nextEl: "#donationProject .swiper-button-next",
+                prevEl: "#donationProject .swiper-button-prev",
+            },
+        });
+    </script>
+
+    <script>
+        // 현재 프로젝트코드로 상세페이지 데이터를 가져오기 위한 기부코드
+        let donationCode = '[[${donationCode}]]';
+        // 썸네일 이미지 경로 지정
+        let thumbNailImageSrc = $('#thumbNailImage').attr('src');
+        $('#thumbNailImage').attr('src', '/summernoteImage/' + '[[${donationInfo.donationImage}]]');
+
+        // 스토리에서 앞에 부분만 잘라서 공백포함 155글자만 가져옴 그뒤는 ... 으로 다자름
+        let storyBodyText = $('#storyBody').text();
+        $('#subContens').text(storyBodyText);
+        if (storyBodyText.length > 155) {
+            storyBodyText = storyBodyText.substring(0, 155) + '...';
+        }
+        // 가져온 텍스트를 subContens에 설정
+        $('#subContens').text(storyBodyText);
+
+        let currentDate = new Date();
+        // 비교 대상 날짜 설정
+        let targetDate = new Date($('#donationEndDate').val());
+        // 두 날짜 간의 차이 계산 (밀리초 단위)
+        let timeDifference = targetDate - currentDate;
+        // 차이를 일(day) 단위로 변환
+        let daysRemaining = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+        // 남은 일 수
+        const $condition = '[[${donationInfo.donationCondition}]]';
+
+        if (daysRemaining <= 0 && $condition == 4){
+            $('#deadLine').text('종료:성공');
+        }else if(daysRemaining <= 0 && $condition == 5){
+            $('#deadLine').text('종료:실패');
+            $('#deadLine').css('background', 'rgba(255,1,15,0.32)');
+            $('#deadLine').css('color', 'rgba(255,1,15,0.77)');
+        }else {
+            // 남은 일 수
+            $('#deadLine').text(daysRemaining + '일남음');
+        }
+
+        // 카테고리 이름 설정
+        $('#category').text('[[${cateAndCompany.categoryName}]]' + ' >');
+        // 회사 이름 설정
+        $('#company').text('[[${cateAndCompany.storeName}]]');
+        $('#achievementPercent').text($('#achievementPercent').text()+'%');
+    </script>
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12" style="margin-top: 30px; margin-bottom: -10px;">
+                <h5 style="display: inline-block; font-weight: bold; font-size: 15px">새소식</h5>
+                <h5 id="newsCount" style="display: inline-block; color: #235FD9; font-weight: bold; font-size: 15px" th:text="${newsList.size()}"></h5>
+            </div>
+            <div class="col-lg-12" style="border: 2px solid #f3f4f5; margin: 10px 0px; width: 100%"></div>
+
+            <div class="col-lg-12 donation-new-box" th:onclick="|location.href='@{/user/donation/detail/news/newsDetail(newCode=${l.newsCode},donationCode=${donationCode})}'|"
+                 th:each="l : ${newsList}">
+                <div>
+                    <span style="color: black; font-weight: bold; font-size: 11px">공지사항</span>
+                    <span style="font-size: 11px; margin-left: 3px; margin-right: 3px"></span>
+                    <span style="font-size: 11px"></span>
+                </div>
+                <div>
+                    <p style="font-size: 15px; color: black" th:text="${l.newsSubject}"></p>
+                </div>
+                <div>
+                    <span class="newsDate" style="font-size: 10px" th:text="${l.newsDatetime}"></span>
+                </div>
+                <div class="col-lg-12" style="border: 1px solid #f3f4f5; margin: 10px 0px; width: 100%"></div>
+            </div>
+
+
+
+        </div>
+    </div>
+
+    <!-- 부가설명을 위한 데이터 -->
+    <div hidden="hidden" id="storyBody" th:utext="${donationInfo.donationContents}" style="color: black; white-space: pre-line"></div>
+</th:block>
+
+</html>

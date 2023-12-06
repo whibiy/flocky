@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layout/default}">
+<head>
+    <meta charset="UTF-8">
+    <title>플로키 1:1문의</title>
+    <link rel="stylesheet" th:href="@{/user/css/inquiryStyle.css}">
+</head>
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- html 사용자 조각 작성 -->
+<th:block layout:fragment="customContents">
+    <form id="fowardForm" method="get">
+        <input type="hidden" id="returnURL" name="returnURL" />
+    </form>
+    <input type="hidden" id="loginCheck" value="false">
+    <div class="ui-header">
+        <h2 class="title">1:1문의</h2>
+    </div>
+
+    <div class="inquiryContentArea">
+        <h2>문의 등록</h2>
+        <br>
+        <h2>문의 하실 내용을 선택해주세요 😅</h2>
+        <div class="btnArea">
+            <button class="inquiryBtn1" onclick="location.href='/user/inquiry/add'">플로키 문의하기</button>
+            <button class="inquiryBtn2" onclick="location.href='/user/inquiry/store'">스토어 문의하기</button>
+        </div>
+    </div>
+</th:block>
+
+</html>
+
+
+

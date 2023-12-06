@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  	  layout:decorate="~{user/layout/default}">
+  	  
+  	  <head>
+		  <title>flocky</title>
+		  <!--  사용자별 css file 추가 부분 -->
+		  <!-- Link Swiper's CSS -->
+		  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+		  <link rel="stylesheet" th:href="@{/user/css/swiper-event-css.css}" />
+		  <link rel="stylesheet" th:href="@{/user/css/main_style.css}" />
+
+  	  </head>
+  	  
+  	  
+	 <!-- 사용자 페이지별 javascript file -->
+	 <th:block layout:fragment="customJsFile">
+		 <!-- Swiper JS -->
+	  	 <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+ 	  	 <script th:src="@{user/js/mainSwiperJs.js}"></script>
+
+		 <!-- scroll to give class js code file -->
+		 <script th:src="@{/user/js/scroll-active.js}"></script>
+		 <!-- ajaxJs -->
+		 <script th:src="@{/common/js/ajaxJs.js}"></script>
+	</th:block>
+	
+	
+	<!-- 사용자별 스크립트 작성 -->
+	<th:block layout:fragment="customJsCode">
+
+		<script>
+			// md join swiper slide
+			let mdJoinSwiper = new Swiper("#mdJoinProject .mySwiper", {
+				slidesPerView: 3,
+				grid: {
+					rows: 2,
+				},
+				// spaceBetween: 20,
+				pagination: {
+					el: ".swiper-pagination",
+					clickable: true,
+				},
+			});
+
+
+			// rank tab function
+			$('.tab-menu-btn li').on('click',function(){
+				let tabData = $(this).attr('data-tab');
+				$('.main-rank-area').removeClass('active');
+				rankAjax(tabData, function(list){
+					console.log(list);
+					// 여기에서 작업
+					$(`.main-rank-area`).addClass('active');
+					$(`.main-rank-area ul li`).remove();
+
+					$(list).each((idx, item) => {
+						// append 로 수정해보기
+						let listElement = "";
+						listElement += "<li>";
+						if(item.projectCode == '리워드'){
+							listElement += `<a href="/user/reward/detail?rewardProjectCode=${item.projectCode}">`;
+						} else if(item.projectCode == '기부'){
+							listElement += `<a href="/user/donation/detail?donationCode=${item.projectCode}">`;
+						} else {
+							listElement += `<a href="/user/investment/detail/main?investmentCode=${item.projectCode}">`;
+						}
+						listElement += `      <em>${item.rankCount}</em>`;
+						listElement += `      <div>`;
+						listElement += `        <h5>${item.subject}</h5>`;
+						listElement += "        <div class='product-detail-info'>";
+						listElement += (tabData == 'achievementPercent')?"<p class='funding-percent'><span>"+item.achievementPercent+"</span>%</p>"
+																		:"<p class='funding-percent'><span>"+item.likeCount+"</span>개</p>";
+						listElement += "          <p class='category'>";
+						listElement += (item.categoryName == '')?"<span>카테고리 없음</span>":"<span>"+item.categoryName+"</span>";
+						listElement += "            ·" ;
+						listElement += "            <span>"+item.projectType+"</span>";
+						listElement += "          </p>";
+						listElement += "        </div>";
+						listElement += "        </div>";
+						listElement += `      <div class="project-img" style="background-image: url('/summernoteImage/${item.imageUrl}'),url('/user/images/no-image.svg');"></div>`
+						listElement += "    </a>";
+						listElement += "</li>";
+						console.log(listElement);
+
+						$(`.main-rank-area ul`).append(listElement);
+
+					});
+				})
+
+				$('.tab-menu-btn li').removeClass('active');
+				$(this).addClass('active');
+			});
+
+			// contents swiper slide
+			let storeContentsSwiperSlide = new Swiper("#storeInnerGroup .contents-area", {
+				slidesPerView: 6,
+				spaceBetween: 20,
+				navigation: {
+					nextEl: "#storeInnerGroup .swiper-button-next",
+					prevEl: "#storeInnerGroup .swiper-button-prev",
+				},
+			});
+
+
+
+			$('#mdJoinProject, #project-rank').addClass('active');
+
+
+		</script>
+
+
+		
+	</th:block>
+	
+	
+  	<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+	<th:block layout:fragment="customContents">
+
+		<!-- main swiper slide start -->
+		<th:block th:replace="~{common/fragments/mainSlideFragments :: mainSlide}"></th:block>
+		<!-- main swiper slide end -->
+
+		<div class="main-wrap">
+
+			<!-- recommend project list -->
+			<section class="main-section main-contents-1">
+				<div class="container">
+					<div id="mdJoinProject">
+						<h3 class="main-title">
+							<span class="section-name" th:if="${session.SID == null}">TODAY</span>
+							<span class="section-name" th:unless="${session.SID == null}" th:text="${session.SNAME}"></span>
+							<span th:unless="${session.SID == null}"> 님 </span>
+							추천 프로젝트</h3>
+
+						<!-- Swiper -->
+						<div class="swiper mySwiper">
+							<div class="swiper-wrapper">
+								<div class="swiper-slide" th:unless="${getRecommendPjgList == null}" th:each="rpl : ${getRecommendPjgList}">
+									<th:block th:switch="${rpl.projectType}">
+										<a th:case="'리워드'" th:href="@{/user/reward/detail(rewardProjectCode=${rpl.projectCode})}">
+											<div class="slide-img">
+												<div th:style="'background-image: url(' + |@{/summernoteImage/}${rpl.projectImage}| + '),url(' + |@{/user/images/no-image.svg}| + ');'"></div>
+											</div>
+											<div class="description">
+												<div class="product-main-title">[[${rpl.subject}]]</div>
+												<div class="product-detail-info">
+													<span class="funding-percent">
+														<em>[[${rpl.achievementPercent}]]</em>
+														%
+													</span>
+																	<span class="category">
+														[[${rpl.categoryName}]]
+														·
+														[[${rpl.storeName}]]
+													</span>
+												</div>
+											</div>
+										</a>
+										<a th:case="'기부'" th:href="@{/user/donation/detail(donationCode=${rpl.projectCode})}">
+											<div class="slide-img">
+												<div th:style="'background-image: url(' + |@{/summernoteImage/}${rpl.projectImage}| + '),url(' + |@{/user/images/no-image.svg}| + ');'"></div>
+											</div>
+											<div class="description">
+												<div class="product-main-title">[[${rpl.subject}]]</div>
+												<div class="product-detail-info">
+													<span class="funding-percent">
+														<em>[[${rpl.achievementPercent}]]</em>
+														%
+													</span>
+													<span class="category">
+														[[${rpl.categoryName}]]
+														·
+														[[${rpl.storeName}]]
+													</span>
+												</div>
+											</div>
+										</a>
+										<a th:case="'투자'" th:href="@{/user/investment/detail/main(investmentCode=${rpl.projectCode})}">
+											<div class="slide-img">
+												<div th:style="'background-image: url(' + |@{/summernoteImage/}${rpl.projectImage}| + '),url(' + |@{/user/images/no-image.svg}| + ');'"></div>
+											</div>
+											<div class="description">
+												<div class="product-main-title">[[${rpl.subject}]]</div>
+												<div class="product-detail-info">
+													<span class="funding-percent">
+														<em>[[${rpl.achievementPercent}]]</em>
+														%
+													</span>
+													<span class="category">
+														[[${rpl.categoryName}]]
+														·
+														[[${rpl.storeName}]]
+													</span>
+												</div>
+											</div>
+										</a>
+									</th:block>
+								</div>
+							</div>
+							<div class="swiper-pagination"></div>
+						</div>
+					</div>
+					<div id="project-rank">
+						<div class="rang-title">
+							<h3 class="main-title">
+								실시간 랭킹
+							</h3>
+							<button id="rankReload" type="button">reload</button>
+						</div>
+
+						<div>
+							<ul class="tab-menu-btn">
+								<li data-tab="achievementPercent" class="active">펀딩 순위</li>
+								<li data-tab="likeCount">찜하기 순위</li>
+							</ul>
+							<div class="main-rank-area active">
+								<ul>
+									<li th:if="${rankList == null}">
+										등록된 프로젝트가 없습니다
+									</li>
+
+									<li th:unless="${rankList == null}" th:each="l : ${rankList}">
+										<th:block th:switch="${l.projectType}">
+											<a th:case="리워드" th:href="@{/user/reward/detail(rewardProjectCode=${l.projectCode})}">
+												<em th:text="${l.rankCount}">순위</em>
+												<div>
+													<h5 th:text="${l.subject}">프로젝트 명</h5>
+													<div class="product-detail-info">
+														<p class="funding-percent"><span th:text="${l.achievementPercent}"></span>%</p>
+														<p class="category" >
+															<span th:if="${l.categoryName == ''}">카테고리없음</span>
+															<span th:unless="${l.categoryName == ''}" th:text="${l.categoryName}">카테고리</span>
+															·
+															<span th:text="${l.projectType}">분류</span>
+														</p>
+													</div>
+												</div>
+												<div class="project-img"
+													 th:style="'background-image: url(' + |@{/summernoteImage/}${l.imageUrl}| + '),url(' + |@{/user/images/no-image.svg}| + ');'"></div>
+											</a>
+
+											<a th:case="기부" th:href="@{/user/donation/detail(donationCode=${l.projectCode})}">
+												<em th:text="${l.rankCount}">순위</em>
+												<div>
+													<h5 th:text="${l.subject}">프로젝트 명</h5>
+													<div class="product-detail-info">
+														<p class="funding-percent"><span th:text="${l.achievementPercent}"></span>%</p>
+														<p class="category" >
+															<span th:if="${l.categoryName == ''}">카테고리없음</span>
+															<span th:unless="${l.categoryName == ''}" th:text="${l.categoryName}">카테고리</span>
+															·
+															<span th:text="${l.projectType}">분류</span>
+														</p>
+													</div>
+												</div>
+												<div class="project-img"
+													 th:style="'background-image: url(' + |@{/summernoteImage/}${l.imageUrl}| + '),url(' + |@{/user/images/no-image.svg}| + ');'"></div>
+											</a>
+
+											<a th:case="투자" th:href="@{/user/investment/detail/main(investmentCode=${l.projectCode})}">
+												<em th:text="${l.rankCount}">순위</em>
+												<div>
+													<h5 th:text="${l.subject}">프로젝트 명</h5>
+													<div class="product-detail-info">
+														<p class="funding-percent"><span th:text="${l.achievementPercent}"></span>%</p>
+														<p class="category" >
+															<span th:if="${l.categoryName == ''}">카테고리없음</span>
+															<span th:unless="${l.categoryName == ''}" th:text="${l.categoryName}">카테고리</span>
+															·
+															<span th:text="${l.projectType}">분류</span>
+														</p>
+													</div>
+												</div>
+												<div class="project-img"
+													 th:style="'background-image: url(' + |@{/summernoteImage/}${l.imageUrl}| + '),url(' + |@{/user/images/no-image.svg}| + ');'"></div>
+											</a>
+										</th:block>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- store swiper area -->
+			<th:block th:replace="~{user/fragments/mainSwiperFragments :: storeSwiperFragment}"></th:block>
+
+			<section id="bannerArea" class="content-wrap scroll-action-area">
+				<div class="container">
+					<div class="banner-content">
+						<a th:href="@{/user/board/event_1}">
+							<div th:style="'background-image: url('+ @{/user/images/EVENT_BANNER_1.png} +');'"></div>
+						</a>
+					</div>
+					<div class="banner-content">
+						<a th:href="@{#}">
+							<div th:style="'background-image: url('+ @{/user/images/EVENT_BANNER_2.png} +');'"></div>
+						</a>
+					</div>
+				</div>
+			</section>
+
+			<!-- reward Swiper area -->
+			<th:block th:replace="~{user/fragments/mainSwiperFragments :: rewardContentsSwiperSlide}"></th:block>
+
+			<!-- donation Swiper area -->
+			<th:block th:replace="~{user/fragments/mainSwiperFragments :: donationContentsSwiperSlide}"></th:block>
+
+			<!-- invest Swiper area -->
+			<th:block th:replace="~{user/fragments/mainSwiperFragments :: investContentsSwiperSlide}"></th:block>
+
+
+			<section id="btEventBanner" class="main-section container">
+
+				<div class="contents-area">
+					<h3>플로키에서 지금 바로 프로젝트를 시작하세요</h3>
+					<p>이미 많은 스토어가 플로키를 경험했어요</p>
+					<a class="link-btn" th:href="@{/user/board/event}">
+						<span>이벤트 바로가기</span>
+					</a>
+				</div>
+			</section>
+		</div>
+	</th:block>
+</html>

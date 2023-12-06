@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div class="col-md-3 left_col" th:fragment="asideFragment">
+  <div class="left_col scroll-view">
+    <div class="navbar nav_title" style="border: 0;">
+      <a th:href="@{/user}" class="site_title">flocky</a>
+
+      <div class="nav toggle">
+        <a id="menu_toggle">닫기</a>
+      </div>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <!-- menu profile quick info -->
+    <!-- <div class="profile clearfix">
+      <div class="profile_pic">
+        <img th:src="@{/admin/images/img.jpg}" alt="..." class="img-circle profile_img">
+      </div>
+      <div class="profile_info">
+        <span>Welcome,</span>
+        <h2>John Doe</h2>
+      </div>
+    </div> -->
+    <!-- /menu profile quick info -->
+
+
+    <!-- sidebar menu -->
+    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+      <div class="menu_section">
+
+        <ul class="nav side-menu">
+          <li><a th:href="@{/seller}"><i class="fa fa-home"></i> 홈 <span class="fa fa-chevron-down"></span></a></li>
+          <li><a><i class="fa fa-user"></i> 스토어 관리(설아)<span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a th:href="@{/seller/store}">스토어 추가/삭제/수정(설아)</a></li>
+              <li><a th:href="@{/seller/store/staffAdd}">직원관리(설아)</a></li>
+              <li><a th:href="@{/seller/store/news}">스토어 소식 관리(설아)</a></li>
+            </ul>
+          </li>
+          <li><a><i class="fa fa-edit"></i> #리워드 프로젝트 관리 (상민) <span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a th:href="@{/seller/reward/products}">프로젝트 목록#</a></li>
+              <li><a th:href="@{/seller/reward/news}">새소식#</a></li>
+              <li><a th:href="@{/seller/reward/products/preExperienceRecruit}">사전체험단#</a></li>
+<!--              <li><a th:href="@{/seller/reward/products/searchTagModify}">태그 관리#</a></li>-->
+<!--              <li><a th:href="@{/seller/reward/products/comment}">댓글 관리#</a></li>-->
+            </ul>
+          </li>
+          <li><a><i class="fa fa-edit"></i> !기부 프로젝트 관리(정민)<span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a th:href="@{/seller/donation/products}">!프로젝트 목록(정민)</a></li>
+              <li><a th:href="@{/seller/donation/news}">!새소식 관리(정민)</a></li>
+              <li><a th:href="@{/seller/donation/condition}">!기부 진행현황 관리(정민)</a></li>
+              <!--<li><a th:href="@{/seller/donation/comments}">!댓글 관리(정민)</a></li>-->
+<!--              <li><a th:href="@{/seller/donation/products/searchTagModify}">!태그 관리(정민)</a></li>-->
+            </ul>
+          </li>
+          <li><a><i class="fa fa-edit"></i> !투자 프로젝트 관리(오진,시원)<span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a th:href="@{/seller/investment/invest-main}">!프로젝트 목록(오진)</a></li>
+              <li><a th:href="@{/seller/investment/news}">!새소식(시원)</a></li>
+              <!--<li><a th:href="@{/seller/investment/comment}">!댓글관리(시원)</a></li>-->
+              <li><a th:href="@{/seller/investment/search/judge}">!투자 펀딩 심사요청(오진)</a></li>
+              <li><a th:href="@{/seller/investment/search/after-fund-revenue}">!투자후 기업정보 공개(오진)</a></li>
+              <li><a th:href="@{/seller/investment/search/after-invest-division}">!투자 후 분배(오진)</a></li>
+            </ul>
+          </li>
+            <li>
+                <a><i class="fa fa-shopping-bag"></i> #주문 관리 (슬지) <span class="fa fa-chevron-down"></span></a>
+                <ul class="nav child_menu">
+                    <li>
+                        <a th:href="@{/admin/order/list}">#주문 목록(슬지)</a>
+                    </li>
+                    <li>
+                        <a th:href="@{/admin/order/delivery}">#배송 관리(슬지)</a>
+                    </li>
+                    <li>
+                        <a th:href="@{/admin/order/refundSwapping}">#교환/환불 신청 관리(슬지)</a>
+                    </li>
+                    <li>
+                        <a th:href="@{/admin/order/autorfnd}">#자동 환불 관리(슬지)</a>
+                    </li>
+                </ul>
+            </li>
+          <li><a><i class="fa fa-bar-chart-o"></i>!통계 관리 (슬지)<span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a th:href="@{/seller/calcula}">!통계 대시보드(슬지)</a></li>
+              <li><a th:href="@{/seller/calcula/date}">!일일 매출 통계(슬지)</a></li>
+              <li><a th:href="@{/seller/calcula/month}">!월별 매출 통계(슬지)</a></li>
+              <li><a th:href="@{/seller/calcula/year}">!연 매출 통계(슬지)</a></li>
+              <li><a th:href="@{/seller/calcula/project}">!프로젝트별 매출 통계(슬지)</a></li>
+            </ul>
+          </li>
+          <li><a><i class="fa fa-clone"></i>!정산 (슬지)<span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a th:href="@{/seller/settlement}">!정산 대시보드(슬지)</a></li>
+              <li><a th:href="@{/seller/settlement/addSettlement}">!정산 신청하기(슬지)</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <div class="menu_section">
+
+        <ul class="nav side-menu">
+          <li><a><i class="fa fa-desktop"></i>#고객센터(진현)<span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a th:href="@{/seller/inquiry/main}">#1:1문의(진현)</a></li>
+            </ul>
+          </li>
+
+
+        </ul>
+      </div>
+
+    </div>
+    <!-- /sidebar menu -->
+
+    <!-- /menu footer buttons -->
+<!--    <div class="sidebar-footer hidden-small">-->
+<!--      <a data-toggle="tooltip" data-placement="top" title="Settings">-->
+<!--        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>-->
+<!--      </a>-->
+<!--      <a data-toggle="tooltip" data-placement="top" title="FullScreen">-->
+<!--        <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>-->
+<!--      </a>-->
+<!--      <a data-toggle="tooltip" data-placement="top" title="Lock">-->
+<!--        <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>-->
+<!--      </a>-->
+<!--      <a data-toggle="tooltip" data-placement="top" title="Logout" href="login.html">-->
+<!--        <span class="glyphicon glyphicon-off" aria-hidden="true"></span>-->
+<!--      </a>-->
+<!--    </div>-->
+    <!-- /menu footer buttons -->
+  </div>
+</div>
+
+
+</html>

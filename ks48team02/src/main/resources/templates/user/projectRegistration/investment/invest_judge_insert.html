@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layout/default}">
+
+<head>
+  <!--  사용자별 css file 추가 부분 -->
+  <!-- Link Swiper's CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+  <link rel="stylesheet" th:href="@{/user/css/swiper-event-css.css}" />
+  <link rel="stylesheet" th:href="@{/user/css/main_style.css}" />
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
+        integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"/>
+
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+  <!-- Swiper JS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+  <!-- 	  	<script th:src="@{user/js/swiper-slide-event.js}"></script> -->
+  <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+  <!-- common js -->
+  <script src="/common/js/common-custom.js"></script>
+
+  <!-- include summernote css/js -->
+<!--  <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">-->
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+
+</th:block>
+
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+  <script type="text/javascript">
+    $(document).ready(function() {
+      // 증권 구분 셀렉트 박스의 변경 이벤트 핸들러 등록
+      $('#securitiesClassification').change(function() {
+        // 선택된 값 가져오기
+        let selectedValue = $(this).val();
+
+        // 현금 보유량, 현재 주식 수, 발행 예정 주식 수 입력 필드의 부모 요소를 가져옴
+        let cashReservesInput = $('#cashReserves').closest('.my-2');
+        let stockNumberInput = $('#stockNumber').closest('.my-2');
+        let issueStockNumberInput = $('#issueStockNumber').closest('.my-2');
+
+        // 주식형이 선택된 경우
+        if (selectedValue === '주식') {
+          // 현재 주식 수와 발행 예정 주식 수 필드 표시
+          stockNumberInput.show();
+          issueStockNumberInput.show();
+          // 현금 보유량 입력 필드 숨기고 유효성 검사 제거, 값 0으로 설정
+          cashReservesInput.hide().find('input').prop('required', false).val('0');
+        } else if (selectedValue === '채권') {
+          // 채권형이 선택된 경우
+          // 현금 보유량 입력 필드 표시
+          cashReservesInput.show().find('input').val('');
+          // 현재 주식 수와 발행 예정 주식 수 입력 필드 숨기고 유효성 검사 제거, 값 0으로 설정
+          stockNumberInput.hide().find('input').prop('required', false).val('0');
+          issueStockNumberInput.hide().find('input').prop('required', false).val('0');
+        }
+      });
+    });
+
+
+
+
+    $(function (){
+
+      $(".nextBtn").click(function () {
+        // companyBusinessTypeCode 필드의 값을 콘솔에 출력
+        let companyBusinessTypeCode = $('#companyBusinessTypeCode').val();
+        if (typeof companyBusinessTypeCode === 'undefined' || companyBusinessTypeCode === '') {
+          alert('companyBusinessTypeCode 값이 설정되지 않았습니다. 값을 설정해주세요.');
+          return;
+        }
+        console.log('companyBusinessTypeCode: ' + companyBusinessTypeCode);
+
+        // 'cashReserves' 요소의 'required' 속성 제거
+        if ($('#securitiesClassification').val() === '1') {
+          $('#cashReserves').removeAttr('required');
+        }
+
+        if ($('#securitiesClassification').val() === '2') {
+          $('#stockNumber').removeAttr('required');
+          $('#issueStockNumber').removeAttr('required');
+        }
+
+        function validationEmptyFn($els) {
+          let isFalse = true;
+          $($els).each((idx, item) => {
+            let value = $(item).val();
+            let labelId = $(item).attr('id');
+
+            // 주식형이 선택되었을 때 현금 보유량 필드는 유효성 검사에서 제외
+            if (labelId === 'cashReserves' && $('#securitiesClassification').val() === '주식') {
+              return true;
+            }else if ((labelId === 'stockNumber' || labelId === 'issueStockNumber') && $('#securitiesClassification').val() === '채권'){
+              return true;
+            }
+
+            // 'display: none;' 스타일이 적용된 부분은 유효성 검사에서 제외
+            if ($(item).parents('.info-contents-area').css('display') === 'none') {
+              return true;
+            }
+
+            if (value == null || value === '' || typeof value === 'undefined') {
+              let labelText = $(`label[for=${labelId}]`).text();
+              alert(labelText + '는 필수 입력 항목입니다');
+              $(item).focus();
+              isFalse = false;
+              return false;
+            }
+          });
+          return isFalse;
+        }
+
+        const targetEls = $('#Judge input, #Judge select').not('input[type="checkbox"]').not('#memberId');
+        // 값 유효성 검사
+        if(!validationEmptyFn(targetEls)){
+          return;
+        }
+
+        confirm('이대로 심사요청 등록을 하시겠습니까?');
+
+
+        $(this).parents('.info-contents-area').hide();
+        $(this).parents('.info-contents-area').next().show();
+
+
+      });
+      // 이전 버튼 클릭시 페이지 이동
+      $('.prevBtn').click(function(){
+        $(this).parents('.info-contents-area').hide();
+        $(this).parents('.info-contents-area').prev().show();
+      });
+
+
+
+      //summerNote API 설정.
+      $('.summernote').summernote({
+        height: 400,                 // 에디터 높이
+        minHeight: null,             // 최소 높이
+        maxHeight: null,             // 최대 높이
+        focus: true,                  // 에디터 로딩후 포커스를 맞출지 여부
+        lang: "ko-KR",					// 한글 설정
+        placeholder: '내용을 작성해 주세요.',	//placeholder 설정
+        callbacks: {	//이미지 첨부 함수
+          onImageUpload : function(files) {
+            uploadSummernoteImageFile(files[0],this);
+          },
+          onPaste: function (e) {
+            var clipboardData = e.originalEvent.clipboardData;
+            if (clipboardData && clipboardData.items && clipboardData.items.length) {
+              var item = clipboardData.items[0];
+              if (item.kind === 'file' && item.type.indexOf('image/') !== -1) {
+                e.preventDefault();
+              }
+            }
+          }
+        }
+      });
+
+      /**
+       * 이미지 파일 업로드
+       */
+      let imagesName = [];
+      function uploadSummernoteImageFile(file, editor) {
+        data = new FormData();
+        data.append("file", file);
+        $.ajax({
+          data : data,
+          type : "POST",
+          url : "/user/projectRegistration/uploadSummernoteImageFile",
+          contentType : false,
+          processData : false,
+          success : function(data) {
+            //항상 업로드된 파일의 url이 있어야 한다.
+            $(editor).summernote('insertImage', data.url);
+            imagesName.push(data.filename);
+          }
+        });
+      }
+
+      // summernote 드래그 & 드랍 구현
+      $("div.note-editable").on('drop',function(e){
+        for(i=0; i< e.originalEvent.dataTransfer.files.length; i++){
+          uploadSummernoteImageFile(e.originalEvent.dataTransfer.files[i],$(".summernote")[0]);
+        }
+        e.preventDefault();
+      })
+
+      // 썸네일 이미지 저장
+      $('#confirmBtn').click(function( ) {
+        if($('#thumbnailImage').val() == '' || typeof $('#thumbnailImage').val() == 'undefined' || $('#thumbnailImage').val() == null){
+          alert('썸네일을 넣어주세요!');
+          return;
+        }
+
+        $('#confirmBtn').css('display', 'none');
+        $('#confimMessage').css('display', 'block');
+        $('#thumbnailImage').css('display', 'none');
+        var formData = new FormData();	//FormData 객체 생성
+        var inputFile = $('#thumbnailImage'); //input 태그의 type이 file인것을 찾아서 inputFile이라는 변수로 지정
+        var files = inputFile[0].files;
+        //files : 선택한 모든 파일을 나열하는 FileList 객체입니다.
+        //multiple 특성을 지정하지 않닸다면 두 개 이상의 파일을 포함하지 않습니다.
+        for (var i = 0; i < files.length; i++) {
+          console.log(files[i]);
+          formData.append("file", files[i]);//키,값으로 append
+        }
+
+        //실제 업로드 부분
+        //upload ajax
+        $.ajax({
+          url: '/user/projectRegistration/uploadSummernoteImageFile',	//경로
+          processData: false,	//기본값은 true
+          //ajax 통신을 통해 데이터를 전송할 때, 기본적으로 key와 value값을 Query String으로 변환해서 보냅니다.
+          contentType: false,	// multipart/form-data타입을 사용하기위해 false 로 지정합니다.
+          data: formData,
+          type: 'POST',
+          dataType:'json',
+          success: function(result){
+            console.log(result.fileName);
+            $('#investmentImage').val(result.fileName); // 이미지 이름 DB 에 저장
+          },
+          error: function(jqXHR, textStatus, errorThrown){	//오류 메시지 판정
+            console.log(textStatus);
+          }
+
+        }); //$.ajax
+      });
+
+      //썸네일 이미지 추가 시, 이미지 표시
+      $('#thumbnailImage').change(function () {
+        if ($(this).val() != null) {
+          $('.img-thumbnail').css('display', 'block');
+          setImageFromFile(this, '.img-thumbnail');
+        }
+      });
+
+      function setImageFromFile(input, expression) {
+        if (input.files && input.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            $(expression).attr('src', e.target.result);
+          }
+          reader.readAsDataURL(input.files[0]);
+        }
+      }
+
+      //약관 체크 모두 될 시 모두 동의에 체크.
+      $('.essential').not('#agreeNews').click(function(){
+        let checkLength = $('.essential').not('#agreeNews').length;
+        let checkedLength = $('.essential:checked').not('#agreeNews').length;
+        let isAllCheck = checkLength === checkedLength;
+        $('#allCheck').prop('checked',isAllCheck);
+      });
+
+
+      //약관 모두 동의 체크시 모두 동의
+      $('#allCheck').click(function(){
+        $('.essential').not('#agreeNews').prop('checked',$(this).prop('checked'));
+      });
+
+      // 프로젝트 시작 날짜 현재일로부터 3일 뒤부터 선택 가능 마감 날짜는 시작날짜부터 2주뒤~60일 까지 선택 가능
+      $(document).ready(function() {
+        const today = new Date();
+        const afterThreeDays = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
+
+        const startDateFormat = afterThreeDays.toISOString().split('T')[0];
+        $('#investmentRegDate').attr('min', startDateFormat);
+
+        $('#investmentRegDate').change(function() {
+          const startDate = new Date($(this).val());
+          const afterTwoWeeks = new Date(startDate.getTime() + 14 * 24 * 60 * 60 * 1000);
+          const afterSixtyDays = new Date(startDate.getTime() + 60 * 24 * 60 * 60 * 1000);
+
+          const minDateFormat = afterTwoWeeks.toISOString().split('T')[0];
+          const maxDateFormat = afterSixtyDays.toISOString().split('T')[0];
+
+          $('#investmentDeadline').attr('min', minDateFormat);
+          $('#investmentDeadline').attr('max', maxDateFormat);
+        });
+      });
+    });
+
+
+    $('.registrationBtn').click(function(){
+      let isValid = true;
+
+      // 콤마 제거 및 빈 문자열을 null로 변환
+      const fields = ['investmentAchievementMoney', 'businessProfits', 'depreciation', 'netDebt', 'stockNumber', 'issueStockNumber', 'cashReserves'];
+      $.each(fields, function(index, field) {
+        let input = $('#' + field);
+        let value = input.val().replace(/,/g, '');
+
+        // 빈 문자열일 경우 null로 변환
+        if(value === '') {
+          value = '';
+        }
+
+        input.val(value);
+      });
+
+      // 추가적인 유효성 검사
+      const additionalFields = ['projectIntroduction', 'risk', 'investmentRegDate', 'investmentDeadline', 'thumbnailImage', 'contractFile', 'investmentReport'];
+      $.each(additionalFields, function(index, field) {
+        let input = $('#' + field);
+        if(input.val() === '' && isValid) { // 앞서 발생한 유효성 검사 문제가 없을 때만 경고창 띄움
+          let label = $("label[for='" + field + "']").text();
+          alert(label + '는 필수 입력 항목입니다.');
+          input.focus();
+          isValid = false;
+          return false;
+        }
+      });
+
+      $('.essential').each(function(idx,item){
+        if(!$(item).prop('checked') && isValid) { // 앞서 발생한 유효성 검사 문제가 없을 때만 경고창 띄움
+          alert('필수 약관에 모두 동의해주세요');
+          $(item).focus();
+          isValid =false;
+          return false;
+        }
+      });
+
+      // // Summernote 글자수 검사
+      // let isOverLimit = false;
+      // $('.summernote').each(function() {
+      //   if($(this).val().length > 2048) {
+      //     isOverLimit = true;
+      //   }
+      // });
+      // if(isOverLimit && isValid) { // 앞서 발생한 유효성 검사 문제가 없을 때만 경고창 띄움
+      //   alert('입력하신 내용 중 2048자를 넘어가는 항목이 있습니다. 내용을 줄여주세요.');
+      //   isValid = false;
+      // }
+
+      if(isValid && confirm('프로젝트를 등록하시겠습니까??')){
+        $(this).submit();
+      }else{
+        return false;
+      }
+    });
+
+
+  </script>
+
+
+
+</th:block>
+
+<th:block layout:fragment="customContents">
+
+  <section>
+    <div class="main-section container">
+      <form class="needs-validation" id="Judge" th:action="@{/user/projectRegistration/investment/judge}" method="post">
+        <div class="info-contents-area" style="display: block;">
+
+            <div class="py-5 text-center">
+              <!--<img class="d-block mx-auto mb-4" src="/docs/5.3/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">-->
+              <h2>투자 프로젝트 심사 요청</h2>
+              <!--<p class="lead">Below is an example form built entirely with Bootstrap’s form controls. Each required form group has a validation state that can be triggered by attempting to submit the form without completing it.</p>-->
+            </div>
+
+
+
+            <div class="row g-5" style="justify-content: center;">
+              <div class="col-md-7 col-lg-8">
+
+                  <div class="row g-3">
+                    <!-- 세션에서 로그인 한 아이디 가져오기 -->
+                    <input type="hidden" class="form-control" id="memberId" name="memberId" th:value="${session.SID}" >
+
+                    <div class="my-2 col-12">
+                      <label for="securitiesClassification" class="form-label fw-bord text-dark">증권 구분</label>
+                      <div class="input-group mb-3">
+                        <select class="custom-select" id="securitiesClassification" name="securitiesClassification">
+                          <option value="" disabled="disabled" selected="selected">증권 구분</option>
+                          <option class="stock" value="주식">주식형</option>
+                          <option class="bond" value="채권">채권형</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <hr class="my-4">
+
+                  <div class="row g-3">
+                    <div class="my-2 col-12">
+                      <label for="investmentRequestSubject" class="form-label fw-bord text-dark">프로젝트 제목</label>
+                      <input type="text" class="form-control" name="investmentRequestSubject" id="investmentRequestSubject" placeholder="프로젝트 제목을 입력해주세요.">
+                    </div>
+
+                    <div class="my-2 col-12">
+                      <label for="investmentRequestContent" class="form-label fw-bord text-dark">심사 요청 내용</label>
+                      <input type="text" class="form-control" name="investmentRequestContent" id="investmentRequestContent" placeholder="심사 요청 내용을 입력해주세요.">
+                    </div>
+
+                    <div class="my-2 col-12">
+                      <label for="corporateName" class="form-label fw-bord text-dark">회사명</label>
+                      <input type="text" class="form-control" name="investmentCompany" id="corporateName" placeholder="회사명을 입력해주세요.">
+                    </div>
+
+                    <div class="my-2 col-12">
+                      <label for="investmentAchievementMoney" class="form-label fw-bord text-dark">펀딩 목표 금액</label>
+                      <input type="text" name="investmentAchievementMoney" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');" class="form-control" id="investmentAchievementMoney" placeholder="펀딩 목표 금액을 입력해주세요.">
+
+                    </div>
+
+                    <div class="my-2 col-12">
+                      <label for="businessProfits" class="form-label fw-bord text-dark">영업 이익</label>
+                      <input type="text" name="businessProfits" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');" class="form-control" id="businessProfits" placeholder="영업 이익 금액을 입력해주세요.">
+                    </div>
+
+                    <div class="my-2 col-12">
+                      <label for="depreciation" class="form-label fw-bord text-dark">감가상각비</label>
+                      <input type="text" name="depreciation" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');" class="form-control" id="depreciation" placeholder="감가상각비를 입력해주세요.">
+                    </div>
+
+                    <div class="my-2 col-12">
+                      <label for="netDebt" class="form-label fw-bord text-dark">순차입금</label>
+                      <input type="text" name="netDebt" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');" class="form-control" id="netDebt" placeholder="순차입금을 입력해주세요.">
+                    </div>
+
+                    <div class="my-2 col-12">
+                      <label for="stockNumber" class="form-label fw-bord text-dark">현재 주식 수</label>
+                      <input type="text" name="stockNumber" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');" class="form-control" id="stockNumber" placeholder="현재 주식 수를 입력해주세요." >
+                    </div>
+
+                    <div class="my-2 col-12">
+                      <label for="issueStockNumber" class="form-label fw-bord text-dark">발행 예정 주식 수</label>
+                      <input type="text" name="issueStockNumber" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');" class="form-control" id="issueStockNumber" placeholder="발행 예정 주식 수를 입력해주세요.">
+                    </div>
+
+                    <div class="my-2 col-12">
+                      <label for="cashReserves" class="form-label fw-bord text-dark">현금 보유량</label>
+                      <input type="text" name="cashReserves" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');" class="form-control" id="cashReserves" placeholder="현금 보유량을 입력해주세요." >
+                    </div>
+
+
+
+
+                  </div>
+
+
+
+                  <hr class="my-4">
+
+                  <div class="my-2 col-12">
+                    <label for="companyBusinessTypeCode" class="form-label fw-bord text-dark">업종 선택</label>
+                    <div class="input-group mb-3">
+                      <select class="custom-select" id="companyBusinessTypeCode" name="companyBusinessTypeCode">
+                        <option value="" disabled="disabled" selected="selected">업종 선택</option>
+                        <option th:each="l : ${userCompanyBusinessType}" th:value="${l.companyBusinessTypeCode}" th:text="|코드번호: ${l.companyBusinessTypeCode} (${l.businessType})|"></option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="my-2 col-12">
+                    <label for="capitalMarketsLawSatisfactionCriteria" class="form-label fw-bord text-dark">자본시장법 충족 기준</label>
+                    <div class="input-group mb-3">
+                      <select class="custom-select" id="capitalMarketsLawSatisfactionCriteria" name="lawSatistifyCode">
+                        <option value="" disabled="disabled" selected="selected">자본시장법 충족 기준 선택</option>
+                        <option th:each="l : ${userLawSatistifyReason}" th:text="${l.lawSatistifyReason}" th:value="${l.lawSatistifyCode}"></option>
+                      </select>
+                    </div>
+                  </div>
+
+
+                  <hr class="my-4">
+
+
+
+
+
+
+                  <button class="nextBtn w-80 btn btn-primary btn-lg" type="button">다음단계</button><br><br>
+
+              </div>
+            </div>
+
+        </div>
+
+
+
+        <div class="info-contents-area" style="display: none;">
+
+            <div class="py-5 text-center">
+              <!--<img class="d-block mx-auto mb-4" src="/docs/5.3/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">-->
+              <h2>투자 프로젝트 공고 등록</h2><br>
+
+              <h5 class="mb-2 fw-bord" style="font-size: 16px">프로젝트의 성공 조건 & 수수료 안내</h5>
+              <h6 class="mb-2" style="font-size: 15px">프로젝트 종료일 기준 모금액이 목표금액의 80% 이상인 경우에만 프로젝트가 성공하게 됩니다.<br>
+                프로젝트가 성공한 경우, 플로키는 모금액에서 수수료(4%, 기본수수료(3,000,000원))를 제한 금액을 정산해드립니다.</h6>
+              <br><br>
+              <!--<p class="lead">Below is an example form built entirely with Bootstrap’s form controls. Each required form group has a validation state that can be triggered by attempting to submit the form without completing it.</p>-->
+            </div>
+
+            <div class="row g-5" style="justify-content: center;">
+              <div class="col-md-7 col-lg-8">
+                  <div class="row g-3">
+
+                    <div class="my-2 col-12">
+                      <label for="projectIntroduction" class="fw-bord text-dark">프로젝트 소개</label>
+                      <textarea class="summernote" id="projectIntroduction" name="projectIntroduction" ></textarea>
+                    </div>
+
+
+                    <div class="my-2 col-12">
+                      <label for="marketAnalysis" class="form-label fw-bord text-dark">시장 분석</label>
+                      <textarea class="summernote" id="marketAnalysis" name="marketAnalysis" ></textarea>
+                    </div>
+
+
+                    <div class="my-2 col-12">
+                      <label for="majorFinancialInformation" class="form-label fw-bord text-dark">주요 재무 정보</label>
+                      <textarea class="summernote" id="majorFinancialInformation" name="majorFinancialInformation"></textarea>
+                    </div>
+
+
+                    <div class="my-2 col-12">
+                      <label for="risk" class="form-label fw-bord text-dark">리스크</label>
+                      <textarea class="summernote" id="risk" name="risk"></textarea>
+                    </div>
+
+
+                    <div class="my-2 col-12">
+                      <label for="majorManpower" class="form-label fw-bord text-dark">주요 인력</label>
+                      <textarea class="summernote" id="majorManpower" name="majorManpower"></textarea>
+                    </div>
+
+
+                    <div class="my-2 col-12">
+                      <label for="patentAwardDetails" class="form-label fw-bord text-dark">특허/수상 내역(선택)</label>
+                      <textarea class="summernote" id="patentAwardDetails" name="patentAwardDetails"></textarea>
+                    </div>
+
+
+                    <div class="my-2 col-12">
+                      <label for="etcInvestContent" class="form-label fw-bord text-dark">기타 투자 내용(선택)</label>
+                      <textarea class="summernote" id="etcInvestContent" name="etcInvestContent"></textarea>
+                    </div>
+
+                    <div class="my-2 col-12">
+                      <label for="investmentRegDate">프로젝트 시작 날짜</label>
+                      <input type="date" id="investmentRegDate" name="investmentRegDate" >
+                    </div>
+
+                    <div class="my-2 col-12">
+                      <label for="investmentDeadline">프로젝트 마감 날짜</label>
+                      <input type="date" id="investmentDeadline" name="investmentDeadline" >
+                    </div>
+
+                    <p>프로젝트 심사부터 리워드 제작 기간 등 전체 일정을 고려해 설정해 주세요.</p>
+                    <br>
+                    <div style="background: #fff1f1; border-radius: 5px; padding: 10px; font-size: 12px">
+                      <p>
+                        <b>⚠️프로젝트 심사(요건확인, 콘텐츠 확인)</b><br>
+                        심사가 끝나면 프로젝트를 공개할 수 있습니다. 프로젝트 특성이나 완성도에 따라 걸리는 시간은 달라집니다.
+                        <br>
+                        <b>⚠️프로젝트 진행(공개~종료)</b><br>
+                        공개부터 종료까지 최소 14일 최대 60일 동안 진행하실 수 있습니다. 프로젝트 상황에 따라 자유롭게 선택할 수 있지만<br>
+                        프로젝트가 승인되고 나면 바꿀 수 없습니다.
+                        <br>
+                      </p>
+                    </div>
+                    <br>
+
+
+
+
+
+                  </div>
+
+
+
+                  <hr class="my-4">
+
+
+
+
+                <div class="mb-3">
+                  <label for="thumbnailImage" class="form-label fw-bord text-dark">대표 이미지를 등록해주세요</label>
+                  <!--                                <div class=" banner-content" style="background-color: #7D7D7D">썸네일 이미지</div>-->
+                  <br>
+                  <div class="border border-secondary mb-lg-1" style="width: 355px; height: 205px;">
+                    <img src="" class="img-thumbnail" alt="썸네일이미지" style="height: 200px; width: 350px; display: none;">
+                  </div>
+
+                  <!--                <input type="file" accept="image/png, image/jpeg" multiple>-->
+                  <input class="form-control" id="thumbnailImage" type="file" accept="image/*">
+                </div>
+                <label for="investmentImage">대표 이미지 확정을 해주세요</label>
+                <input id="investmentImage" name="investmentImage" style="display: none">
+                <div class="mb-3">
+                  <button id="confirmBtn" type="button" style="border-radius: 5px; background-color: #0b44d7; color: whitesmoke; padding: 5px">대표 이미지 확정</button>
+                </div>
+                <div id="confimMessage" style="background: #ddfffc; border-radius: 5px; padding: 10px; font-size: 12px; color: black; display: none">
+                  <p>
+                    <b>대표 이미지가 확정 되었습니다!</b><br>
+                  </p>
+                </div>
+
+                  <hr class="my-4">
+
+                  <!--<div class="form-group">
+                    <label for="contractFile">프로젝트 계약서 업로드</label>
+                    <input type="file" class="form-control-file" name="contractFile" id="contractFile">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="investmentReport">프로젝트 보고서 업로드</label>
+                    <input type="file" class="form-control-file" name="investmentReport" id="investmentReport">
+                  </div>
+
+
+                  <hr class="my-4">-->
+
+
+                  <div class="ml-lg-2 mt-lg-5">
+                    <h5 style="font-weight: bold;">약관 동의</h5>
+                    <div class="ml-lg-3 mt-lg-4">
+
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="allCheck">
+                        <label class="form-check-label" for="allCheck">
+                          필수 약관 모두동의
+                        </label>
+                      </div>
+                      <div style="border: 0.2px solid #f3f4f5; margin: 5px; width: 100%"></div>
+                      <div class="form-check">
+                        <input class="essential form-check-input" type="checkbox" value="" id="agree1">
+                        <label class="form-check-label" for="agree1">
+                          개인정보 제3자 제공 동의 (필수)
+                        </label>
+                      </div>
+                      <div class="form-check">
+                        <input class="essential form-check-input" type="checkbox" value="" id="agree2">
+                        <label class="form-check-label" for="agree2">
+                          책임 규정에 대한 동의 (필수)
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <hr class="my-4">
+
+                  <div class="d-flex justify-content-center">
+                    <button class="prevBtn w-80 btn btn-secondary btn-lg" type="button">이전단계</button>
+                    <button class="registrationBtn w-80 btn btn-primary btn-lg" type="submit" >등록하기</button>
+                  </div><br>
+
+              </div>
+            </div>
+
+        </div>
+      </form>
+    </div>
+  </section>
+</th:block>
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+
+</html>

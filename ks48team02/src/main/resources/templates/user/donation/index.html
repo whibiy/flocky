@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  	  layout:decorate="~{user/layout/default}">
+  	  
+  	  <head>
+		  <title>flocky</title>
+  	  <!--  사용자별 css file 추가 부분 -->
+  	   <!-- Link Swiper's CSS -->
+  		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+  		<link rel="stylesheet" th:href="@{/user/css/swiper-event-css.css}" />
+  		<link rel="stylesheet" th:href="@{/user/css/main_style.css}" />
+
+  	 
+  	  </head>
+  	  
+  	  
+	 <!-- 사용자 페이지별 javascript file -->
+	 <th:block layout:fragment="customJsFile">
+		<!-- Swiper JS -->
+	  	<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+<!-- 	  	<script th:src="@{user/js/swiper-slide-event.js}"></script> -->
+
+	
+	</th:block>
+	
+	
+	<!-- 사용자별 스크립트 작성 -->
+	<th:block layout:fragment="customJsCode">
+
+		<script>
+			// md join swiper slide
+			let mdJoinSwiper = new Swiper("#mdJoinProject .mySwiper", {
+				slidesPerView: 3,
+				grid: {
+					rows: 2,
+				},
+				// spaceBetween: 20,
+				pagination: {
+					el: ".swiper-pagination",
+					clickable: true,
+				},
+			});
+
+			// rank tab function
+			$('.tab-menu-btn li').on('click',function(){
+				$('.tab-menu-btn li').removeClass('active');
+				$(this).addClass('active');
+				let tabData = $(this).attr('data-tab');
+				$('.main-rank-area').hide();
+				$('#'+tabData).show();
+			});
+
+			// contents swiper slide
+			let storeContentsSwiperSlide = new Swiper("#storeInnerGroup .contents-area", {
+				slidesPerView: 6,
+				spaceBetween: 20,
+				navigation: {
+					nextEl: "#storeInnerGroup .swiper-button-next",
+					prevEl: "#storeInnerGroup .swiper-button-prev",
+				},
+			});
+
+			let rewardContentsSwiperSlide = new Swiper("#rewardProject .contents-area", {
+				slidesPerView: 3,
+				spaceBetween: 20,
+				navigation: {
+					nextEl: "#rewardProject .swiper-button-next",
+					prevEl: "#rewardProject .swiper-button-prev",
+				},
+			});
+			let investContentsSwiperSlide = new Swiper("#investProject .contents-area", {
+				slidesPerView: 3,
+				spaceBetween: 20,
+				navigation: {
+					nextEl: "#investProject .swiper-button-next",
+					prevEl: "#investProject .swiper-button-prev",
+				},
+			});
+			let donationContentsSwiperSlide = new Swiper("#donationProject .contents-area", {
+				slidesPerView: 3,
+				spaceBetween: 20,
+				navigation: {
+					nextEl: "#donationProject .swiper-button-next",
+					prevEl: "#donationProject .swiper-button-prev",
+				},
+			});
+
+		</script>
+
+
+		
+	</th:block>
+	
+	
+  	<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+	<th:block layout:fragment="customContents">
+
+		<!-- main swiper slide start -->
+		<section id="main-swiper-slide" class="swiper mySwiper">
+			<div class="swiper-wrapper">
+				<div class="swiper-slide slide-1">
+					<div class="container">
+						<div>
+							<div class="sub-title">NEW</div>
+							<h2>
+								플로키 투자회원 전용
+								<br>
+								카톡방 오픈
+							</h2>
+							<div class="slide-description">
+								플로키 회원이라면 누구나 입장 가능
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="swiper-slide slide-2">
+					<div class="container">
+						<div>
+							<div class="sub-title">EVENT</div>
+							<h2>
+								특별히 검증된 상품만 모았어요
+								<br>
+								신상품 10% 할인
+							</h2>
+							<div class="slide-description">
+								이벤트 페이지 참조
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="swiper-slide slide-3">
+					<div class="container">
+						<div>
+							<div class="sub-title">REWARD</div>
+							<h2>
+								시선집중 스페셜 기획전
+								<br>
+								추천 프로젝트를 만나보세요
+							</h2>
+							<div class="slide-description">
+								펀딩 마감기간 임박
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="container">
+				 <div class="controller-area">
+					 <div class="swiper-button-prev"></div>
+					 <div class="swiper-button-next"></div>
+                </div>
+			</div>
+			<div class="swiper-pagination"></div>
+		</section>
+		<!-- main swiper slide start -->
+
+		<!-- 페이지 contents area -->
+		<div th:replace="~{user/donation/detail/fragments/aside :: }"></div>
+
+
+
+
+	</th:block>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/reward/detail/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <!-- Link Swiper's CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    <link rel="stylesheet" th:href="@{/user/css/swiper-event-css.css}" />
+    <link rel="stylesheet" th:href="@{/user/css/main_style.css}" />
+
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+
+        .info-contents-area {
+            display: none; /*진열안함*/
+        }
+        /* 탭 활성화 버튼 css control */
+        .list-group li.active {
+            background: var(--maincolor);
+        }
+        .form-control{
+            width: 355px;
+        }
+    </style>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <!-- 	  	<script th:src="@{user/js/swiper-slide-event.js}"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/locales/bootstrap-datepicker.ko.min.js"></script>
+
+
+</th:block>
+
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+
+    <script>
+        var swiper = new Swiper(".mySwiper", {
+            spaceBetween: 30,    // 슬라이드 사이 여백
+            slidesPerView : 'auto', // 한 슬라이드에 보여줄 갯수
+            centeredSlides: true,    //센터모드
+            autoplay: {     //자동슬라이드 (false-비활성화)
+                delay: 2500, // 시간 설정
+                disableOnInteraction: false, // false-스와이프 후 자동 재생
+            },
+            loop : false,   // 슬라이드 반복 여부
+            loopAdditionalSlides : 1,
+            // 슬라이드 반복 시 마지막 슬라이드에서 다음 슬라이드가 보여지지 않는 현상 수정
+            pagination: { // 호출(pager) 여부
+                el: ".swiper-pagination", //버튼을 담을 태그 설정
+                clickable: true, // 버튼 클릭 여부
+            },
+            navigation: {   // 버튼
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+        });
+        let rewardProjectSwiperSlide = new Swiper("#rewardProject .contents-area", {
+            slidesPerView: 3,
+            spaceBetween: 12,
+            navigation: {
+                nextEl: "#rewardProject .swiper-button-next",
+                prevEl: "#rewardProject .swiper-button-prev",
+            },
+        });
+        $(function(){
+            //유효성 검사를 위한 validationCheck 함수.
+            function validationCheck(data) {
+                let isValid =true;
+
+                //1.인수 값이 객체일 경우
+                if(typeof data =='object') {
+
+                    $.each(data, function(){
+                        let checkValue = $(this).val();
+                        if(checkValue === null || checkValue === '' || checkValue === 'undefined') {
+                            isValid = false;
+                            let eleId = $(this).attr('id');
+                            let cate = $(`label[for="${eleId}"]`).text();
+                            alert(`${cate} 필수 입력 항목입니다.`);
+                            $(this).focus();
+                            return isValid;
+                        }
+                    });
+                    //2.인수 값이 객체가 아닐 경우
+                }else{
+                    if(data === null || data === '' || data === 'undefined') {
+                        isValid = false;
+                    }
+                }
+                return isValid;
+            }
+
+            let swiper = function(){
+                new Swiper(".contents-area", {
+                    slidesPerView: 3,
+                    spaceBetween: 20,
+                    navigation: {
+                        nextEl: ".swiper-button-next",
+                        prevEl: ".swiper-button-prev",
+                    },
+                });
+            }
+
+        })
+
+        //summerNote TextArea 안에있는 이미지 저장위한 코드
+        $('#detailComent').summernote({
+            height: 500, // 에디터 높이
+            width: 620,
+            minHeight: null,             // 최소 높이
+            maxHeight: null,             // 최대 높이
+            focus: true,                  // 에디터 로딩후 포커스를 맞출지 여부
+            lang: "ko-KR",					// 한글 설정
+            placeholder: '최대 2048자까지 쓸 수 있습니다',	//placeholder 설정
+            callbacks: {	//여기 부분이 이미지를 첨부하는 부분
+                onImageUpload : function(files) {
+                    uploadSummernoteImageFile(files[0],this);
+                },
+                onMediaDelete: function ($target, editor, $editable) {
+                    if (confirm('이미지를 삭제 하시겠습니까?')) {
+                        var deletedImageUrl = $target
+                            .attr('src')
+                            .split('/')
+                            .pop()
+                        // ajax 함수 호출
+                        deleteSummernoteImageFile(deletedImageUrl)
+                    }
+                },
+                onPaste: function (e) {
+                    var clipboardData = e.originalEvent.clipboardData;
+                    if (clipboardData && clipboardData.items && clipboardData.items.length) {
+                        var item = clipboardData.items[0];
+                        if (item.kind === 'file' && item.type.indexOf('image/') !== -1) {
+                            e.preventDefault();
+                        }
+                    }
+                }
+            }
+        });
+        /**
+         * 이미지 파일 업로드
+         */
+        let imagesName = [];
+        function uploadSummernoteImageFile(file, editor) {
+            data = new FormData();
+            data.append("file", file);
+            $.ajax({
+                data : data,
+                type : "POST",
+                url : "/user/projectRegistration/uploadSummernoteImageFile",
+                contentType : false,
+                processData : false,
+                success : function(data) {
+                    //항상 업로드된 파일의 url이 있어야 한다.
+                    $(editor).summernote('insertImage', data.url);
+                    imagesName.push(data.filename);
+                }
+            });
+        }
+
+        /**
+         * 이미지 삭제
+         */
+        function deleteSummernoteImageFile(imageName) {
+            data = new FormData()
+            data.append('file', imageName)
+            $.ajax({
+                data: data,
+                type: 'POST',
+                url: 'deleteSummernoteImageFile',
+                contentType: false,
+                enctype: 'multipart/form-data',
+                processData: false,
+            })
+        }
+
+        // summernote 드래그 & 드랍 구현
+        $("div.note-editable").on('drop',function(e){
+            for(i=0; i< e.originalEvent.dataTransfer.files.length; i++){
+                uploadSummernoteImageFile(e.originalEvent.dataTransfer.files[i],$("#donationContents")[0]);
+            }
+            e.preventDefault();
+        })
+
+        $('.cancelBtn').click(function (){
+            if(confirm('정말 취소 하시겠습니까?')){
+                window.history.go(-1);
+            }else{
+                return false;
+            }
+        });
+
+        $('#submitBtn').click(function (){
+            if($('#detailSubject').val() == '' || $('#detailSubject').val() == null || typeof $('#detailSubject').val() == 'undefined'){
+                alert('후기 제목을 입력해 주세요');
+                return false;
+            }
+            if($('#detailComent').summernote('isEmpty')){
+                alert('후기 상세 내용을 입력해 주세요');
+                return false;
+            }
+            if(confirm('정말 후기를 작성하시겠습니까?')){
+                $('#addReviewForm').submit();
+            }else{
+                return false;
+            }
+
+        });
+
+
+    </script>
+
+
+
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <!-- main swiper slide start -->
+    <div class="container" >
+        <br><br>
+        <div>
+            <div class="py-lg-2 text-center bg-light" style="width: 620px; border-radius: 10px">
+                <h2>사전체험단 리뷰 등록</h2>
+            </div>
+            <br>
+            <div class="main-section container">
+                <div class="row ml-lg-1">
+                    <div id="storyInfo" class="info-contents-area" style="display: block;">
+
+                        <form id="addReviewForm" th:action="@{/user/reward/detail/addReview}" method="post">
+                            <div class="row">
+                                <div>
+                                    <div class="mb-3">
+                                        <p for="detailSubject" class="form-label text-dark" style="font-size: 20px">후기 제목을 적어주세요</p>
+                                        <input id="detailSubject" name="reviewSubject" style="width: 620px"></input>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="mb-3">
+                                        <label for="detailComent" class="form-label text-dark" style="font-size: 20px">사전체험 후기를 적어주세요</label>
+                                        <textarea id="detailComent" name="reviewContent"></textarea>
+                                    </div>
+                                </div>
+                                <input name="rewardProjectCode" hidden="hidden" th:value="${rewardProject.rewardProjectCode}">
+                                <div class="col-8">
+                                    <br>
+                                    <button id="submitBtn" class="w-80 btn btn-primary btn-lg" type="button">등록</button>
+                                    <button id="cancelBtn" class="w-80 btn btn-danger btn-lg" type="button"
+                                    th:onclick="|location.href='@{/user/reward/detail/preReview?(rewardProjectCode=${rewardProject.rewardProjectCode})}'|">취소</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</th:block>
+</html>

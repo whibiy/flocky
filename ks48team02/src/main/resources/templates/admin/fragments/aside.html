@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div class="col-md-3 left_col" th:fragment="asideFragment">
+  <div class="left_col scroll-view">
+    <div class="navbar nav_title" style="border: 0;">
+      <a th:href="@{/user}" class="site_title">flocky</a>
+
+      <div class="nav toggle">
+        <a id="menu_toggle">닫기</a>
+      </div>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <!-- sidebar menu -->
+    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+      <div class="menu_section">
+
+        <ul class="nav side-menu">
+          <li>
+            <a th:href="@{/admin}"><i class="fa fa-home"></i> 홈 <span class="fa fa-chevron-down"></span></a>
+          </li>
+          <li>
+            <a><i class="fa fa-user"></i># 회원관리(설아) <span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a th:href="@{/admin/user/memberList}"># 회원 조회(설아)</a></li>
+              <li><a th:href="@{/admin/user/loginLog}"># 로그인 이력(설아)</a></li>
+              <li><a th:href="@{/admin/user/memberRank}"># 등급 관리(설아)</a></li>
+            </ul>
+          </li>
+          <li>
+            <a><i class="fa fa-edit"></i> #프로젝트 관리 (정민) <span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a th:href="@{/admin/projectManagement}">#프로젝트 조회(정민)</a></li>
+            </ul>
+          </li>
+          <li>
+            <a><i class="fa fa-shopping-bag"></i> #주문 관리 (슬지) <span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li>
+                <a th:href="@{/admin/order/list}">#주문 목록(슬지)</a>
+              </li>
+              <li>
+                <a th:href="@{/admin/order/delivery}">#배송 관리(슬지)</a>
+              </li>
+              <li>
+                <a th:href="@{/admin/order/refundSwapping}">#교환/환불 신청 관리(슬지)</a>
+              </li>
+              <li>
+                <a th:href="@{/admin/order/autorfnd}">#자동 환불 관리(슬지)</a>
+              </li>
+              <li>
+                <a th:href="@{/admin/order/completedList}">#주문 확정 목록(슬지)</a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a><i class="fa fa-desktop"></i> #스토어 관리(설아) <span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a href="#">#스토어 조회(설아)</a></li>
+              <li><a href="#">#스토어 신청 현황(설아)</a></li>
+
+            </ul>
+          </li>
+          <li>
+            <a><i class="fa fa-table"></i>!심사 관리(상,정,오)<span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a th:href="@{/admin/reward/judgement}">리워드 심사 관리(상민)</a></li>
+              <li><a th:href="@{/admin/donation/judgement}">!기부 심사 관리(정민)</a></li>
+              <li>
+                <a >!투자 심사 관리(오진)</a>
+                <!-- 3 depth -->
+                <ul class="nav child_menu">
+                  <li class="sub_menu">
+                    <a th:href="@{/admin/investment/search/investment}">!투자 펀딩 공고</a>
+                  </li>
+                  <li class="sub_menu">
+                    <a th:href="@{/admin/investment/search/judge}">!투자 펀딩 심사 요청</a>
+                  </li>
+                  <li class="sub_menu">
+                    <a th:href="@{/admin/investment/search/corporate-value}">!기업가치 평가</a>
+                  </li>
+                  <li>
+                    <a th:href="@{/admin/investment/search/law-satistify}">!자본시장법 범위충족기준</a>
+                  </li>
+                  <li>
+                    <a th:href="@{/admin/investment/search/incongruity-sectors}">!부적합 업종</a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a><i class="fa fa-bar-chart-o"></i> !통계 관리(슬지) <span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a th:href="@{/admin/calcula}">!통계 대시보드 (슬지)</a></li>
+              <li><a th:href="@{/admin/calcula/date}">!일일 매출 통계 (슬지)</a></li>
+              <li><a th:href="@{/admin/calcula/month}">!월별 매출 통계 (슬지)</a></li>
+              <li><a th:href="@{/admin/calcula/year}">!연 매출 통계 (슬지)</a></li>
+            </ul>
+          </li>
+          <li>
+            <a ><i class="fa fa-clone"></i>!정산 관리 (슬지)<span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a th:href="@{/admin/settlement}">!정산 신청 현황 (슬지)</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <div class="menu_section">
+
+        <ul class="nav side-menu">
+          <li>
+            <a><i class="fa fa-bug"></i> !사이트 관리 (진현) <span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a th:href="@{/admin/site/category}">!카테고리 관리 (진현)</a></li>
+              <li><a th:href="@{/admin/site/notification}">#알림 관리 (진현)</a></li>
+            </ul>
+          </li>
+          <li>
+            <a><i class="fa fa-windows"></i>!게시판 관리 (진현)<span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a th:href="@{/admin/board/main}">!공지사항 관리 (진현)</a></li>
+              <li><a th:href="@{/admin/board/event}">!이벤트 관리 (진현)</a></li>
+              <li><a th:href="@{/admin/board/coupon}">!쿠폰 관리 (진현)</a></li>
+            </ul>
+          </li>
+          <li>
+            <a><i class="fa fa-sitemap"></i>!문의 관리 (진현)<span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li>
+                <a th:href="@{/admin/inquiry/main}">!1:1 문의 관리 (진현)</a>
+              </li>
+              <li>
+                <a th:href="@{/admin/inquiry/inquiryAnswer}">!문의 답변 관리(진현)</a>
+              </li>
+              <li><a th:href="@{/admin/inquiry/report}">!신고 관리 (진현)</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!-- /sidebar menu -->
+
+    <!-- /menu footer buttons -->
+<!--    <div class="sidebar-footer hidden-small">-->
+<!--      <a data-toggle="tooltip" data-placement="top" title="Settings">-->
+<!--        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>-->
+<!--      </a>-->
+<!--      <a data-toggle="tooltip" data-placement="top" title="FullScreen">-->
+<!--        <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>-->
+<!--      </a>-->
+<!--      <a data-toggle="tooltip" data-placement="top" title="Lock">-->
+<!--        <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>-->
+<!--      </a>-->
+<!--      <a data-toggle="tooltip" data-placement="top" title="Logout" href="login.html">-->
+<!--        <span class="glyphicon glyphicon-off" aria-hidden="true"></span>-->
+<!--      </a>-->
+<!--    </div>-->
+    <!-- /menu footer buttons -->
+  </div>
+</div>
+
+
+</html>

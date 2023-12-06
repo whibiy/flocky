@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layout/login_default}">
+<!--로그인 후 볼 수 있는 유저 마이 페이지-->
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
+    <style>
+        .login-logo .user-connection-menu {
+            display: none;
+        }
+
+        .nav-link{
+            font-size: medium;
+        }
+
+        #profileContainer{
+            display: flex;
+            justify-content: center;
+            padding: 35px;
+            flex-direction: column;
+        }
+
+        #img-box{
+            margin: 0 auto;
+        }
+
+        #name-box{
+            display: flex;
+            justify-content: center;
+            flex-direction: row;
+        }
+    </style>
+
+</head>
+<body>
+<!--사용자별 html-->
+<th:block layout:fragment="customContents">
+    <!-- 유저 프로필 영역   -->
+    <div id="profileContainer">
+        <!-- 프로필 이미지 -->
+        <div id="img-box">
+            <img style="width: 90px; height: 90px; border-radius: 50%;" src="https://search.pstatic.net/sunny/?src=https%3A%2F%2Fi.namu.wiki%2Fi%2FDgDM89CJAmUv4KwG-JNwQOWklX6MPKPXip-KQL66igwbwegZ3y6pRdFZ3Ne28Qn7JaxXZzewB3_iHM_uqJ7s8A.webp&type=sc960_832"
+                 id="profile_img" alt="">
+        </div>
+
+        <!-- 사용자 이름 + 설정 아이콘 -->
+        <div id="name-box">
+            <!-- 사용자 이름 -->
+            <h2 th:text="${orderInfo.orderName}"></h2>
+            <!-- 설정 아이콘 클릭시 프로필 설정 페이지로 이동  -->
+            <a th:href="@{/user/mypage/profile}"><i class="bi bi-gear" id="showProfileIcon" ></i></a>
+
+        </div>
+    </div>
+    <!-- tab 메뉴 영역  -->
+    <!-- data-toggle="tab" 속성을 Bootstrap의 <a> 태그에 추가하면 해당 링크가 tab 컴포넌트를 제어하도록 설정 -->
+    <div class="row mb-lg-5" >
+        <div class="col-lg-4"></div>
+
+        <div  id="cancelResult" class="col-lg-4 main_container" style="display: block;">
+            <div class="border border-secondary rounded bg-light mb-lg-3 d-flex justify-content-center row">
+                <h3 class="text-dark my-lg-2">결제 내역</h3>
+            </div>
+
+            <div class="border border-secondary rounded py-lg-3 px-lg-2 row">
+                <div class="col-lg-12">
+
+                    <h5 class="rewardProjectName" th:text="${orderInfo.orderFundingName}"></h5>
+                    <hr style="color: #5a6268; size:1px">
+                    <div class="text-dark">
+                        <h5>결제 정보</h5>
+                        <span class="ml-2">결제 날짜 :</span>
+                        <span class="float-right mr-lg-4" th:text="${orderInfo.orderApplicationDate}"></span>
+                        <br>
+                        <span class="ml-2">총 기부 플로버 :</span>
+                        <span class="float-right mr-lg-4" th:text="|${orderInfo.orderTotalPrice / 100} 개|"></span>
+                        <br>
+                    </div>
+                    <hr style="color: #5a6268; size:1px">
+                    <h4>총 결제 금액 <span class="float-right"><span class=" text-primary" th:text="${#numbers.formatInteger(orderInfo.orderTotalPrice,0,'COMMA')}"></span> 원</span></h4>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+
+</th:block>
+
+<!-- 사용자별 스크립트 파일 -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+
+    <script th:inline="javascript">
+
+    </script>
+
+
+
+</th:block>
+
+
+</body>
+</html>

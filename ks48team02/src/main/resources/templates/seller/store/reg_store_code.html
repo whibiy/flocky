@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{seller/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+<style>
+    /*  검은 버튼  */
+    .submitBtn_black {
+        background: #191919;
+        padding: 7px 23px;
+        transition: all .4s;
+        color: #fff;
+        display: inline-block;
+        text-decoration: none;
+        border: 1px solid #191919;
+        font-size: 12px;
+        transition: background 0.3s;
+        margin-left: 7px;
+    }
+
+    .submitBtn_black:hover {
+        background: var(--maincolor);
+        border: 1px solid var(--maincolor);
+    }
+
+    /* 흰 버튼 */
+    .submitBtn_white {
+        background: #fff;
+        padding: 7px 23px;
+        transition: all .4s;
+        color: #191919;
+        display: inline-block;
+        text-decoration: none;
+        border: 1px solid #191919;
+        font-size: 12px;
+        transition: background 0.3s;
+        margin-left: 10px;
+    }
+
+    .submitBtn_white:hover {
+        background: var(--maincolor);
+        border: 1px solid var(--maincolor);
+        color: #fff;
+    }
+</style>
+</head>
+
+<!-- page content -->
+<div class="right_col" role="main">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left">
+                <h3 th:text="${contentsTitle}">스토어 연결하기</h3>
+            </div>
+
+        </div>
+
+
+        <div class="row" style="width: 1200px">
+            <div class="admin-wrapper">
+                <!-- 사용자정의 contents start -->
+                <th:block layout:fragment="customContents">
+                    <div class="mb-3" style="width:700px; display: flex; flex-direction: column; padding: 20px; gap:10px; align-items: center;" >
+                        <div style="display: flex; flex-direction:column; align-items: start; gap: 10px;">
+                            <label for="store-name" class="form-label" style="font-size:larger;">스토어 코드 </label>
+                            <div style="display: flex; gap:10px;">
+                                <form>
+                                    <input type="text" class="form-control" id="store-name" value="" placeholder="스토어 코드 입력">
+                                </form>
+                                <button class="submitBtn_black " style="width:105px;" data-toggle="modal" data-target="#submitModal">등록</button>
+                            </div>
+                            <div class="form-text" style="color:red; font-size:13px;" aria-hidden="true">정확한 스토어 코드를 입력해 주세요</div>
+                        </div>
+
+                        <!--  등록한 스토어 코드에 해당하는 스토어 미리보기   -->
+                        <div id="profile-box" style="width: 570px; height: 400px; display: flex; flex-direction: column; justify-content: space-evenly;
+                                                align-items: center; background-color: white; margin-top:20px;"  >
+                            <div id="img-box" style="display: flex; flex-direction: column; justify-content: space-evenly; align-items: center; gap:20px;">
+                                <!-- 2. 선택된 이미지 미리보기  -->
+                                <img id="edit-image-preview" src="" style="width: 200px; height: 200px; border-radius: 50%; background-color: grey;" >
+                                <h2 class="store-profile" style="font-weight: bold; font-size: larger;">철수네 약과</h2>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <!-- 스토어 코드 등록 확인 Modal -->
+                    <div class="modal fade" id="submitModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" style="width: 400px;">
+
+                                <div class="modal-body" style=" height: 110px; display: flex; justify-content:center; space-evenly; align-items: center">
+                                            <h5>스토어 코드를 등록하시겠습니까?</h5>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="submitBtn_white" data-dismiss="modal">닫기</button>
+                                    <button type="submit" class="submitBtn_black">확인</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </th:block>
+                <!-- 사용자정의 contents end -->
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- /page content -->
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+
+</th:block>
+
+
+
+</html>

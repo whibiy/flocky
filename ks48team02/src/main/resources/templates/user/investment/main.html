@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <!-- Link Swiper's CSS -->
+    <style>
+        .selected {
+            font-weight: bold;
+            color: black;
+        }
+        ul.d-flex li:hover {
+            cursor: pointer;
+        }
+        .investment-item-box{
+            width: 350px;
+            height: 300px;
+        }
+        .investment-item-first-child{
+            background: grey;
+            width: 350px;
+            height: 200px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .investment-item-first-child img{
+            width: 100%;
+            height: 100%;
+            border-radius: 5px;
+        }
+        .investment-item-second-child{
+            width: 350px;
+            height: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .investment-item-third-child{
+            width: 350px;
+            height: auto;
+            font-weight: bolder;
+            color: black;
+            font-size: 15px;
+        }
+        .investment-item-fourth-child{
+            width: 350px;
+            height: auto;
+        }
+        .investment-item-span-first{
+            font-weight: bold;
+            font-size: 20px;
+            color: #235FD9;
+        }
+        .investment-item-span-second{
+            margin-left: 5px;
+        }
+        .investment-item-span-third{
+            margin-left: auto;
+            color: #235FD9;
+            background: #cce5ff;
+            font-size: 12px;
+            padding: 2px;
+            border-radius: 5px;
+        }
+
+        /* project title */
+        .project-title a {
+            display: block;
+            width : 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #191919;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    <link rel="stylesheet" th:href="@{/user/css/swiper-event-css.css}" />
+
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <!-- 	  	<script th:src="@{user/js/swiper-slide-event.js}"></script> -->
+
+</th:block>
+
+
+<!-- 사용자별 스크립트 작성 -->
+
+<th:block layout:fragment="customJsCode">
+
+
+    <script>
+        function sortItemClickedStyle(element) {
+            const listItems = document.querySelectorAll("#sort-item-wrap li");
+
+            for (const listItem of listItems) {
+                listItem.classList.remove("selected");
+            }
+
+            element.classList.add("selected");
+        }
+        function cateItemClickedStyle(element) {
+            const listItems = document.querySelectorAll("#category-wrap li");
+
+            for (const listItem of listItems) {
+                listItem.classList.remove("selected");
+            }
+
+            element.classList.add("selected");
+        }
+
+        // 초기 스타일이 적용되도록 직접 호출
+        document.addEventListener("DOMContentLoaded", function() {
+            const sortItemWrap = document.querySelector("#sort-item-wrap li:first-child");
+            sortItemWrap.classList.add("selected");
+
+
+        });
+
+
+
+        // Ajax 요청 함수
+        function sortedListAjax(orderBy, status, securities, callback) {
+            const request = $.ajax({
+                url: '/user/investment/ajax/sortedList',
+                method: 'POST',
+                async: false,
+                data: {
+                    "orderBy": orderBy,
+                    "status": status,
+                    "securities": securities
+                },
+                dataType: 'json'
+            });
+
+            request.done(function (list) {
+                callback(list);
+            });
+
+            request.fail(function (err) {
+                console.log(err);
+            });
+        }
+
+        // 정렬 항목 클릭 이벤트
+        $('#sort-item-wrap li').on('click', function () {
+            const sortType = $(this).attr('id');
+            const status = $('#status').val();
+            const securities = $('#securities').val();
+
+            sortedListAjax(sortType, status, securities, function (list) {
+                updateInvestmentBox(list);
+            });
+        });
+
+        // select 값 변경 이벤트
+        $('#status, #securities').on('change', function () {
+            const sortType = $('#sort-item-wrap .selected').attr('id');
+            const status = $('#status').val();
+            const securities = $('#securities').val();
+
+            sortedListAjax(sortType, status, securities, function (list) {
+                updateInvestmentBox(list);
+            });
+        });
+
+        // 투자 박스 업데이트 함수
+        function updateInvestmentBox(list) {
+            $('.investmentBox').empty();
+
+            let listElement = '';
+            $(list).each((idx, item) => {
+                // item 출력
+                console.log(item);
+
+                // investJudgeSituation의 값이 3, 4, 5인 경우에만 박스 생성
+                if(item.investJudgeSituation == 3 || item.investJudgeSituation == 4 || item.investJudgeSituation == 5) {
+                    listElement += `<div class="col investment-item-box col-lg-4" onclick="location.href='/user/investment/detail/main?investmentCode=${item.investmentCode}'">`;
+                    listElement += `    <div class="investment-item-first-child">`;
+                    listElement += `        <img class="investment-item-third-child-image" src="/summernoteImage/${item.investmentImage}">`;
+                    listElement += `    </div>`;
+                    listElement += `    <div class="investment-item-second-child">`;
+                    listElement += `        <span class="investment-item-span-first">${item.investAchievementPercent}%</span>`;
+                    listElement += `        <span class="investment-item-span-second">${item.investmentAmount}</span>`;
+                    listElement += `        <span class="investment-item-span-third">${item.investmentDeadlineCnt}일 남음</span>`;
+                    listElement += `    </div>`;
+                    listElement += `    <div class="investment-item-third-child project-title">`;
+                    listElement += `        <a href="/user/investment/detail/main?investmentCode=${item.investmentCode}">${item.investmentSubject}</a>`;
+                    listElement += `    </div>`;
+                    listElement += `    <div class="investment-item-fourth-child">${item.investmentCompany}</div>`;
+                    listElement += `</div>`;
+                }
+            });
+
+            $('.investmentBox').append(listElement);
+
+            $('.investment-item-span-second').each(function () {
+                $(this).text($(this).text().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '원');
+            });
+        }
+    </script>
+
+</th:block>
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <!-- main swiper slide start -->
+    <th:block th:replace="~{common/fragments/mainSlideFragments :: mainSlide}"></th:block>
+    <!-- main swiper slide end -->
+
+    <div style="margin-bottom: 50px"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex col">
+                    <p style="font-weight: bold; font-size: 20px; margin-bottom: 20px; color: black; margin-left: 15px">전체</p>
+                    <div id="sort-item-wrap" class="d-flex" style="margin-left: auto">
+                        <select id="status" style="margin-right: 10px; border: 0px solid #ccc; background: none; margin-bottom: 20px">
+                            <option value="">전체</option>
+                            <option value="ing">진행중</option>
+                            <option value="end">종료됨</option>
+                        </select>
+                        <select id="securities" style="margin-right: 10px; border: 0px solid #ccc; background: none; margin-bottom: 20px">
+                            <option value="">증권 종류</option>
+                            <option value="stock">주식</option>
+                            <option value="bond">채권</option>
+                        </select>
+                        <ul class="d-flex" style="margin-top: 5px">
+                            <li id="recommendation" class="ml-3" onclick="sortItemClickedStyle(this)">추천순</li>
+                            <li id="latest" class="ml-3" onclick="sortItemClickedStyle(this)">최신순</li>
+                            <li id="popularity" class="ml-3" onclick="sortItemClickedStyle(this)">인기순</li>
+                            <li id="recruitmentAmount" class="ml-3" onclick="sortItemClickedStyle(this)">모집금액순</li>
+                            <li id="deadline" class="ml-3" onclick="sortItemClickedStyle(this)">마감임박순</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="container stretch" style="width: 100%; height: 100%">
+                    <div class="row investmentBox">
+                        <div class="col investment-item-box col-lg-4" th:if="${l.investJudgeSituation == 3 || l.investJudgeSituation == 4 || l.investJudgeSituation == 5}" th:each="l : ${investmentInfo}"
+                             th:onclick="|location.href='@{/user/investment/detail/main(investmentCode=${l.investmentCode})}'|">
+                            <div class="investment-item-first-child">
+                                <img class="investment-item-third-child-image" th:src="|@{/summernoteImage/}${l.investmentImage}|"
+                                     th:onerror="|this.src='@{/user/images/no-image.svg}'|">
+                            </div>
+                            <div class="investment-item-second-child">
+                                <span class="investment-item-span-first" th:text="|${#numbers.formatInteger(l.investAchievementPercent,0,'COMMA')}% 달성|"></span>
+                                <span class="investment-item-span-second" th:text="|${#numbers.formatInteger(l.investmentAmount,0,'COMMA')}원|"></span>
+                                <span class="investment-item-span-third" th:text="|${#numbers.formatInteger(l.investmentDeadlineCnt,0,'COMMA')}일 남음|"></span>
+                            </div>
+                            <div class="investment-item-third-child project-title">
+                                <a th:text="${l.investmentSubject}" th:href="@{/user/investment/detail/main}"></a>
+                            </div>
+                            <div class="investment-item-fourth-child" th:text="${l.investmentCompany}"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</th:block>
+</html>

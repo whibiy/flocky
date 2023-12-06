@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{seller/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+    <!-- Link Swiper's CSS -->
+    <style>
+        .category-button {
+            border: none;
+            border-radius: 25px; /* 라운드 처리 반경을 조정합니다. */
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .category-li{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-left: 20px;
+        }
+        .selected {
+            font-weight: bold;
+            color: black;
+        }
+        ul.d-flex li:hover {
+            cursor: pointer;
+        }
+        .donation-item-box{
+            width: 350px;
+            height: 300px;
+            margin: 10px;
+            margin-bottom: 20px;
+        }
+        .donation-item-first-child{
+            background: grey;
+            width: 350px;
+            height: 200px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .donation-item-first-child img{
+            width: 100%;
+            height: 100%;
+            border-radius: 5px;
+        }
+        .donation-item-second-child{
+            width: 350px;
+            height: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .donation-item-third-child{
+            width: 350px;
+            height: auto;
+            font-weight: bolder;
+            color: black;
+            font-size: 15px;
+        }
+        .donation-item-fourth-child{
+            width: 350px;
+            height: auto;
+        }
+        .donation-item-span-first{
+            font-weight: bold;
+            font-size: 20px;
+            color: #235FD9;
+        }
+        .donation-item-span-second{
+            margin-left: 5px;
+        }
+        .donation-item-span-third{
+            margin-left: auto;
+            color: #235FD9;
+            background: #cce5ff;
+            font-size: 12px;
+            padding: 2px;
+            border-radius: 5px;
+        }
+        .donation-item-third-child a:link{
+            text-decoration: none;
+        }
+        .donation-item-third-child a:visited{
+            color: black;
+            text-decoration: none;
+        }
+        .donation-item-third-child a:hover{
+            color: blue; text-decoration: underline;
+        }
+        .condition-add-btn:active{
+            box-shadow: inset -.3rem -.1rem 1.4rem  #FBFBFB, inset .3rem .4rem .8rem #BEC5D0;
+            cursor: pointer;
+        }
+        .condition-add-btn{
+            /* 상자 디자인 큰틀*/
+            padding: 10px;
+            border: 0px;
+            background-color: #235FD9;
+
+            /* 그림자 */
+            border-radius: 5px;
+            box-shadow:.5rem .3rem 1.4rem  #BEC5D0, -.1rem -.2rem .8rem #FBFBFB;
+            /* box-shadow:-.2rem -.2rem 1.8rem white, .8rem .8rem 1.4rem  #AAB7CB; */
+
+            /* 글씨 */
+            color: whitesmoke;
+            font-weight: bold;
+
+            animation-name: keybtn-language;
+            animation-duration: .2s;
+        }
+        .condition-modify-btn:active{
+            box-shadow: inset -.3rem -.1rem 1.4rem  #FBFBFB, inset .3rem .4rem .8rem #BEC5D0;
+            cursor: pointer;
+        }
+        .condition-modify-btn{
+            /* 상자 디자인 큰틀*/
+            padding: 10px;
+            border: 0px;
+            background-color: #235FD9;
+
+            /* 그림자 */
+            border-radius: 5px;
+            box-shadow:.5rem .3rem 1.4rem  #BEC5D0, -.1rem -.2rem .8rem #FBFBFB;
+            /* box-shadow:-.2rem -.2rem 1.8rem white, .8rem .8rem 1.4rem  #AAB7CB; */
+
+            /* 글씨 */
+            color: whitesmoke;
+            font-weight: bold;
+
+            animation-name: keybtn-language;
+            animation-duration: .2s;
+        }
+        .item-hover{
+            cursor: pointer;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    <link rel="stylesheet" th:href="@{/user/css/swiper-event-css.css}" />
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <!-- 	  	<script th:src="@{user/js/swiper-slide-event.js}"></script> -->
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+
+        function sortItemClickedStyle(element) {
+            const listItems = document.querySelectorAll("#sort-item-wrap li");
+
+            for (const listItem of listItems) {
+                listItem.classList.remove("selected");
+            }
+
+            element.classList.add("selected");
+        }
+        function cateItemClickedStyle(element) {
+            const listItems = document.querySelectorAll("#category-wrap li");
+
+            for (const listItem of listItems) {
+                listItem.classList.remove("selected");
+            }
+
+            element.classList.add("selected");
+        }
+
+        $('.donation-item-span-third').each(function (){
+            let currentDate = new Date();
+            // 비교 대상 날짜 설정
+            let targetDate = new Date($(this).text());
+            // 두 날짜 간의 차이 계산 (밀리초 단위)
+            let timeDifference = targetDate - currentDate;
+            // 차이를 일(day) 단위로 변환
+            let daysRemaining = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+            // 남은 일 수
+            $(this).text(daysRemaining + "일 남음");
+        });
+
+        $('.donation-item-span-first').each(function (){
+            let goalMoney = parseInt($(this).next().val());
+            let achievementMoney = parseInt($(this).next().next().text());
+
+            let percent = (achievementMoney / goalMoney) * 100;
+            $(this).text(parseInt(percent) + '%');
+        });
+
+        // 달성 금액 설정
+        $('.donation-item-span-second').each(function (){
+            $(this).text($(this).text().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '원');
+        });
+
+        $('.condition-modify-btn').click(function (){
+        });
+
+        $('.condition-add-btn').click(function (){
+            const donationCode = $(this).val();
+            let isCondition = 9;
+            $.ajax({
+                type: "POST",
+                url: "/seller/donation/condition/isProject",
+                dataType: "text",
+                data: donationCode,
+                success: function (result){
+                    console.log(result);
+                    isCondition = parseInt(result);
+                    if (isCondition === 0){
+                        window.location.href=`/seller/donation/condition/add?donationCode=${donationCode}`;
+                    }else{
+                        alert('현황이 이미 등록되어 있습니다.\n사용현황 수정을 이용해 주세요');
+                        return false;
+                    }
+                },
+                error: function (){
+                    console.log("AJAX 호출 실패");
+                }
+            });
+        });
+
+        $('.condition-modify-btn').click(function (){
+            const donationCode = $(this).val();
+            let isCondition = 7;
+            $.ajax({
+                type: "POST",
+                url: "/seller/donation/condition/isProject",
+                dataType: "text",
+                data: donationCode,
+                success: function (result){
+                    console.log(result);
+                    isCondition = parseInt(result);
+                    if (isCondition === 1){
+                        window.location.href=`/seller/donation/condition/modify?donationCode=${donationCode}`;
+                    }else{
+                        alert('현재 사용현황이 없습니다.\n사용현황을 등록해 주세요');
+                        return false;
+                    }
+                },
+                error: function (){
+                    console.log("AJAX 호출 실패");
+                }
+            });
+        });
+
+
+    </script>
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <div class="container">
+        <div class="row">
+            <div class="donation-item-box col-lg-4" th:if="${l.donationCondition == 3 || l.donationCondition == 4 || l.donationCondition == 5}" th:each="l : ${allDonationInfo}">
+                <div class="item-hover" th:onclick="|location.href='@{/user/donation/detail(donationCode=${l.donationCode})}'|">
+                    <div class="donation-item-first-child">
+                        <img class="donation-item-third-child-image" th:src="|@{/summernoteImage/}${l.donationImage}|">
+                    </div>
+                    <div class="donation-item-second-child">
+                        <span class="donation-item-span-first"></span>
+                        <input class="donatio-item-goalMoney" th:value="${l.donationGoalMoney}" hidden="hidden"/>
+                        <span class="donation-item-span-second" th:text="${l.donationAchievementMoney}"></span>
+                        <span class="donation-item-span-third" th:text="${l.donationEndDate}"></span>
+                    </div>
+                    <div class="donation-item-third-child">
+                        <p th:text="${l.donationSubject}"></p>
+                    </div>
+                    <div class="donation-item-fourth-child" th:text="${l.storeName}"></div>
+                </div>
+                <div class="">
+                    <button class="condition-add-btn" type="button" th:value="${l.donationCode}">사용현황등록</button>
+                    <button class="condition-modify-btn" type="button" th:value="${l.donationCode}">사용현황수정</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <form id="conditionModifyForm" th:action="@{/seller/donation/condition/modify}" method="get" hidden="hidden">
+        <input id="donationCode" name="donationCode">
+    </form>
+
+</th:block>
+</body>
+</html>

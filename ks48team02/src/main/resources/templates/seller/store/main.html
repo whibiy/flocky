@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{seller/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+<style>
+    /*  검은 버튼  */
+    .submitBtn_black {
+        background: #191919;
+        padding: 7px 23px;
+        transition: all .4s;
+        color: #fff;
+        display: inline-block;
+        text-decoration: none;
+        border: 1px solid #191919;
+        font-size: 12px;
+        transition: background 0.3s;
+        margin-left: 7px;
+    }
+
+    .submitBtn_black:hover {
+        background: var(--maincolor);
+        border: 1px solid var(--maincolor);
+    }
+
+    /* 흰 버튼 */
+    .submitBtn_white {
+        background: #fff;
+        padding: 7px 23px;
+        transition: all .4s;
+        color: #191919;
+        display: inline-block;
+        text-decoration: none;
+        border: 1px solid #191919;
+        font-size: 12px;
+        transition: background 0.3s;
+        margin-left: 10px;
+    }
+
+    .submitBtn_white:hover {
+        background: var(--maincolor);
+        border: 1px solid var(--maincolor);
+        color: #fff;
+    }
+
+    #have-store-container{
+        border: 1px solid lightgrey;
+        width:700px; display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color:white;
+        padding:20px;
+    }
+
+    .pageContainer{
+        margin-top: 50px;
+        margin-left: 200px;
+    }
+
+    .store-status-list{
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .store-status{
+        padding:15px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width:100px;
+        height: 40px;
+        background-color: white;
+        margin:20px;
+        font-weight: bold;
+        color: darkgray;
+        text-decoration: underline;
+    }
+
+    .store-status-menu{
+        font-weight: bold;
+        padding-top: 20px;
+    }
+
+    .store-member{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        color: darkgrey;
+    }
+
+    table{
+        color: darkgrey;
+    }
+
+    /* 각 셀의 테두리 없앰 */
+    th, td {
+        border: none;
+        color: darkgrey;
+    }
+
+
+
+</style>
+</head>
+
+<!-- page content -->
+<div class="right_col" role="main">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left">
+                <h3 th:text="${contentsTitle}">My 스토어</h3>
+            </div>
+        </div>
+
+        <div class="row" style="width: 1200px">
+            <div class="admin-wrapper">
+                <!-- 사용자정의 contents start -->
+                <th:block layout:fragment="customContents">
+                    <div class="mb-3" style="width:700px; display: flex; flex-direction: column; padding: 20px; gap:10px; align-items: center;" >
+
+                        <!--  스토어가 있는 판매자 page content -->
+                        <div class="pageContainer" id="have-store-container">
+                            <!-- 스토어 이름 + 프로필 사진 /  -->
+                            <div class="store-container" style="display:flex; flex-direction: column; align-items: center;">
+                                <!-- 프로필 이미지 -->
+                                <div class="img-box">
+                                    <img style="width: 180px; height: 180px; border-radius: 50%;" src="https://search.pstatic.net/common/?src=http%3A%2F%2Fshop1.phinf.naver.net%2F20230830_137%2F169335864225220l8t_PNG%2F904819171823915_1190040385.png&type=sc960_832"
+                                         id="profile_img" alt="">
+                                </div>
+                                <!-- 스토어 이름 -->
+                                <h2 class="store-profile" style="font-weight: bold; font-size: larger;">철수네 약과</h2>
+                            </div>
+                            <!--  대표자 이름 + 직원 수  -->
+                            <div style="height: 50px; padding-top: 10px;">
+                                    <table >
+                                        <tbody>
+                                        <tr>
+                                            <th style="color:darkgrey;">대표자명</th>
+                                            <td>김철수</td>
+                                        </tr>
+                                        <tr>
+                                            <th style="color:darkgrey;">직원수</th>
+                                            <td>5</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+
+                            <!-- 좋아요 수 /  총 펀딩 수 / 진행 중인 펀딩 / 심사 중인 펀딩 -->
+                            <div class="store-container" style="width:600px; display: flex; justify-content: space-evenly;">
+                                <div style="display: flex; justify-content: center; margin-top:10px;">
+                                    <ul style="display: flex; flex-direction: row;">
+                                        <li class="store-status-list">
+                                            <div class="store-status-menu">좋아요</div>
+                                            <div class="store-status">14</div>
+                                        </li>
+                                        <li class="store-status-list">
+                                            <div class="store-status-menu">총 펀딩</div>
+                                            <div class="store-status">1</div>
+                                        </li>
+                                        <li class="store-status-list">
+                                            <div class="store-status-menu">진행 중인 펀딩</div>
+                                            <div class="store-status">0</div>
+                                        </li>
+                                        <li class="store-status-list">
+                                            <div class="store-status-menu">심사 중인 펀딩</div>
+                                            <div class="store-status">0</div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!--  스토어 편집  -->
+                            <div style="width:700px; display: flex; justify-content: end; padding-top: 20px; padding-right: 30px;">
+                                <a th:href="@{/seller/store/edit}" >
+                                    <button class="btn btn-outline-light" style="border-radius: 0;">수정</button>
+                                </a>
+                            </div>
+                        </div>
+
+
+
+                        <!-- 스토어가 없는 판매자 page content -->
+                        <div class="pageContainer" style="padding-top: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                            <h3 style="color:dimgrey;">등록된 스토어가 없습니다.</h3>
+                            <div>
+                                <a th:href="@{/seller/store/storeCode}" >
+                                    <button type="button" id="regStoreCodeBtn" class="submitBtn_white">스토어 코드 등록하기</button>
+                                </a>
+
+                                <a th:href="@{/seller/store/registration}" >
+                                    <button type="button" id="createStoreBtn" class="submitBtn_black" style=" border-radius: 0;" >스토어 만들기</button>
+                                </a>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /스토어가 없는 판매자 page content -->
+
+                </th:block>
+                <!-- 사용자정의 contents end -->
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- /page content -->
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+
+</th:block>
+
+
+
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+    <link rel="stylesheet" th:href="@{/admin/css/adminBoard.css}">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <!--    <script>-->
+    <!--        function popupOpen(){-->
+    <!--            console.log("a");-->
+    <!--            var url= "/admin/board/main";    //팝업창에 출력될 페이지 URL-->
+    <!--            var winWidth = 700;-->
+    <!--            var winHeight = 600;-->
+
+    <!--            var popupX = (document.body.offsetWidth / 2) - (winWidth / 2);-->
+    <!--            // 만들 팝업창 좌우 크기의 1/2 만큼 보정값으로 빼주었음-->
+
+    <!--            var popupY= (window.screen.height / 2) - (winHeight / 2);-->
+    <!--            // 만들 팝업창 상하 크기의 1/2 만큼 보정값으로 빼주었음-->
+    <!--            var popupOption= 'status=no, height='+winWidth+', width='+winHeight+', left='+ popupX + ', top='+ popupY;    //팝업창 옵션(optoin)-->
+
+    <!--            window.open(url,' target="_blank"',popupOption);-->
+    <!--    </script>-->
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+        // 체크박스 전체 선택
+        $('#allCheck').on('click', function (){
+            let isChecked = $(this).prop('checked');
+            $('input[name="admin_board"]').prop('checked', isChecked);
+        });
+
+        // 개별 체크박스 선택 시 전체 체크박스 상태 확인
+        $('input[name="admin_board"]').on('click', function() {
+            let totalCheckboxes = $('input[name="admin_board"]').length;
+            let checkedCheckboxes = $('input[name="admin_board"]:checked').length;
+
+            if (totalCheckboxes === checkedCheckboxes) {
+                $('#allCheck').prop('checked', true);
+            } else {
+                $('#allCheck').prop('checked', false);
+            }
+        });
+
+        // 개별 체크박스 중 하나라도 체크를 해제할 때 전체 선택 체크박스도 해제
+        $('input[name="admin_board"]').on('click', function() {
+            let isChecked = $(this).prop('checked');
+
+            if (!isChecked) {
+                $('#allCheck').prop('checked', false);
+            }
+        });
+    </script>
+</th:block>
+
+<th:block layout:fragment="customContents">
+    <div class="boardMain" style="margin-bottom: 20px;">
+        <h3>알림 관리</h3>
+    </div>
+    <form>
+
+        <div class="section">
+            <div class="title"><h2>알림 목록</h2></div>
+            <div class="addBtnArea">
+                <a th:href="@{/admin/site/notificationAdd}" class="addBtn">알림 등록</a>
+            </div>
+        </div>
+
+        <div class="boardTable">
+            <table border="1">
+                <thead class="top">
+                <tr>
+                    <th><input type="checkbox" id="allCheck"></th>
+                    <th>알림 유형</th>
+                    <th>유저 아이디</th>
+                    <th>알림 내용</th>
+                    <th>알림 발생 일시</th>
+                </tr>
+                </thead>
+                <tbody class="center">
+                <tr>
+                    <td>
+                        <input type="checkbox" class="rowCheck" name="admin_board" value="1">
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="board-page-area">
+            <div class="list-controller-inner">
+                <ul>
+                    <li class="link-active"><a th:href="@{#}">1</a></li>
+                    <li><a th:href="@{#}">2</a></li>
+                    <li><a th:href="@{#}">3</a></li>
+                    <li><a th:href="@{#}">4</a></li>
+                    <li><a th:href="@{#}">5</a></li>
+                    <li><a th:href="@{#}">6</a></li>
+                </ul>
+                <div class="list-btn-area">
+                    <button class="prev-transfer">
+                        <span>prev</span>
+                    </button>
+                    <button class="next-transfer">
+                        <span>next</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </form>
+</th:block>
+</html>

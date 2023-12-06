@@ -1,0 +1,115 @@
+@charset "UTF-8";
+.title{
+    text-align: center;
+    margin-top: 40px;
+}
+.noticeContentArea{
+    width: 900px;
+    margin: 0 auto; /* 가운데 정렬 */
+
+}
+.thumb{
+    width: 144px;
+    height: 108px;
+}
+.info {
+    display: flex; /* 이 안에 직계 자식이 수평 정렬 됨 */
+    justify-content: space-between;
+}
+.board{
+    text-align: center;
+}
+.ui-taps ul{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    border-bottom: 1px solid #EEEEEE;
+    padding-bottom: 20px;
+}
+.noticeContentArea{
+    border-bottom: 1px solid #EEEEEE;
+}
+.noticeContentArea li{
+    padding: 20px 0;
+}
+.search{
+    display: flex;
+    justify-content: center;
+    font-size: 15px;
+    margin: 20px;
+}
+.pageBtn{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 0 auto;
+    padding: 20px 0;
+
+}
+.text-hidden{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    padding: 10px 13px 10px 10px;
+    color: #FFFFFF;
+    font-size: 10px;
+    font-weight: 700;
+    text-decoration: none;
+    background-color: var(--maincolor);
+    border-radius: 10px;
+}
+
+.text-hidden::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: rotate(90deg);
+    width: 10px;
+    height: 10px;
+    border-radius: 10px;
+}
+.pageBtn .text-hidden:nth-of-type(1)::after {
+    transform: rotate(225deg);
+}
+.text-hidden::after {
+    content: '';
+    transform: rotate(45deg);
+    width: 8px;
+    height: 8px;
+    border-top: 2px solid #FFF;
+    border-right: 2px solid #FFF;
+}
+.page1{
+    justify-content: center;
+    margin: 5px;
+}
+.btn-search{
+    background-color: #f5f7fa;
+    border: 1px solid #dadce0;
+
+}
+.comment{
+    width: 900px;
+    margin: 0 auto;
+    color: black;
+    padding: 10px;
+}
+.Profile{
+    width: 900px;
+    margin: 0 auto;
+    border-bottom: 1px solid #EEE;
+    padding-bottom: 20px;
+}
+.ProfileImage{
+    width: 40px;
+    height: 40px;
+    background: #EEE;
+}
+.author{
+    color: #AAA;
+}
+.created-at{
+    color: #AAA;
+}

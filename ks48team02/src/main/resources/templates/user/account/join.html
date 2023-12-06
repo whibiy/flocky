@@ -1,0 +1,172 @@
+<!doctype html>
+<!-- 회원 탈퇴 화면-->
+
+<html xmlns:th="http://www.thymeleaf.org/" lang="ko"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layout/semi_default}">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>회원 탈퇴 페이지</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+
+        #PageWrapper {
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+            height: 750px;
+            align-items: center;
+
+        }
+
+        #dropContainer {
+            background-color: white;
+            width: 500px;
+            margin:30px;
+            margin-top:80px;
+        }
+
+        .login-logo .top-left-conts {
+            position: absolute;
+            left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @media (max-width: 800px){
+            .navbar.navbar-expand-lg.ftco_navbar.ftco-navbar-light, .py-1.bg-primary {
+                display: none;
+            }
+        }
+
+        .login-logo .user-connection-menu {
+            display: none;
+        }
+
+        /* 탈퇴 동의 체크박스 */
+        .form-check-label {
+            color: grey;
+            font-weight: normal;
+        }
+
+        #drop-title, .drop-check, #solve-problem, .mb-3{
+            padding: 10px;
+
+        }
+
+        /* 확인사항 */
+        #dropTerm dt, #solve-problem{
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        #dropTerm dd{
+            font-size: 13px;
+            color: darkgery;
+            margin: 10px;;
+
+        }
+
+        .solid-bolder{
+            border: 1px solid grey;
+        }
+
+        .agree-check{
+            margin-left: 20px;
+            margin-bottom:50px;
+        }
+
+        .modal-body detail{
+        }
+
+        /*  검은 버튼  */
+        .submitBtn_black {
+            background: #191919;
+            padding: 7px 23px;
+            transition: all .4s;
+            color: #fff;
+            display: inline-block;
+            text-decoration: none;
+            border: 1px solid #191919;
+            font-size: 12px;
+            transition: background 0.3s;
+            margin-left: 7px;
+        }
+
+        .submitBtn_black:hover {
+            background: var(--maincolor);
+            border: 1px solid var(--maincolor);
+        }
+
+        /* 흰 버튼 */
+        .submitBtn_white {
+            background: #fff;
+            padding: 7px 23px;
+            transition: all .4s;
+            color: #191919;
+            display: inline-block;
+            text-decoration: none;
+            border: 1px solid #191919;
+            font-size: 12px;
+            transition: background 0.3s;
+            margin-left: 10px;
+        }
+
+        .submitBtn_white:hover {
+            background: var(--maincolor);
+            border: 1px solid var(--maincolor);
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+<!--사용자별 html 코드-->
+<th:block layout:fragment="customContents">
+    <div id="PageWrapper">
+        <div id="dropContainer">
+            <h1 style="font-weight:550; margin-bottom: 30px;">회원가입이 완료되었습니다.</h1>
+            <div id="drop-title">
+
+
+                <div id="solve-problem">
+                    <a th:href="@{#}" style="color:#235FD9;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-arrow-down-right-square-fill" viewBox="0 0 16 16">
+                            <path d="M14 16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12zM5.904 5.197 10 9.293V6.525a.5.5 0 0 1 1 0V10.5a.5.5 0 0 1-.5.5H6.525a.5.5 0 0 1 0-1h2.768L5.197 5.904a.5.5 0 0 1 .707-.707z"/>
+                        </svg>  로그인하러 가기</a>
+                </div>
+            </div>
+
+
+
+
+
+
+
+        </div>
+    </div>
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+
+    </script>
+
+</th:block>
+
+<!-- 사용자별 스크립트 파일 -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+</body>

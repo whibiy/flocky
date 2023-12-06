@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{seller/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <script th:src="@{/admin/js/settlement/adminCustomJs.js}"></script>
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+        // 기간 선택 min value setting
+        $('input[name="amDateSettStartDate"]').on('change', function(){
+            let startDate = $(this).val();
+            $('input[name="amDateSettEndDate"]').prop('min',startDate);
+        });
+
+
+
+
+        let startDateValue = startDate(nowDateSet);
+        let endDateValue = `${nowDateSet.getFullYear()}-${String(nowDateSet.getMonth() + 1).padStart(2, '0')}-${String(nowDateSet.getDate()).padStart(2, '0')}`;
+
+        console.log(startDateValue, '<-- start value');
+        console.log(endDateValue, '<-- end value');
+
+        $('input[name="amDateSettStartDate"]').val(startDateValue);
+        $('input[name="amDateSettEndDate"]').val(endDateValue);
+
+
+
+
+
+        // loaded category checkbox all checked
+        const $categoryEls = $('.order-category-select input');
+        $($categoryEls).prop('checked', true);
+
+
+    </script>
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <div class="admin-content-wrapper form-table">
+        <form id="amYearChartForm" method="get">
+            <table class="partition-select">
+                <tbody>
+                    <tr>
+                        <td>
+                            기간
+                        </td>
+                        <td>
+                            <input type="date" name="amDateSettStartDate" value="">
+                            <span> - </span>
+                            <input type="date" name="amDateSettEndDate" value="">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            주문 상태
+                        </td>
+                        <td class="order-category-select">
+                            <ul>
+                                <li>
+                                    <input id="delivery_d" type="checkbox" name="">
+                                    <label for="delivery_d">배송 대기중</label>
+                                </li>
+                                <li>
+                                    <input id="delivering_d" type="checkbox" name="">
+                                    <label for="delivering_d">배송중</label>
+                                </li>
+                                <li>
+                                    <input id="delivered_d" type="checkbox" name="">
+                                    <label for="delivered_d">배송완료</label>
+                                </li>
+                                <li>
+                                    <input id="refunding_d" type="checkbox" name="">
+                                    <label for="refunding_d">환불 신청 배송</label>
+                                </li>
+                                <li>
+                                    <input id="swipping_d" type="checkbox" name="">
+                                    <label for="swipping_d">교환 신청 배송</label>
+                                </li>
+
+                            </ul>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            검색 키워드
+                        </td>
+                        <td class="order-category-select">
+                            <select name="searchKey">
+                                <option value="total">전체</option>
+                                <option value="settlementCode">공고코드</option>
+                                <option value="settlementId">신청아이디</option>
+                                <option value="projectName">공고명</option>
+                            </select>
+                            <input type="search" name="searchValue">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="btn-area">
+                <button type="button" class="submitBtn">검색</button>
+            </div>
+        </form>
+    </div>
+    <div class="title-wrap">
+        <h4 class="admin-content-title">배송 목록</h4>
+        <div class="btnArea">
+            <button type="button" class="printBtn"><span>액셀 다운로드</span></button>
+        </div>
+    </div>
+    <div class="admin-content-wrapper" style="overflow-x: hidden;">
+        <div>
+            <!-- select are -->
+            <div class="data-info">
+                <div class="list-count-area">
+                    <ul>
+                        <li>배송 정보 총 <span class="count-data total-list">0</span>건</li>
+                        <li>선택 항목 총 <span class="count-data select-list-count">0</span>건</li>
+                    </ul>
+                </div>
+                <div class="list-count-selector">
+                    <select name="orderby">
+                        <option value="delived_d">배송일 역순</option>
+                        <option value="delived_a">배송일 순</option>
+                        <option>-----------------</option>
+                        <option value="order_name_d">주문자 역순</option>
+                        <option value="order_name_a">주문자 순</option>
+                        <option>-----------------</option>
+                        <option value="deliveryWait_o">배송대기중</option>
+                        <option value="delivery_o">배송중</option>
+                        <option value="deliveryCompleted_o">배송완료</option>
+                        <option value="swapping_o">교환 배송</option>
+                        <option value="refunding_o">환불 신청 배송</option>
+                    </select>
+                    <select name="count-select">
+                        <option value="15">15개씩 보기</option>
+                        <option value="20">20개씩 보기</option>
+                        <option value="30">30개씩 보기</option>
+                    </select>
+                </div>
+            </div>
+            <!-- contents area -->
+            <form id="orderListForm">
+                <table class="settlement-log">
+                    <thead>
+                    <tr>
+                        <th style="width:5%;">
+                            <input type="checkbox" name="allSelect" id="allSelectBtn">
+                        </th>
+                        <th style="width:12%;">배송 관리코드</th>
+                        <th style="width:8%;">배송유형</th>
+                        <th style="width:5%;">배송상태</th>
+                        <th style="width:10%;">주문 아이디</th>
+                        <th style="width:10%;">택배사</th>
+                        <th style="width:17%;">
+                            운송장번호
+                        </th>
+                        <th style="width:8%;">배송완료 예정일</th>
+
+                        <th style="width:8%;">배송 시작일</th>
+                        <th style="width:8%;">배송 완료일</th>
+                        <th style="width:12%;">주문 코드</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- 조회 결과 없음 -->
+                    <tr style="display:none;">
+                        <td colspan="10" style="text-align: center; padding: 30px 0;">검색 결과가 없습니다.</td>
+                    </tr>
+                    <!-- 조회 결과 contents -->
+                    <tr>
+                        <td class="table-data-center">
+                            <input type="checkbox" name="selectList">
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/delivery/detail}">ORD_20230922_000001</a>
+                        </td>
+                        <td  class="table-data-center">
+                            일반 주문 배송
+                        </td>
+                        <td class="table-data-center">
+                            배송중
+                        </td>
+                        <td >
+                            id100
+                        </td>
+
+                        <td >
+                            우체국택배
+                        </td>
+                        <td>
+                            1324-343-2375758
+                        </td>
+
+                        <td  class="table-data-center">
+                            2023-10-20
+                        </td>
+
+                        <td class="table-data-center">
+                            2023-10-15
+                        </td>
+                        <td class="table-data-center">
+                            -
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-data-center">
+                            <input type="checkbox" name="selectList">
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/delivery/detail}">ORD_20230922_000001</a>
+                        </td>
+                        <td  class="table-data-center">
+                            일반 주문 배송
+                        </td>
+                        <td class="table-data-center">
+                            배송중
+                        </td>
+                        <td >
+                            id100
+                        </td>
+
+                        <td >
+                            우체국택배
+                        </td>
+                        <td>
+                            1324-343-2375758
+                        </td>
+
+                        <td  class="table-data-center">
+                            2023-10-20
+                        </td>
+
+                        <td class="table-data-center">
+                            2023-10-15
+                        </td>
+                        <td class="table-data-center">
+                            -
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-data-center">
+                            <input type="checkbox" name="selectList">
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/delivery/detail}">ORD_20230922_000001</a>
+                        </td>
+                        <td  class="table-data-center">
+                            일반 주문 배송
+                        </td>
+                        <td class="table-data-center">
+                            배송중
+                        </td>
+                        <td >
+                            id100
+                        </td>
+
+                        <td >
+                            우체국택배
+                        </td>
+                        <td>
+                            1324-343-2375758
+                        </td>
+
+                        <td  class="table-data-center">
+                            2023-10-20
+                        </td>
+
+                        <td class="table-data-center">
+                            2023-10-15
+                        </td>
+                        <td class="table-data-center">
+                            -
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-data-center">
+                            <input type="checkbox" name="selectList">
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/delivery/detail}">ORD_20230922_000001</a>
+                        </td>
+                        <td  class="table-data-center">
+                            일반 주문 배송
+                        </td>
+                        <td class="table-data-center">
+                            배송중
+                        </td>
+                        <td >
+                            id100
+                        </td>
+
+                        <td >
+                            우체국택배
+                        </td>
+                        <td>
+                            1324-343-2375758
+                        </td>
+
+                        <td  class="table-data-center">
+                            2023-10-20
+                        </td>
+
+                        <td class="table-data-center">
+                            2023-10-15
+                        </td>
+                        <td class="table-data-center">
+                            -
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-data-center">
+                            <input type="checkbox" name="selectList">
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/delivery/detail}">ORD_20230922_000001</a>
+                        </td>
+                        <td  class="table-data-center">
+                            일반 주문 배송
+                        </td>
+                        <td class="table-data-center">
+                            배송중
+                        </td>
+                        <td >
+                            id100
+                        </td>
+
+                        <td >
+                            우체국택배
+                        </td>
+                        <td>
+                            1324-343-2375758
+                        </td>
+
+                        <td  class="table-data-center">
+                            2023-10-20
+                        </td>
+
+                        <td class="table-data-center">
+                            2023-10-15
+                        </td>
+                        <td class="table-data-center">
+                            -
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-data-center">
+                            <input type="checkbox" name="selectList">
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/delivery/detail}">ORD_20230922_000001</a>
+                        </td>
+                        <td  class="table-data-center">
+                            일반 주문 배송
+                        </td>
+                        <td class="table-data-center">
+                            배송중
+                        </td>
+                        <td >
+                            id100
+                        </td>
+
+                        <td >
+                            우체국택배
+                        </td>
+                        <td>
+                            1324-343-2375758
+                        </td>
+
+                        <td  class="table-data-center">
+                            2023-10-20
+                        </td>
+
+                        <td class="table-data-center">
+                            2023-10-15
+                        </td>
+                        <td class="table-data-center">
+                            -
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-data-center">
+                            <input type="checkbox" name="selectList">
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/delivery/detail}">ORD_20230922_000001</a>
+                        </td>
+                        <td  class="table-data-center">
+                            일반 주문 배송
+                        </td>
+                        <td class="table-data-center">
+                            배송중
+                        </td>
+                        <td >
+                            id100
+                        </td>
+
+                        <td >
+                            우체국택배
+                        </td>
+                        <td>
+                            1324-343-2375758
+                        </td>
+
+                        <td  class="table-data-center">
+                            2023-10-20
+                        </td>
+
+                        <td class="table-data-center">
+                            2023-10-15
+                        </td>
+                        <td class="table-data-center">
+                            -
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-data-center">
+                            <input type="checkbox" name="selectList">
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/delivery/detail}">ORD_20230922_000001</a>
+                        </td>
+                        <td  class="table-data-center">
+                            일반 주문 배송
+                        </td>
+                        <td class="table-data-center">
+                            배송중
+                        </td>
+                        <td >
+                            id100
+                        </td>
+
+                        <td >
+                            우체국택배
+                        </td>
+                        <td>
+                            1324-343-2375758
+                        </td>
+
+                        <td  class="table-data-center">
+                            2023-10-20
+                        </td>
+
+                        <td class="table-data-center">
+                            2023-10-15
+                        </td>
+                        <td class="table-data-center">
+                            -
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-data-center">
+                            <input type="checkbox" name="selectList">
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/delivery/detail}">ORD_20230922_000001</a>
+                        </td>
+                        <td  class="table-data-center">
+                            일반 주문 배송
+                        </td>
+                        <td class="table-data-center">
+                            배송중
+                        </td>
+                        <td >
+                            id100
+                        </td>
+
+                        <td >
+                            우체국택배
+                        </td>
+                        <td>
+                            1324-343-2375758
+                        </td>
+
+                        <td  class="table-data-center">
+                            2023-10-20
+                        </td>
+
+                        <td class="table-data-center">
+                            2023-10-15
+                        </td>
+                        <td class="table-data-center">
+                            -
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-data-center">
+                            <input type="checkbox" name="selectList">
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/delivery/detail}">ORD_20230922_000001</a>
+                        </td>
+                        <td  class="table-data-center">
+                            일반 주문 배송
+                        </td>
+                        <td class="table-data-center">
+                            배송중
+                        </td>
+                        <td >
+                            id100
+                        </td>
+
+                        <td >
+                            우체국택배
+                        </td>
+                        <td>
+                            1324-343-2375758
+                        </td>
+
+                        <td  class="table-data-center">
+                            2023-10-20
+                        </td>
+
+                        <td class="table-data-center">
+                            2023-10-15
+                        </td>
+                        <td class="table-data-center">
+                            -
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-data-center">
+                            <input type="checkbox" name="selectList">
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/delivery/detail}">ORD_20230922_000001</a>
+                        </td>
+                        <td  class="table-data-center">
+                            일반 주문 배송
+                        </td>
+                        <td class="table-data-center">
+                            배송중
+                        </td>
+                        <td >
+                            id100
+                        </td>
+
+                        <td >
+                            우체국택배
+                        </td>
+                        <td>
+                            1324-343-2375758
+                        </td>
+
+                        <td  class="table-data-center">
+                            2023-10-20
+                        </td>
+
+                        <td class="table-data-center">
+                            2023-10-15
+                        </td>
+                        <td class="table-data-center">
+                            -
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-data-center">
+                            <input type="checkbox" name="selectList">
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/delivery/detail}">ORD_20230922_000001</a>
+                        </td>
+                        <td  class="table-data-center">
+                            일반 주문 배송
+                        </td>
+                        <td class="table-data-center">
+                            배송중
+                        </td>
+                        <td >
+                            id100
+                        </td>
+
+                        <td >
+                            우체국택배
+                        </td>
+                        <td>
+                            1324-343-2375758
+                        </td>
+
+                        <td  class="table-data-center">
+                            2023-10-20
+                        </td>
+
+                        <td class="table-data-center">
+                            2023-10-15
+                        </td>
+                        <td class="table-data-center">
+                            -
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-data-center">
+                            <input type="checkbox" name="selectList">
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/delivery/detail}">ORD_20230922_000001</a>
+                        </td>
+                        <td  class="table-data-center">
+                            일반 주문 배송
+                        </td>
+                        <td class="table-data-center">
+                            배송중
+                        </td>
+                        <td >
+                            id100
+                        </td>
+
+                        <td >
+                            우체국택배
+                        </td>
+                        <td>
+                            1324-343-2375758
+                        </td>
+
+                        <td  class="table-data-center">
+                            2023-10-20
+                        </td>
+
+                        <td class="table-data-center">
+                            2023-10-15
+                        </td>
+                        <td class="table-data-center">
+                            -
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-data-center">
+                            <input type="checkbox" name="selectList">
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/delivery/detail}">ORD_20230922_000001</a>
+                        </td>
+                        <td  class="table-data-center">
+                            일반 주문 배송
+                        </td>
+                        <td class="table-data-center">
+                            배송중
+                        </td>
+                        <td >
+                            id100
+                        </td>
+
+                        <td >
+                            우체국택배
+                        </td>
+                        <td>
+                            1324-343-2375758
+                        </td>
+
+                        <td  class="table-data-center">
+                            2023-10-20
+                        </td>
+
+                        <td class="table-data-center">
+                            2023-10-15
+                        </td>
+                        <td class="table-data-center">
+                            -
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-data-center">
+                            <input type="checkbox" name="selectList">
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/delivery/detail}">ORD_20230922_000001</a>
+                        </td>
+                        <td  class="table-data-center">
+                            일반 주문 배송
+                        </td>
+                        <td class="table-data-center">
+                            배송중
+                        </td>
+                        <td >
+                            id100
+                        </td>
+
+                        <td >
+                            우체국택배
+                        </td>
+                        <td>
+                            1324-343-2375758
+                        </td>
+
+                        <td  class="table-data-center">
+                            2023-10-20
+                        </td>
+
+                        <td class="table-data-center">
+                            2023-10-15
+                        </td>
+                        <td class="table-data-center">
+                            -
+                        </td>
+                        <td class="table-data-center">
+                            <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                        </td>
+                    </tr>
+
+
+                    </tbody>
+                </table>
+            </form>
+            <!-- list pager -->
+            <div class="board-page-area">
+                <div class="list-controller-inner">
+                    <ul>
+                        <li class="link-active"><a th:href="@{#}">1</a></li>
+                        <li><a th:href="@{#}">2</a></li>
+                        <li><a th:href="@{#}">3</a></li>
+                        <li><a th:href="@{#}">4</a></li>
+                        <li><a th:href="@{#}">5</a></li>
+                        <li><a th:href="@{#}">6</a></li>
+                    </ul>
+                    <div class="list-btn-area">
+                        <button class="prev-transfer">
+                            <span>prev</span>
+                        </button>
+                        <button class="next-transfer">
+                            <span>next</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</th:block>
+</body>
+</html>

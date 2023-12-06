@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+    <style>
+        #commentBox {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            z-index: 99999;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.2);
+        }
+        .comment-box-content {
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-top: 15px;
+            padding-bottom: 10px;
+            width: 550px;
+            height: 550px;
+            background: #fff;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 20px;
+        }
+    </style>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script th:inline="javascript">
+
+        const $commentBox = $('#commentBox');
+
+        let rewardProjectCode;
+
+        $('.judgementReject').click(function () {
+            $commentBox.css('display', 'block'); // 심사 거부 버튼 클릭 시 반려사유 창 열림
+            rewardProjectCode = $(this).parents('.rewardProject').find('.rewardProjectCode').text();
+            console.log(rewardProjectCode);
+        })
+
+        $('#commentAddBtn').click(function(){
+            let judgeReasonTextLength = $('.comment-text-box').val().length;
+            if(judgeReasonTextLength < 10 || judgeReasonTextLength > 2000){
+                alert('10글자 이상 2000자 미만으로 작성 해주세요!');
+                return
+            }else{
+                alert('심사가 반려 되었습니다.'); // 빈값 수정
+                let judgeRejectReason = $('#projectJudgementSelect option:selected').val();
+                let judgeRejectReasonDetail = $('.comment-text-box').val();
+                window.location.href = `/admin/reward/confirmAndRegect?judgement=reject&rewardProjectCode=${rewardProjectCode}&judgeRejectReasonCode=${judgeRejectReason}&judgeRejectReasonDetail=${judgeRejectReasonDetail}`;
+            }
+        })
+        const $commentBoxClose = $('#commentBoxClose');
+        $commentBoxClose.click(function (){
+            $commentBox.css('display', 'none'); // 버튼 클릭 시 댓글 창 종료
+        });
+
+        $('.comment-text-box').keyup(function (e){
+            let content = $(this).val();
+            if(content.length > 10){
+                $('#commentCounter').html("("+content.length+" / 최대 2000자 까지만 등록 가능합니다.)");
+            }else{
+                $('#commentCounter').html("("+content.length+" / 최소 10글자 이상만 등록 가능합니다.)");
+            }
+        });
+
+    </script>
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <div class="title-wrap">
+        <h4 class="admin-content-title">현재 프로젝트 목록</h4>
+    </div>
+    <div class="admin-content-wrapper">
+        <div class="data-info">
+            <div class="list-count-area">
+                <ul>
+                    <li>프로젝트 목록 총 <span class="totalCnt" style="color: #235fd9;" th:text="|${rowCnt} 건|"></span></li>
+                </ul>
+            </div>
+        </div>
+        <form>
+
+            <table class="settlement-log">
+                <thead>
+                <tr>
+                    <th style="width:8%;">프로젝트코드</th>
+                    <th style="width:8%;">신청인 아이디</th>
+                    <th style="width:20%;">프로젝트 명</th>
+                    <th style="width:15%;">스토어 명</th>
+                    <th style="width:15%;">프로젝트 목표 금액</th>
+                    <th style="width:10%;">공고 등록일자</th>
+                    <th style="width:10%;">공고 마감일자</th>
+                    <th style="width:10%;">심사 승인</th>
+                    <th style="width:10%;">심사 반려</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                <!-- not contents -->
+                <tr th:if="${#lists.size(projectList) == 0}" class="not-contents">
+                    <td colspan="11" style="text-align: center; padding: 30px 0;">검색 결과가 없습니다.</td>
+                </tr>
+                <!-- contents -->
+                    <tr class="rewardProject" th:unless="${#lists.size(projectList) == 0}" th:each="l : ${projectList}"
+                        th:onclick="|location.href='@{/user/reward/detail(rewardProjectCode=${l.rewardProjectCode})}'|">
+                        <td class="rewardProjectCode" th:text="${l.rewardProjectCode}"></td>
+                        <td class="sellerId" th:text="${l.regMemberId}"></td>
+                        <td th:text="${l.projectSubject}"></td>
+                        <td th:text="${l.regCompany}"></td>
+                        <td>
+                            <div style="float:left;"><span class="goal-money" th:text="|${#numbers.formatInteger(l.projectGoalMoney,0,'COMMA')} 원|"></span> </div>
+                        </td>
+                        <td class="table-data-center" th:text="${l.projectRegDate}"></td>
+                        <td class="table-data-center" th:text="${l.projectEndDate}"></td>
+
+                        <td class="table-data-center start-project-date" th:if="${l.projectCondition == 1}">
+                            <button type="button" class="startBtn" style=" background-color: #235fd9; border-radius: 5px; color: whitesmoke; padding: 5px">프로젝트 시작</button>
+                        </td>
+                        <td class="table-data-center">
+                            <button type="button" class="btn btn-sm btn-primary"
+                            th:onclick="|location.href='@{/admin/reward/confirmAndRegect(rewardProjectCode=${l.rewardProjectCode},judgement='confirm')}'|">심사승인</button>
+                        </td>
+                        <td class="table-data-center">
+                            <button type="button" class="judgementReject  btn btn-sm btn-danger">심사거절</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+
+
+        <!-- list pager -->
+        <div class="board-page-area">
+            <div class="list-controller-inner">
+                <ul>
+                    <th:block th:if="${#lists.size(projectList) != 0}" th:each="num : ${#numbers.sequence(startPageNum, endPageNum)}">
+                        <li class="link-active">
+                            <a th:if="${num != currentPage}"
+                               th:href="@{/admin/reward/judgement(currentPage=${num})}">[[${'[' + num + ']'}]]</a>
+                            <a th:unless="${num != currentPage}" th:text="${num}"></a>
+                        </li>
+                    </th:block>
+                </ul>
+                <div class="list-btn-area">
+                    <button class="prev-transfer" th:if="${currentPage > 1}"
+                            th:onclick="|location.href='@{/admin/reward/judgement(currentPage=${currentPage - 1})}'|">
+                        <span>prev</span>
+                    </button>
+                    <button class="prev-transfer" th:unless="${currentPage > 1}">
+                        <span>prev</span>
+                    </button>
+                    <button class="next-transfer" th:if="${currentPage < lastPage}"
+                            th:onclick="|location.href='@{/admin/reward/judgement(currentPage=${currentPage + 1})}'|">
+                        <span>next</span>
+                    </button>
+                    <button class="next-transfer" th:unless="${currentPage < lastPage}">
+                        <span>next</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="commentBox">
+            <div class="comment-box-content">
+                <div style="display: inline-block; font-size: 25px; color: black; font-weight: bold; margin-top: 10px;">심사반려사유</div>
+                <div id="commentBoxClose" style="display: inline-block; float: right; font-size: 30px; cursor: pointer">
+                    ⨉
+                </div>
+                <select id="projectJudgementSelect" style="width: 100%">
+                    <option value="0">반려 사유를 선택해주세요</option>
+                    <option th:each="l : ${rewardJudegmentResonList}" th:text="${l.judgementReason}" th:value="${l.projectJudgementCode}"></option>
+                </select>
+                <div style="margin-top: 10px">
+                    <textarea class="comment-text-box" style="width: 100%; height: 200px; resize: none; outline-color: #235FD9; outline-width: 1px; padding: 10px;" minlength="10" maxlength="2000" placeholder="반려 이유를 작성해주세요!!"></textarea>
+                </div>
+                <span id="commentCounter" style="color: black">(0 / 최소 10글자 이상만 등록 가능합니다.)</span>
+                <div style="background: #fff1f1; border-radius: 5px; padding: 10px; font-size: 12px">
+                    <p>
+                        ⚠️ 반려 사유 <br>
+                        영리를목적으로사업을수행하는단체/정치, 종교등의역할을직접적으로수행또는대행·지지하거나사적이윤을추구하는단체
+                        정부및기업이직접출현하고해당예산만으로운영되는단체/학교법인및의료법인
+                        세제혜택이있는기부금영수증발급이불가한단체(지정기부금단체승인증빙불가또는지정기간만료)
+                        서류상설립일기준으로3년을경과하였더라도실제사업운영기간이3년미만인단체
+                        대표자외4대보험에가입되고, 전일(하루8시간이상, 주5회)근무하는상근자가없는단체
+                        주무관청의감사및언론을통해위법사실이드러났거나적발된이력이있는단체
+                        해피빈활동중강제폐쇄이력이있는단체등
+                    </p>
+                </div>
+                <div style="margin-top: 10px">
+                    <button id="commentAddBtn" type="button" style="background: #235FD9; width: 100%; height: 40px; color: white; font-size: 15px; outline-color: #235FD9; outline-width: 1px">완료</button>
+                </div>
+            </div>
+        </div>
+</th:block>
+</body>
+</html>

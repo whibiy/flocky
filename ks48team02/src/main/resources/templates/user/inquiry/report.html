@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>플로키 신고하기</title>
+    <link rel="stylesheet" th:href="@{/user/css/reportStyle.css}">
+</head>
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- html 사용자 조각 작성 -->
+<th:block layout:fragment="customContents">
+    <div class="pop_wrap">
+        <form id="reportForm" method="get">
+            <input type="hidden" id="popUP" name="popUP"/>
+            <input type="hidden" name="detail">
+        </form>
+        <div class="report">
+            <h2 class="title">신고하기</h2>
+        </div>
+
+        <div class="comment">
+            <p>플로키에서 해당 게시물을 신고합니다.</p>
+            <p>플로키에서 사용 수칙에 맞지 않는 글을 신고하는 기능입니다.</p>
+            <p>허위 신고일 경우에는 신고자가 제제 받을 수 있음을 유념해 주시기 바랍니다.</p>
+        </div>
+
+        <div class="report_area">
+            <dl>
+                <span class="inner">작성자</span>
+                <input type="text" class="report_cont" placeholder="작성자 아이디 입력해주세요.">
+            </dl>
+            <dl class="report_connt">
+                <span class="inner">내 용</span>
+                <input type="text" class="report_cont" placeholder="상세 신고 내용을 적어주세요">
+            </dl>
+        </div>
+
+        <div class="reason">
+            <strong class="reason_Title">사유선택</strong>
+            <ul>
+                <li class="list">
+                    <input type="radio" name="select" id="0" class="report_reason">
+                    <div class="check_area">
+                        <label for="0">
+                            지적재산권 침해
+                        </label>
+                    </div>
+                </li>
+                <li class="list">
+                    <input type="radio" name="select" id="1" class="report_reason">
+                    <div class="check_area">
+                        <label for="1">
+                            스토리 내 허위사실
+                        </label>
+                    </div>
+                </li>
+                <li class="list">
+                    <input type="radio" name="select" id="2" class="report_reason">
+                    <div class="check_area">
+                        <label for="2">
+                            동일 제품의 타 채널 유통
+                        </label>
+                    </div>
+                </li>
+                <li class="list">
+                    <input type="radio" name="select" id="3" class="report_reason">
+                    <div class="check_area">
+                        <label for="3">
+                            커뮤니티 정책 위반
+                        </label>
+                    </div>
+                </li>
+                <li class="list">
+                    <input type="radio" name="select" id="4" class="report_reason">
+                    <div class="check_area">
+                        <label for="4">
+                            기타
+                        </label>
+                    </div>
+                </li>
+            </ul>
+            <div class="comment-1">
+                <textarea name="textarea" rows="10" cols="50" placeholder="세부 내용"></textarea>
+
+            </div>
+            <div class="pop_report">
+                <button class="btnRepprt">
+                    <a href="#" class="btn_submit">신고하기</a>
+                </button>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+</html>

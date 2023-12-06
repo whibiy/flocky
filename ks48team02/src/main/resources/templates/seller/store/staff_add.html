@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{seller/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+<style>
+    /*  검은 버튼  */
+    .submitBtn_black {
+        background: #191919;
+        padding: 7px 23px;
+        transition: all .4s;
+        color: #fff;
+        display: inline-block;
+        text-decoration: none;
+        border: 1px solid #191919;
+        font-size: 12px;
+        transition: background 0.3s;
+        margin-left: 7px;
+    }
+
+    .submitBtn_black:hover {
+        background: var(--maincolor);
+        border: 1px solid var(--maincolor);
+    }
+
+    /* 흰 버튼 */
+    .submitBtn_white {
+        background: #fff;
+        padding: 7px 23px;
+        transition: all .4s;
+        color: #191919;
+        display: inline-block;
+        text-decoration: none;
+        border: 1px solid #191919;
+        font-size: 12px;
+        transition: background 0.3s;
+        margin-left: 10px;
+    }
+
+    .submitBtn_white:hover {
+        background: var(--maincolor);
+        border: 1px solid var(--maincolor);
+        color: #fff;
+    }
+
+    .store-profile{
+        display: flex;
+        justify-content: center;
+    }
+
+    .staff-member {
+        width: 400px;
+        height: 180px;
+        display: flex;
+        justify-content: space-evenly;
+        padding: 35px;
+        margin-bottom: 20px;
+        gap:60px;
+        border: 1px solid lightgrey;
+    }
+
+    .staff-info{
+        padding-left:  30px;
+        color:darkgray;
+    }
+
+</style>
+</head>
+
+<!-- page content -->
+<div class="right_col" role="main">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left">
+                <h3 th:text="${contentsTitle}">스토어 직원 관리</h3>
+                <p th:text="${contentsSubTitle}">sub title 내용 작성, 변수 contentsSubTitle</p>
+            </div>
+        </div>
+
+        <div class="row" style="width: 1200px">
+            <div class="admin-wrapper">
+                <!-- 사용자정의 contents start -->
+                <th:block layout:fragment="customContents">
+                    <div class="mb-3" style="width:700px; display: flex; flex-direction: column; padding: 20px; gap:10px; align-items: center;" >
+                        <div style="display: flex; flex-direction:column; align-items: start; gap: 10px;">
+                            <label for="store-name" class="form-label" style="font-size:larger;">스태프 추가</label>
+                            <div style="display: flex; gap:10px;">
+                                <form>
+                                    <input type="text" class="form-control" id="store-name" value="" placeholder="스태프 아이디 입력">
+                                </form>
+                                <button class="submitBtn_black" style="width:105px;" data-toggle="modal" data-target="#submitModal">등록</button>
+                            </div>
+                            <div class="form-text" style="color:red; font-size:13px;" aria-hidden="true">정확한 아이디를 입력해 주세요</div>
+                        </div>
+
+                        <!-- 스태프 목록  -->
+                        <div class="staffList" style="display: flex; flex-direction: column; justify-content: space-evenly; margin-top: 60px;">
+                           <div>
+                               <p style="margin-left: 33px; font-size:larger;font-weight: bold;">스토어 스태프 목록</p>
+                           </div>
+
+                           <div style="display: flex; justify-content: space-evenly;">
+                                <ul>
+                                    <li class="staff-member">
+                                        <dl class="staff-row-name" >
+                                            <dd class="staff-name" style="font-weight: bold; font-size:medium;">신짱구</dd>
+                                            <dd style="color: dimgray; text-decoration: underline; margin-top:20px;
+                                                margin-left: 6px;" data-toggle="modal" data-target="#editModal">수정</dd>
+                                        </dl>
+                                        <dl class="staff-row-info" >
+                                            <dt>직급 </dt>
+                                            <dd class="staff-info">직원</dd>
+                                            <dt>업무 </dt>
+                                            <dd class="staff-info">댓글 관리와 게시물 관리</dd>
+                                            <dt>권한 </dt>
+                                            <dd class="staff-info">활성화 상태</dd>
+                                        </dl>
+                                    </li>
+
+                                    <li>
+                                        <div class="staff-member">
+                                            <div class="staff-row-name" style="width: 150px; display: flex; flex-direction: column;
+                                                    align-items: center; justify-content: center;" >
+                                                <strong class="staff-name" style="font-weight: bold; font-size:medium;">신짱구</strong>
+                                                <a style="color: dimgray; text-decoration: underline; margin-top:20px;
+                                                margin-left: 6px;" data-toggle="modal" data-target="#editModal" >수정</a>
+                                            </div>
+                                            <table style="padding: 30px;">
+                                                <tbody>
+                                                <tr >
+                                                    <th style="padding-right: 60px;">직급</th>
+                                                    <td>직원</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>업무</th>
+                                                    <td>댓글 관리</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>권한</th>
+                                                    <td>활성화 상태</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </li>
+                                </ul>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- 스토어 직원 추가 Modal -->
+                    <div class="modal fade" id="submitModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel" style="font-size: larger" >스토어 직원 추가</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <form>
+                                        <div id="staff-box"  style="width: 570px; height: 300px; display: flex; flex-direction: column; justify-content: space-evenly; align-items: center">
+                                            <div id="add-box" style=" height: 100px; display: flex; flex-direction: column; justify-content: space-evenly; align-items: center; gap:15px;" >
+                                                <form>
+                                                    <!--  직원 이름 작성-->
+                                                    <div>
+                                                        <label for="input-staff-name">이름</label>
+                                                        <input  class="form-control" id="input-staff-name" placeholder="직원 이름 작성">
+                                                    </div>
+                                                    <!--  직원 역할 작성 -->
+                                                    <div>
+                                                        <label for="input-staff-role">역할</label>
+                                                        <input  class="form-control" id="input-staff-role" placeholder="직원 역할 작성">
+                                                    </div>
+                                                    <!--  직원 권한 활성화 여부 -->
+                                                    <h5 style="font-weight: bold;">직원 권한 활성화 여부 선택</h5>
+                                                    <div style="display: flex; gap: 30px; justify-content: start;">
+                                                        <div>
+                                                            <label for="input-staff-unactive">on</label>
+                                                            <input type="radio" class="form-control" id="input-staff-unactive" name="staff_authority_status"
+                                                                   value=1 placeholder="직원 권한 활성화 여부">
+                                                        </div>
+                                                        <div>
+                                                            <label for="input-staff-active">off</label>
+                                                            <input type="radio" class="form-control" id="input-staff-active" name="staff_authority_status"
+                                                                   value=0 placeholder="직원 권한 활성화 여부">
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="submitBtn_white" data-dismiss="modal">닫기</button>
+                                    <button type="submit" class="submitBtn_black">편집하기</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 스토어 직원 추가 모달 끝 -->
+
+                    <!-- 스토어 직원 편집 모달 -->
+                    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editModalLabel" style="font-size: larger" >스토어 직원 편집</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <form>
+                                        <div id="edit-staff-box"  style="width: 570px; height: 300px; display: flex; flex-direction: column; justify-content: space-evenly; align-items: center">
+                                            <div id="edit-add-box" style=" height: 100px; display: flex; flex-direction: column; justify-content: space-evenly; align-items: center; gap:15px;" >
+                                                <form>
+                                                    <!--  직원 이름 작성-->
+                                                    <div>
+                                                        <label for="staff-name">이름</label>
+                                                        <input  class="form-control" id="staff-name" placeholder="직원 이름 작성" value="">
+                                                    </div>
+                                                    <!--  직원 역할 작성 -->
+                                                    <div>
+                                                        <label for="input-staff-role">역할</label>
+                                                        <input  class="form-control" id="staff-role" placeholder="직원 역할 작성">
+                                                    </div>
+                                                    <!--  직원 권한 활성화 여부 -->
+                                                    <h5 style="font-weight: bold;">직원 권한 활성화 여부 선택</h5>
+                                                    <div style="display: flex; gap: 30px; justify-content: start;">
+                                                        <div>
+                                                            <label for="input-staff-unactive">on</label>
+                                                            <input type="radio" class="form-control" id="staff-unactive" name="staff_authority_status"
+                                                                   value=1 placeholder="직원 권한 활성화 여부">
+                                                        </div>
+                                                        <div>
+                                                            <label for="input-staff-active">off</label>
+                                                            <input type="radio" class="form-control" id="staff-active" name="staff_authority_status"
+                                                                   value=0 placeholder="직원 권한 활성화 여부">
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="submitBtn_white" data-dismiss="modal">닫기</button>
+                                    <button type="submit" class="submitBtn_black">편집하기</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </th:block>
+                <!-- 사용자정의 contents end -->
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- /page content -->
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+
+</th:block>
+
+
+
+</html>

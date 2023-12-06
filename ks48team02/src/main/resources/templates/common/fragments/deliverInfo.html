@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:fragment="delriverInfo">
+
+    <div class="project-info-title"  style="margin: 50px 0 20px;">
+        <h5>배송 코드</h5>
+        <p style="color: var(--maincolor);">[[${getDeliveryByCode.orderDeliveryCode}]]</p>
+    </div>
+    <form >
+        <table id="deliveryInfo" class="settlement-log" style="border:none;">
+            <!-- contents -->
+            <tr>
+                <td >
+                    배송 유형
+                </td>
+                <td colspan="3" style="text-align: left !important;">
+                    <select name="deliveryCategory">
+                        <option value="defaultOrder" th:selected="${getDeliveryByCode.deliveryCategory == '일반 주문 배송'}">일반 주문 배송</option>
+                        <option value="swappingDelivery" th:selected="${getDeliveryByCode.deliveryCategory == '교환 배송'}">교환 배송</option>
+                        <option value="refundDelivery" th:selected="${getDeliveryByCode.deliveryCategory == '환불 배송'}">환불 배송</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    배송 상태
+                </td>
+                <td style="text-align: left !important;">
+                    <select name="deliveryState">
+                        <option value="1" th:selected="${getDeliveryByCode.deliveryState == '1'}">출고대기</option>
+                        <option value="2" th:selected="${getDeliveryByCode.deliveryState == '2'}">배송중</option>
+                        <option value="3" th:selected="${getDeliveryByCode.deliveryState == '3'}">배송완료</option>
+                    </select>
+                </td>
+                <td class="title-td">
+                    배송 완료 예정일
+                </td>
+                <td>
+<!--                    <input type="date" name="dueDateArrival" th:value="${getDeliveryByCode.dueDateArrival}">-->
+                    <input type="text" th:value="${getDeliveryByCode.dueDateArrival}" style="outline:none; padding: 5px 0 !important; border: none; color:var(--maincolor);" name="dda" readonly="readonly">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    교환 코드
+                </td>
+                <td style="text-align: left !important;">
+                    <a th:if="${getDeliveryByCode.switchingCode == null}">-</a>
+                    <a th:unless="${getDeliveryByCode.switchingCode == null}" class="detail-link" th:href="@{#}">[[${getDeliveryByCode.switchingCode}]]</a>
+                </td>
+                <td class="title-td">
+                    환불 코드
+                </td>
+                <td style="text-align: left !important;">
+                    <a th:if="${getDeliveryByCode.rewardRefundCode == null}">-</a>
+                    <a th:unless="${getDeliveryByCode.rewardRefundCode == null}" class="detail-link" th:href="@{#}">[[${getDeliveryByCode.rewardRefundCode}]]</a>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    택배사
+                </td>
+                <td style="text-align: left !important;">
+                    <select name="delivery_category">
+                        <option value="" th:selected="${getDeliveryByCode.deliveryCategoryCode == null}">=== 택배사를 선택해주세요 ===</option>
+                        <th:block th:each="dcl : ${deliveryCourierCategory}">
+                            <option th:value="${dcl.deliveryCategoryCode}" th:selected="${dcl.deliveryCategoryCode} == ${getDeliveryByCode.deliveryCategoryCode}">[[${dcl.deliveryCourierName}]]</option>
+                        </th:block>
+                    </select>
+                </td>
+                <td class="title-td">
+                    운송장번호
+                </td>
+                <td>
+                    <input type="text" name="numberInvoice" th:value="${getDeliveryByCode.numberInvoice}">
+                </td>
+            </tr>
+            <tr>
+                <td >
+                    배송 메세지
+                </td>
+                <td  colspan="3" style="text-align: left !important;">
+                    <select name="deliveryMessage" style="width:210px;">
+                        <option value="1" selected>문 앞에 두고 가주세요</option>
+                        <option value="2">배송 전에 연락 바랍니다</option>
+                        <option value="3">직접 받고 부재시 문 앞</option>
+                        <option value="4">부재시 경비실에 두고 가주세요</option>
+                        <option value="5">직접 입력</option>
+                    </select>
+                    <input type="text" width="700px" maxlength="20" placeholder="직접입력" name="deliveryMessageDirect" disabled>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    배송 시작일
+                </td>
+                <td style="text-align: left !important;">
+<!--                    <input type="date" name="deliveryStartDate" th:value="${getDeliveryByCode.deliveryStartDate}">-->
+                    <input type="text" th:value="${getDeliveryByCode.deliveryStartDate}" style="outline:none; padding: 5px 0 !important; border: none; color:var(--maincolor);" name="dsd" readonly="readonly">
+                </td>
+                <td class="title-td">
+                    배송 완료일
+                </td>
+                <td>
+<!--                    <input type="date" name="deliveryEndDate" th:value="${getDeliveryByCode.deliveryEndDate}">-->
+                    <input th:value="${getDeliveryByCode.deliveryEndDate}" type="text" style="outline:none; padding: 5px 0 !important; ; border: none; color:var(--maincolor);" name="ded" readonly="readonly">
+                </td>
+            </tr>
+        </table>
+    </form>
+    </th:block>
+
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/default}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>카테고리 수정</title>
+    <link rel="stylesheet" th:href="@{/admin/css/adminBoard.css}">
+    <style>
+        .tableForm{
+            width: 1000px;
+        }
+        .comment{
+            width: 800px;
+        }
+        .banner{
+            width: 200px;
+            background: #e5dddd;
+        }
+        form{
+        flex-basis: 400px;
+        background-color: #FFFFFF;
+        padding: 30px 25px 25px 30px;
+        border-radius: 16px;
+        box-shadow: 0px 0px 8px rgba(0,0,0,0.16);
+        }
+        .couponBtnArea{
+            width: 720px;
+            margin: 0 auto;
+            text-align: right;
+        }
+        .CouponBtn{
+            margin-top: 20px;
+            background-color: black;
+            font-size: 18px;
+            color: #EEE;
+            padding: 8px;
+            border-radius: 20px 20px 20px 20px;
+        }
+
+
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+
+        // 카테고리 수정
+        $(document).ready(function (){
+            $('#modifyCategoryForm').on('submit', function (e){ // $('#modifyCategoryForm') form Id 값 넣기
+                e.preventDefault();
+
+                var formData = $(this).serialize();
+                console.log(formData);
+
+                $.ajax({
+                    url: '/admin/site/categoryModify', // 서버에 보낼 URL
+                    type: 'POST', // HTTP 메서드
+                    data: formData, // form 데이터를 URL 쿼리 문자열로 변환
+                    dataType: 'JSON',
+                    success: function (response){ // 서버로부터 성공적인 응답 받을때 실행할 코드
+                        console.log(response);
+                        alert('카테고리가 성공적으로 수정 되었습니다.');
+                        window.location.href = '/admin/site/category';
+                    },
+                    error: function (error){ // 서버로부터 에러 응답을 받았을 때 실행할 코드
+                        console.log(error);
+                        alert('카테고리 수정에 실패 했습니다. 다시시도 해주세요.');
+
+                    }
+                })
+            })
+        })
+    </script>
+</head>
+<body>
+<th:block layout:fragment="customContents">
+    <div class="categoryModify">
+        <h1>카테고리 수정</h1>
+    </div>
+    <form id="modifyCategoryForm" th:action="@{/admin/site/categoryModify}" method="post">
+        <div class="section">
+            <h3>카테고리 수정</h3>
+        </div>
+
+        <table border="1" class="tableForm" th:each="tc:${categoryUpdate}">
+            <tbody class="contentForm">
+            <tr class="row-1">
+                <th class="banner" scope="row" th:name="totalCategoryCode">카테고리 코드</th>
+                <td><input type="text" class="comment" name="totalCategoryCode" th:value="${tc.totalCategoryCode}" readonly/></td>
+            </tr>
+            <tr class="row-2">
+                <th class="banner" scope="row" th:name="memberId">카테고리 등록 관리자</th>
+                <td><input type="text" class="comment" name="memberId" th:value="${tc.memberId}"/></td>
+            </tr>
+            <tr class="row-3">
+                <th class="banner" scope="row" th:name="projectPatition">분류</th>
+                <td><input type="text" class="comment" name="projectPatition" th:value="${tc.projectPatition}"/></td>
+            </tr>
+            <tr class="row-4">
+                <th class="banner" scope="row" th:name="categoryName">카테고리 이름</th>
+                <td><input type="text" class="comment" name="categoryName" th:value="${tc.categoryName}"/></td>
+            </tr>
+            <tr class="row-5">
+                <th class="banner" scope="row" th:name="categoryComment">분류 설명</th>
+                <td><input type="text" class="comment" name="categoryComment" th:value="${tc.categoryComment}"/></td>
+            </tr>
+            <tr class="row-6">
+                <th class="banner" scope="row" th:name="categoryUsageStatus">사용 여부</th>
+                <td><input type="text" class="comment" name="categoryUsageStatus" th:value="${tc.categoryUsageStatus}"></td>
+            </tr>
+            <tr class="row-7">
+                <th class="banner" scope="row" th:name="categoryRegDate">등록 일시</th>
+                <td><input type="date" class="comment" name="categoryRegDate" th:value="${tc.categoryRegDate}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="couponBtnArea">
+            <button type="submit" class="CouponBtn">수정</button>
+        </div>
+    </form>
+</th:block>
+
+
+
+</body>
+
+
+</html>

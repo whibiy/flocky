@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>공지사항 등록</title>
+    <link rel="stylesheet" th:href="@{/admin/css/boardAdd.css}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.11/summernote-bs4.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.11/summernote-bs4.js"></script>
+
+    <style>
+        .inputTitleText{
+            width: 100%;
+        }
+        .RW{
+            background: #e5dddd;
+            text-align: left;
+        }
+    </style>
+</head>
+
+
+<body>
+
+
+<th:block layout:fragment="customContents">
+
+    <form>
+        <div class="titleArea">
+            <h2>공지사항 등록</h2>
+        </div>
+
+        <div class="boardForm">
+            <table border="1">
+                <caption>공지사항 등록 폼</caption>
+                <colgroup>
+                    <col style="width: 190px">
+                    <col style="width: auto;">
+                </colgroup>
+
+                <tbody>
+                <form class="editForm">
+                    <div class="formText">
+                        <tr>
+                            <th scope="row" class="RW">제목</th>
+                            <td>
+                                <input id="subject" name="subject" class="inputTitleText" type="text">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="RW">내용</th>
+                            <td>
+                                <div id="summernote"></div>
+                                <script>
+                                    $('#summernote').summernote({
+                                        placeholder: '공지사항을 입력 해주세요.',
+                                        tabsize: 2,
+                                        height: 300,
+                                        width: 700
+                                    });
+                                </script>
+                            </td>
+                        </tr>
+                    </div>
+                </form>
+
+                </tbody>
+            </table>
+        </div>
+    </form>
+
+</th:block>
+    <div class="boardBtn">
+        <a href="#" class="cancel">취소</a> <a href="#" class="registration">글 등록</a>
+    </div>
+<script th:src="@{/admin/vendors/jquery/dist/jquery.min.js}"></script>
+<script>
+    // 취소 버튼 누르면 알림창
+    $('.cancel').click(function (e){
+        //  취소 누르면 뒤로가기
+        e.preventDefault();
+    if(confirm('정말 취소하시겠습니까?')){
+    // 확인 누르면 실행될 내용 작성
+    // 창이 사라진다.
+    console.log(11);
+    window.close();
+        }
+    })
+</script>
+</body>
+</html>

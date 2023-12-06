@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="searchFragment">
+    <form th:action="@{/admin/investment/search/incongruity-sectors}" method="get">
+
+        <div class="admin-content-wrapper form-table">
+            <table class="partition-select">
+                <tbody>
+                <tr>
+                    <td>
+                        기간
+                    </td>
+                    <td>
+                        <input type="date" name="amDateSettStartDate">
+                        <span> - </span>
+                        <input type="date" name="amDateSettEndDate">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        검색 키워드
+                    </td>
+                    <td>
+                        <select name="searchKey">
+                            <option value="incongruitySectorsCode">코드명</option>
+                            <option value="incongruitySectorsBusiness">부적합사유</option>
+                            <option value="memberId">아이디</option>
+                        </select>
+                        <input type="text" name="searchValue" placeholder="검색어를 입력해주세요."/>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="btn-area">
+                <button type="submit" class="submitBtn">검색</button>
+            </div>
+        </div>
+    </form>
+</div>
+</html>

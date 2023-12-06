@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{seller/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+
+    <style>
+        /*  검은 버튼  */
+        .submitBtn_black {
+            background: #191919;
+            transition: all .4s;
+            color: #fff;
+            display: inline-block;
+            text-decoration: none;
+            border: 1px solid #191919;
+            font-size: 12px;
+            transition: background 0.3s;
+        }
+
+        .submitBtn_black:hover {
+            background: var(--maincolor);
+            border: 1px solid var(--maincolor);
+        }
+
+        /* 흰 버튼 */
+        .submitBtn_white {
+            background: #fff;
+            padding: 7px 23px;
+            transition: all .4s;
+            color: #191919;
+            display: inline-block;
+            text-decoration: none;
+            border: 1px solid #191919;
+            font-size: 12px;
+            transition: background 0.3s;
+            margin-left: 10px;
+        }
+
+        .submitBtn_white:hover {
+            background: var(--maincolor);
+            border: 1px solid var(--maincolor);
+            color: #fff;
+        }
+
+
+        .staff-member {
+            width: 500px;
+            display: flex;
+            padding: 20px;
+            margin-bottom: 20px;
+            gap:10px;
+            border: 1.5px solid lightgrey;
+            border-radius: 10px;
+        }
+
+
+    </style>
+</head>
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/locales/bootstrap-datepicker.ko.min.js"></script>
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+
+        //유효성 검사 validationCheck 함수
+            function validationCheck(data) {
+                let isValid =true;
+                //1.인수 값이 객체일 경우
+                if(typeof data =='object') {
+                    $.each(data, function(){
+                        let checkValue = $(this).val();
+                        if(checkValue === null || checkValue === '' || checkValue === 'undefined') {
+                            isValid = false;
+                            let eleId = $(this).attr('id');
+                            let cate = $(`label[for="${eleId}"]`).text();
+                            alert(`${cate} 필수 입력 항목입니다.`);
+                            $(this).focus();
+                            return isValid;
+                        }
+                    });
+                    //2.인수 값이 객체가 아닐 경우
+                }else{
+                    if(data === null || data === '' || data === 'undefined') {
+                        isValid = false;
+                    }
+                }
+                return isValid;
+            }
+
+        // 기간 선택 min value setting
+        $('input[name="startDate"]').on('change', function(){
+            let startDate = $(this).val();
+            $('input[name="endDate"]').prop('min',startDate);
+        });
+
+        $('#preMemberAddBtn').click(function(){
+            let validCheck = $('#regForm').find('input');
+            let isValid = validationCheck(validCheck);
+            if(isValid && confirm('정말 추가하시겠습니까?')) {
+
+                let memberId = $('#preMemberId').val();
+                let startDate = $('#startDate').val();
+                let endDate = $('#endDate').val();
+
+                //가입된 회원인지 검사
+                const idCheck = $.ajax({
+                    method : "POST",
+                    url: "/seller/reward/products/preMemberIdCheck",
+                    data : {
+                        "memberId" : memberId
+                    },
+                    dataType : "json",
+                });
+                idCheck.done(function(data){
+                    if(data > 0) {
+                        //이미 등록된 회원인지 검사
+                        const regCheck = $.ajax({
+                            method : "POST",
+                            url: "/seller/reward/products/preMemberRegCheck",
+                            data : {
+                                "memberId" : memberId
+                            },
+                            dataType : "json",
+                        });
+                        regCheck.done(function(data){
+                            if(data > 0) {
+                                alert('이미 등록된 회원입니다.')
+                            } else {
+                                location.href = `/seller/reward/products/regPreMember?memberId=${memberId}&startDate=${startDate}&endDate=${endDate}`;
+                            }
+                        });
+                        regCheck.fail(function(err){
+                            console.log(err);
+                        })
+                    }else {
+                        alert('가입되지 않은 회원입니다.');
+                    }
+                });
+                idCheck.fail(function(err){
+                    console.log(err);
+                });
+            }
+        });
+
+        $('#preMemberDelBtn').click(function(){
+            let validCheck = $('#preMemberId');
+            let isValid = validationCheck(validCheck);
+            if(isValid && confirm('정말 삭제하시겠습니까?')) {
+
+                let memberId = $(validCheck).val();
+
+                const regCheck = $.ajax({
+                    method : "POST",
+                    url: "/seller/reward/products/preMemberRegCheck",
+                    data : {
+                        "memberId" : memberId
+                    },
+                    dataType : "json",
+                });
+                regCheck.done(function(data){
+                    if(data > 0) {
+                        location.href = `/seller/reward/products/delPreMember?memberId=${memberId}`;
+                    } else {
+                        alert('등록되지 않은 회원입니다.')
+                    }
+                });
+                regCheck.fail(function(err){
+                    console.log(err);
+                })
+            }
+        });
+
+    </script>
+</th:block>
+
+
+<!-- 사용자정의 contents start -->
+<th:block layout:fragment="customContents">
+    <div class="row">
+        <div class="mb-lg-3">
+            <div style="display: flex; flex-direction:column; align-items: start; gap: 10px; margin-left: 100px;">
+                <p class="form-label" style="font-size:larger; margin-left:10px">사전체험단 추가</p>
+                <div style="gap:10px;  border: lightgrey solid 1px; padding: 10px; border-radius: 10px; width: 320px">
+                    <div id="regForm" style="margin-left: 20px">
+                        <br>
+                        <label for="preMemberId" class="fw-bord text-dark">아이디</label>
+                        <br>
+                        <input type="text" class="form-control-sm" id="preMemberId" placeholder="사전체험단 아이디 입력" style="width: 200px">
+                        <br><br>
+                        <label class="fw-bord text-dark mt-lg-3">기간</label><br>
+                        <label hidden="hidden" for="startDate">시작 기간</label>
+                        <label hidden="hidden" for="endDate">종료 기간</label>
+                        <input type="date" name="startDate" id="startDate">
+                        <span> - </span>
+                        <input type="date" name="endDate" id="endDate">
+                    </div>
+                    <br>
+                    <div class="text-center">
+                        <button id="preMemberAddBtn" class="submitBtn_white" style="width:80px; height: 30px">등록</button>
+                        <button id="preMemberDelBtn" class="submitBtn_black" style="width:80px; height: 30px">삭제</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+
+        <!-- 스태프 목록  -->
+        <div class="staffList" style="display: flex; flex-direction: column; justify-content: space-evenly; margin-top: 30px; margin-left: 100px">
+                <p style="margin-left: 10px; font-size:larger;font-weight: bold;">사전체험단 회원 목록</p>
+
+                <ul>
+                    <li th:each="l : ${preMemberList}">
+                        <div class="staff-member">
+                            <div class="staff-row-name" style="width: 150px; display: flex; flex-direction: column;
+                                    align-items: center; justify-content: center;" >
+                                <strong class="staff-name" style="font-weight: bold; font-size:medium; margin-bottom: 10px" th:text="${l.memberName}">신형만</strong>
+                                <span th:text="${l.startDate}">2023-11-29</span> ~ <span th:text="${l.endDate}">2023-12-21</span>
+                            </div>
+                            <table>
+                                <tbody>
+                                <tr >
+                                    <th>아이디</th>
+                                    <td th:text="${l.memberId}">id005</td>
+                                </tr>
+                                <tr>
+                                    <th>연락처</th>
+                                    <td th:text="${l.mobile}">010-2758-6440</td>
+                                </tr>
+                                <tr>
+                                    <th>주소</th>
+                                    <td th:text="|${l.addr} ${l.addrDetail}|">들사평 1길 18 1434-27-27번지</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    <!-- 스토어 직원 추가 Modal -->
+    <div class="modal fade" id="submitModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel" style="font-size: larger" >스토어 직원 추가</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+
+
+
+</html>

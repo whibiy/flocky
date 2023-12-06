@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksmart.ks48team02.admin.mapper.donation.AdminDonationMapper">
+
+    <resultMap id="DonationResultMap" type="Donation">
+    <id property="donationCode" column="donation_code"></id>
+    <result property="storeName" column="store_name"></result>
+    <result property="memberId" column="member_id"></result>
+    <result property="donationCategoryCode" column="donation_category_code"></result>
+    <result property="donationJudgementReasonCode" column="donation_judgement_reason_code"></result>
+    <result property="adminMemberId" column="admin_member_id"></result>
+    <result property="donationSubject" column="donation_subject"></result>
+    <result property="donationContents" column="donation_contents"></result>
+    <result property="donationImage" column="donation_image"></result>
+    <result property="donationRegDate" column="donation_reg_date"></result>
+    <result property="donationStartDate" column="donation_start_date"></result>
+    <result property="donationEndDate" column="donation_end_date"></result>
+    <result property="donationAchievementMoney" column="donation_achievement_money"></result>
+    <result property="donationGoalMoney" column="donation_goal_money"></result>
+    <result property="donationAchievementPercent" column="donation_achievement_percent"></result>
+    <result property="donationJudgmentReasonDetail" column="donation_judgment_reason_detail"></result>
+    <result property="donationJudgementDate" column="donation_judgement_date"></result>
+    <result property="searchCount" column="search_count"></result>
+    <result property="donationCondition" column="donation_condition"></result>
+    </resultMap>
+
+    <select id="getDonationList" resultType="Donation">
+        SELECT
+            d.donation_code AS donationCode,
+            s.store_name AS storeName,
+            d.member_id AS memberId,
+            d.donation_judgement_reason_code AS donationJudgementReasonCode,
+            d.admin_member_id AS adminMemberId,
+            d.total_category_code AS total_category_code,
+            d.donation_subject AS donationSubject,
+            d.donation_contents AS donationContents,
+            d.donation_image AS donationImage,
+            d.donation_reg_date AS donationRegDate,
+            d.donation_start_date AS donationStartDate,
+            d.donation_end_date AS donationEndDate,
+            d.donation_achievement_money AS donationAchievementMoney,
+            d.donation_goal_money AS donationGoalMoney,
+            d.donation_achievement_percent AS donationAchievementPercent,
+            d.donation_judgment_reason_detail AS donationJudgmentReasonDetail,
+            d.donation_judgement_date AS donationJudgementDate,
+            d.search_count AS searchCount,
+            d.donation_condition AS donationCondition
+        FROM
+            donation as d
+            INNER JOIN
+            store AS s
+            ON
+            d.member_id = s.member_id
+        WHERE
+            d.donation_condition = 0;
+    </select>
+
+    <update id="judgementApprove" parameterType="String">
+        UPDATE
+            donation
+        SET
+            donation_condition = 1,
+            admin_member_id = #{adminId}
+        WHERE
+            donation_code = #{donationCode};
+    </update>
+
+    <update id="judgementReject" parameterType="String">
+        UPDATE
+            donation
+        SET
+            admin_member_id = #{adminId},
+            donation_judgement_reason_code = #{judgeRejectReason},
+            donation_judgment_reason_detail = #{judgeRejectReasonDetail},
+            donation_judgement_date = NOW(),
+            donation_condition = 2
+        WHERE
+            donation_code = #{donationCode};
+    </update>
+
+    <select id="judgementReason" resultType="DonationJudgementReason">
+        SELECT
+            donation_judgement_reason_code AS donationJudgementReasonCode,
+            admin_member_id AS adminMemberId,
+            donation_judgement_reason AS donationJudgementReason,
+            judgement_reason_reg_date AS judgementReasonRegDate
+        FROM
+            donation_judgement_reason
+    </select>
+
+    <select id="getAllprojectList" resultType="AllProjectList">
+        SELECT
+            d.donation_code AS projectCode,
+            d.donation_condition AS projectCondition,
+            d.member_id AS memberId,
+            d.donation_subject AS projectSubject,
+            s.store_name AS storeName,
+            d.donation_achievement_money AS projectAchievementMoney,
+            d.donation_goal_money AS projectGoalMoney,
+            d.donation_reg_date AS projectRegDate,
+            d.donation_end_date AS projectEndDate,
+            d.admin_member_id AS adminId
+        FROM
+            donation AS d
+        INNER join
+            store AS s
+        ON
+            d.store_code = s.store_code
+        UNION
+        SELECT
+            r.reward_project_code,
+            r.project_condition,
+            r.member_id,
+            r.project_subject,
+            r.reg_company,
+            r.project_achievement_money,
+            r.project_goal_money,
+            r.project_reg_date,
+            r.project_end_date,
+            r.admin_member_id
+        FROM
+            reward_project AS r
+        UNION
+        SELECT
+            i.investment_code,
+            i.invest_judge_situation,
+            i.member_id_seller,
+            i.investment_subject,
+            i.investment_company,
+            i.investment_amount,
+            i.investment_achievement_money,
+            i.investment_reg_date,
+            i.investment_deadline,
+            i.member_id
+        FROM
+            investment AS i;
+    </select>
+</mapper>

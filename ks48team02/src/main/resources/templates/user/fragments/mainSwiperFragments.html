@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+
+<!-- reward fragments -->
+<th:block th:fragment="rewardContentsSwiperSlide">
+	<section id="rewardProject" class="content-wrap scroll-action-area">
+		<div class="main-section container">
+			<h3 class="main-title">리워드 추천 프로젝트</h3>
+			<div class="swiper mySwiper contents-area">
+				<div class="swiper-wrapper" >
+					<div class="swiper-slide" th:unless="${rewardProjectList == null}" th:each="rl : ${rewardProjectList}">
+						<a th:href="@{/user/reward/detail(rewardProjectCode=${rl.rewardProjectCode}, searchCnt=true)}">
+							<div class="slide-thumb">
+								<div th:style="'background-image: url(' + |@{/summernoteImage/}${rl.projectThumbnailImage}| + '),url(' + |@{/user/images/no-image.svg}| + ');'"></div>
+
+							</div>
+							<div class="description">
+								<div class="product-main-title">[[${rl.projectSubject}]]</div>
+								<div class="product-detail-info">
+									<span class="funding-percent">
+										<em>[[${rl.projectAchievementPercent}]]</em>
+										%
+									</span>
+									<span class="category">
+										[[${rl.categoryName}]]
+										·
+										[[${rl.regCompany}]]
+									</span>
+								</div>
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="swiper-button-next"></div>
+			<div class="swiper-button-prev"></div>
+		</div>
+	</section>
+</th:block>
+
+<!-- donation fragments -->
+<th:block th:fragment="donationContentsSwiperSlide">
+	<section id="donationProject" class="content-wrap scroll-action-area">
+		<div class="main-section container">
+			<h3 class="main-title">기부 추천 프로젝트</h3>
+			<!-- Swiper -->
+			<div class="swiper mySwiper contents-area">
+				<div class="swiper-wrapper">
+					<div class="swiper-slide" th:unless="${donationPrjList == null}" th:each="dl : ${donationPrjList}">
+						<a th:href="@{/user/donation/detail(donationCode=${dl.donationCode})}">
+							<div class="slide-thumb">
+								<div th:style="'background-image: url(' + |@{/summernoteImage/}${dl.donationImage}| + '),url(' + |@{/user/images/no-image.svg}| + ');'"></div>
+							</div>
+							<div class="description">
+								<div class="product-main-title">[[${dl.donationSubject}]]</div>
+								<div class="product-detail-info">
+									<span class="funding-percent">
+										<em>[[${dl.donationAchievementPercent}]]</em>
+										%
+									</span>
+									<span class="category">
+										[[${dl.categoryName}]]
+										·
+										[[${dl.storeName}]]
+									</span>
+								</div>
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="swiper-button-next"></div>
+			<div class="swiper-button-prev"></div>
+		</div>
+
+	</section>
+</th:block>
+
+<!-- donation fragments -->
+<th:block th:fragment="investContentsSwiperSlide">
+	<section id="investProject" class="content-wrap scroll-action-area">
+		<div class="main-section container">
+			<h3 class="main-title">투자 추천 프로젝트</h3>
+			<!-- Swiper -->
+			<div class="swiper mySwiper contents-area">
+				<div class="swiper-wrapper">
+					<div class="swiper-slide" th:unless="${investPrjList == null}" th:each="il : ${investPrjList}">
+						<a th:href="@{/user/investment/detail/main(investmentCode=${il.investmentCode})}">
+							<div class="slide-thumb">
+								<div th:style="'background-image: url(' + |@{/summernoteImage/}${il.investmentImage}| + '),url(' + |@{/user/images/no-image.svg}| + ');'"></div>
+							</div>
+							<div class="description">
+								<div class="product-main-title">[[${il.investmentSubject}]]</div>
+								<div class="product-detail-info">
+									<span class="funding-percent">
+										<em>[[${il.investAchievementPercent}]]</em>
+										%
+									</span>
+									<span class="category">
+										[[${il.categoryName}]]
+										·
+										[[${il.investmentCompany}]]
+									</span>
+								</div>
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="swiper-button-next"></div>
+			<div class="swiper-button-prev"></div>
+		</div>
+
+	</section>
+
+</th:block>
+
+<th:block th:fragment="storeSwiperFragment">
+	<section id="storeInnerGroup" class="content-wrap scroll-action-area">
+		<div class="main-section container">
+			<h3 class="main-title">스토어 추천</h3>
+			<!-- Swiper -->
+			<div class="swiper mySwiper contents-area">
+				<div class="swiper-wrapper">
+					<div class="swiper-slide" th:unless="${storeList == null}" th:each="sl : ${storeList}">
+						<th:block  th:switch="${sl.projectType}">
+							<a th:case="'리워드'" th:href="@{/user/reward/detail(rewardProjectCode=${sl.projectCode}, searchCnt=true)}">
+								<div class="slide-thumb">
+									<div th:style="'background-image: url(' + |@{/summernoteImage/}${sl.projectImage}| + '),url(' + |@{/user/images/no-image.svg}| + ');'"></div>
+								</div>
+								<div class="description">
+									<div class="store-name">
+										[[${sl.storeName}]]
+									</div>
+									<div class="product-main-title">[[${sl.subject}]]</div>
+									<div class="product-detail-info">
+									<span class="funding-percent">
+										<em>[[${sl.achievementPercent}]]</em>
+										%
+									</span>
+										<span class="category">
+										[[${sl.categoryName}]]
+
+									</span>
+									</div>
+								</div>
+							</a>
+							<a th:case="'기부'" th:href="@{/user/donation/detail(donationCode=${sl.projectCode})}">
+								<div class="slide-thumb">
+									<div th:style="'background-image: url(' + |@{/summernoteImage/}${sl.projectImage}| + '),url(' + |@{/user/images/no-image.svg}| + ');'"></div>
+								</div>
+								<div class="description">
+									<div class="store-name">
+										[[${sl.storeName}]]
+									</div>
+									<div class="product-main-title">[[${sl.subject}]]</div>
+									<div class="product-detail-info">
+									<span class="funding-percent">
+										<em>[[${sl.achievementPercent}]]</em>
+										%
+									</span>
+										<span class="category">
+										[[${sl.categoryName}]]
+
+									</span>
+									</div>
+								</div>
+							</a>
+							<a th:case="'투자'" th:href="@{/user/investment/detail/main(investmentCode=${sl.projectCode})}">
+								<div class="slide-thumb">
+									<div th:style="'background-image: url(' + |@{/summernoteImage/}${sl.projectImage}| + '),url(' + |@{/user/images/no-image.svg}| + ');'"></div>
+								</div>
+								<div class="description">
+									<div class="store-name">
+										[[${sl.storeName}]]
+									</div>
+									<div class="product-main-title">[[${sl.subject}]]</div>
+									<div class="product-detail-info">
+									<span class="funding-percent">
+										<em>[[${sl.achievementPercent}]]</em>
+										%
+									</span>
+										<span class="category">
+										[[${sl.categoryName}]]
+
+									</span>
+									</div>
+								</div>
+							</a>
+						</th:block>
+						</div>
+				</div>
+			</div>
+			<div class="swiper-button-next"></div>
+			<div class="swiper-button-prev"></div>
+		</div>
+
+	</section>
+</th:block>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{seller/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+        // 현재 URL 가져오기
+        let currentUrl = window.location.href;
+
+        // 특정 키와 값 설정
+        let searchKey = 'searchKey';
+        let searchValue = 'searchValue';
+        let amDateSettStartDate = 'amDateSettStartDate';
+        let amDateSettEndDate = 'amDateSettEndDate';
+        let searchSelectValue = 'searchSelectValue';
+        let currentPage = 'currentPage';
+        let lastPage = 'lastPage';
+        let startPageNum = 'startPageNum';
+        let endPageNum = 'endPageNum';
+        let security = 'security';
+
+        // URL 파싱하여 쿼리스트링 맵으로 변환
+        let urlParams = new URLSearchParams(window.location.search);
+
+        // 특정 키와 값 제거
+        urlParams.delete(searchKey);
+        urlParams.delete(searchValue);
+        urlParams.delete(amDateSettStartDate);
+        urlParams.delete(amDateSettEndDate);
+        urlParams.delete(searchSelectValue);
+        urlParams.delete(currentPage);
+        urlParams.delete(lastPage);
+        urlParams.delete(startPageNum);
+        urlParams.delete(endPageNum);
+        urlParams.delete(security);
+
+        // 수정된 쿼리스트링을 URL에 반영
+        let newUrl = currentUrl.split('?')[0] + '?' + urlParams.toString();
+
+        if (window.location.href !== newUrl) {
+
+            // history.replaceState를 사용하여 주소창에서 쿼리스트링 숨기기
+            history.replaceState({}, document.title, newUrl);
+        }
+    </script>
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+
+    <div th:include="~{admin/judgement/investment/search/invest_jduge_search :: searchFragment}"></div>
+    <br>
+    <div class="admin-content-wrapper">
+        <table>
+            <thead>
+            <tr>
+                <th>운영 후 투자자 손익 코드</th>
+                <th>투자펀딩 공고코드</th>
+                <th>투자펀딩후 진행정보 코드</th>
+                <th>총 수익</th>
+                <th>주가 수익</th>
+                <th>주가수익률</th>
+                <th>배당수익</th>
+                <th>배당수익률</th>
+                <th>주당수익</th>
+                <th>주식구입수</th>
+                <th>주당금액</th>
+                <th>결제금액</th>
+                <th>수익기준일</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${customerInvestList == null}">
+                <td colspan="15">운영 후 투자자 손익 목록이 없습니다.</td>
+            </tr>
+            <tr th:unless="${customerInvestList == null}" th:each="l : ${customerInvestList}">
+                <td>
+                    <a th:href="@{/seller/investment/view/customer-invest(customerInvestCode=${l.customerInvestCode})}"
+                       th:text="${l.afterFundrevenueCode}"></a>
+                </td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td th:text="${l}"></td>
+                <td>
+                    <a th:href="@{/seller/investment/update/customer-invest(customerInvestCode=${l.customerInvestCode})}">수정</a>
+                </td>
+                <td>
+                    <a th:href="@{/seller/investment/delete/customer-invest(customerInvestCode=${l.customerInvestCode})}">삭제</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+
+        <div class="board-page-area">
+            <div class="list-controller-inner">
+                <ul>
+                    <li class="link-active"><a th:href="@{#}">1</a></li>
+                    <li><a th:href="@{#}">2</a></li>
+                    <li><a th:href="@{#}">3</a></li>
+                    <li><a th:href="@{#}">4</a></li>
+                    <li><a th:href="@{#}">5</a></li>
+                    <li><a th:href="@{#}">6</a></li>
+                </ul>
+                <div class="list-btn-area">
+                    <button class="prev-transfer">
+                        <span>prev</span>
+                    </button>
+                    <button class="next-transfer">
+                        <span>next</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+<!--    <div class="btn-area">-->
+<!--        <ul>-->
+<!--            <li>-->
+<!--                <button type="button" class="submitBtn"-->
+<!--                        th:onclick="|location.href='@{/seller/investment/insert/customer-invest}'|">-->
+<!--                    등록하기-->
+<!--                </button>-->
+<!--            </li>-->
+<!--        </ul>-->
+<!--    </div>-->
+
+</th:block>
+</html>

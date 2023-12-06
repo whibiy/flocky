@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <style>
+        #ftco-navbar {
+            background-color: white; !important;
+        }
+
+        .container {
+            flex-direction: row;
+            align-items: baseline; !important;
+            justify-content: space-between;
+            margin-top: 0;
+            margin-bottom: 0 ;
+
+        }
+
+        .left-empty-space {
+            color:white;
+            width: 132px;
+            height: 40px;
+        }
+
+        #logo-container {
+            padding-left: 0; !important;
+        }
+
+        .top-right-conts {
+          padding-right: 0; !important;
+        }
+        .login-logo {
+            position: relative;
+        }
+        .login-logo .top-left-conts {
+            position: absolute;
+            left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .navbar>.container {
+            justify-content: flex-end;
+
+        }
+        .user-connection-menu {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+
+
+<nav class="login-logo navbar navbar-expand-lg ftco_navbar ftco-navbar-light" id="ftco-navbar " th:fragment="semiheaderNavFragment">
+<div class="container">
+
+    <div class="top-left-conts" id="logo-container">
+        <h1><a class="navbar-brand" th:href="@{/user}"></a></h1>
+    </div>
+    <div class="top-right-conts">
+        <ul class="user-connection-menu">
+            <li><a th:href="@{/user/account/login}">로그인</a></li>
+            <li><a th:href="@{/user/account}">회원가입</a></li>
+        </ul>
+    </div>
+</div>
+</nav>
+
+
+<!-- -->
+
+
+
+</html>

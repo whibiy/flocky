@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{seller/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <script th:src="@{/admin/js/settlement/adminCustomJs.js}"></script>
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script type="text/javascript">
+        // 기간 선택 min value setting
+        $('input[name="amDateSettStartDate"]').on('change', function(){
+            let startDate = $(this).val();
+            $('input[name="amDateSettEndDate"]').prop('min',startDate);
+        });
+
+
+
+
+        let startDateValue = startDate(nowDateSet);
+        let endDateValue = `${nowDateSet.getFullYear()}-${String(nowDateSet.getMonth() + 1).padStart(2, '0')}-${String(nowDateSet.getDate()).padStart(2, '0')}`;
+
+        console.log(startDateValue, '<-- start value');
+        console.log(endDateValue, '<-- end value');
+
+        $('input[name="amDateSettStartDate"]').val(startDateValue);
+        $('input[name="amDateSettEndDate"]').val(endDateValue);
+
+
+
+
+
+        // loaded category checkbox all checked
+        const $categoryEls = $('.order-category-select input');
+        $($categoryEls).prop('checked', true);
+    </script>
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <div class="admin-content-wrapper form-table">
+        <form id="amYearChartForm" method="get">
+            <table class="partition-select">
+                <tbody>
+                    <tr>
+                        <td>
+                            기간
+                        </td>
+                        <td>
+                            <input type="date" name="amDateSettStartDate" value="">
+                            <span> - </span>
+                            <input type="date" name="amDateSettEndDate" value="">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            주문 상태
+                        </td>
+                        <td class="order-category-select">
+                            <ul>
+                                <li>
+                                    <input id="projecting" type="checkbox" name="">
+                                    <label for="projecting">프로젝트 공고중</label>
+                                </li>
+                                <li>
+                                    <input id="projectCompleted" type="checkbox" name="">
+                                    <label for="projectCompleted">프로젝트 성공</label>
+                                </li>
+                                <li>
+                                    <input id="projectFail" type="checkbox" name="">
+                                    <label for="projectFail">프로젝트 실패</label>
+                                </li>
+                                <li>
+                                    <input id="orderCompleted" type="checkbox" name="">
+                                    <label for="orderCompleted">주문 확정</label>
+                                </li>
+                                <li>
+                                    <input id="refunting" type="checkbox" name="">
+                                    <label for="refunting">환불 처리중</label>
+                                </li>
+                                <li>
+                                    <input id="refundCompleted" type="checkbox" name="">
+                                    <label for="refundCompleted">환불 완료</label>
+                                </li>
+                                <li>
+                                    <input id="swapping" type="checkbox" name="">
+                                    <label for="swapping">교환 처리중</label>
+                                </li>
+                                <li>
+                                    <input id="swappingCompleted" type="checkbox" name="">
+                                    <label for="swappingCompleted">교환 완료</label>
+                                </li>
+                                <li>
+                                    <input id="orderCancle" type="checkbox" name="">
+                                    <label for="orderCancle">주문 취소</label>
+                                </li>
+                            </ul>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            검색 키워드
+                        </td>
+                        <td class="order-category-select">
+                            <select name="searchKey">
+                                <option value="total">전체</option>
+                                <option value="orderCode">주문코드</option>
+                                <option value="orderName">주문자명</option>
+                                <option value="orderId">주문아이디</option>
+                                <option value="projectName">공고명</option>
+                            </select>
+                            <input type="search" name="searchValue">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="btn-area">
+                <button type="button" class="submitBtn">검색</button>
+            </div>
+        </form>
+    </div>
+    <div class="title-wrap">
+        <h4 class="admin-content-title">주문 목록</h4>
+        <div class="btnArea">
+            <button type="button" class="printBtn"><span>액셀 다운로드</span></button>
+        </div>
+    </div>
+    <div class="admin-content-wrapper" style="overflow-x: hidden;">
+        <div>
+            <!-- select are -->
+            <div class="data-info">
+                <div class="list-count-area">
+                    <ul>
+                        <li>주문 총 <span class="count-data total-list">0</span>건</li>
+                        <li>선택 항목 총 <span class="count-data select-list-count">0</span>건</li>
+                    </ul>
+                </div>
+                <div class="list-count-selector">
+                    <select name="orderby">
+                        <option value="order_d">주문일 역순</option>
+                        <option value="order_a">주문일 순</option>
+                        <option>-----------------</option>
+                        <option value="order_name_d">주문자 역순</option>
+                        <option value="order_name_a">주문자 역순</option>
+                        <option>-----------------</option>
+                        <option value="projecting_o">프로젝트 공고중</option>
+                        <option value="projectFail_o">프로젝트 실패</option>
+                        <option value="deliveryWait_o">배송대기중</option>
+                        <option value="delivery_o">배송중</option>
+                        <option value="deliveryCompleted_o">배송완료</option>
+                        <option value="swapping_o">교환 신청</option>
+                        <option value="refunding_o">환불 신청</option>
+                        <option value="orderCompleted">주문확정</option>
+                        <option value="refund_o">환불</option>
+                    </select>
+                    <select name="count-select">
+                        <option value="15">15개씩 보기</option>
+                        <option value="20">20개씩 보기</option>
+                        <option value="30">30개씩 보기</option>
+                    </select>
+                </div>
+            </div>
+            <!-- contents area -->
+            <form id="orderListForm">
+                <table class="settlement-log">
+                    <thead>
+                        <tr>
+                        <th style="width:5%;">
+                            <input type="checkbox" name="allSelect" id="allSelectBtn">
+                        </th>
+                        <th style="width:12%;">주문 관리코드</th>
+                        <th style="width:10%;">주문 일시</th>
+                        <th style="width:5%;">주문자</th>
+                        <th style="width:10%;">주문 공고</th>
+                        <th style="width:20%;">
+                            주문 옵션
+                        </th>
+                        <th style="width:5%;">주문 상태</th>
+
+                        <th style="width:13%;">주문 금액</th>
+                        <th style="width:8%;">주문 확정 일시</th>
+                        <th style="width:8%;">주문 취소 일시</th>
+                        <th style="width:8%;">배송 코드</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 조회 결과 없음 -->
+                        <tr style="display:none;">
+                            <td colspan="10" style="text-align: center; padding: 30px 0;">검색 결과가 없습니다.</td>
+                        </tr>
+                        <!-- 조회 결과 contents -->
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                            </td>
+                            <td  class="table-data-center">
+                                2023-10-20 00:00
+                            </td>
+                            <td class="table-data-center">
+                                신형만
+                            </td>
+                            <td >
+                                [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛 [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛
+                            </td>
+                            <td >
+                                [얼리버드 기념] 멋진 타블렛 + 타블렛 전용 클리너 500ml 사은품 500명 한정 증정
+                            </td>
+                            <td>
+                                공고중
+                            </td>
+
+                            <td  class="table-data-center">
+                                <span class="order-pay">35,000</span> 원
+                            </td>
+
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                <a class="table-detail-btn" th:href="@{/seller/reword/order/detail}">배송정보</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                            </td>
+                            <td  class="table-data-center">
+                                2023-10-20 00:00
+                            </td>
+                            <td class="table-data-center">
+                                신형만
+                            </td>
+                            <td >
+                                [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛 [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛
+                            </td>
+                            <td >
+                                [얼리버드 기념] 멋진 타블렛 + 타블렛 전용 클리너 500ml 사은품 500명 한정 증정
+                            </td>
+                            <td>
+                                공고중
+                            </td>
+
+                            <td  class="table-data-center">
+                                <span class="order-pay">35,000</span> 원
+                            </td>
+
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                <a class="table-detail-btn" th:href="@{/seller/reword/order/detail}">배송정보</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                            </td>
+                            <td  class="table-data-center">
+                                2023-10-20 00:00
+                            </td>
+                            <td class="table-data-center">
+                                신형만
+                            </td>
+                            <td >
+                                [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛 [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛
+                            </td>
+                            <td >
+                                [얼리버드 기념] 멋진 타블렛 + 타블렛 전용 클리너 500ml 사은품 500명 한정 증정
+                            </td>
+                            <td>
+                                공고중
+                            </td>
+
+                            <td  class="table-data-center">
+                                <span class="order-pay">35,000</span> 원
+                            </td>
+
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                <a class="table-detail-btn" th:href="@{/seller/reword/order/detail}">배송정보</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                            </td>
+                            <td  class="table-data-center">
+                                2023-10-20 00:00
+                            </td>
+                            <td class="table-data-center">
+                                신형만
+                            </td>
+                            <td >
+                                [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛 [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛
+                            </td>
+                            <td >
+                                [얼리버드 기념] 멋진 타블렛 + 타블렛 전용 클리너 500ml 사은품 500명 한정 증정
+                            </td>
+                            <td>
+                                공고중
+                            </td>
+
+                            <td  class="table-data-center">
+                                <span class="order-pay">35,000</span> 원
+                            </td>
+
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                <a class="table-detail-btn" th:href="@{/seller/reword/order/detail}">배송정보</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                            </td>
+                            <td  class="table-data-center">
+                                2023-10-20 00:00
+                            </td>
+                            <td class="table-data-center">
+                                신형만
+                            </td>
+                            <td >
+                                [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛 [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛
+                            </td>
+                            <td >
+                                [얼리버드 기념] 멋진 타블렛 + 타블렛 전용 클리너 500ml 사은품 500명 한정 증정
+                            </td>
+                            <td>
+                                공고중
+                            </td>
+
+                            <td  class="table-data-center">
+                                <span class="order-pay">35,000</span> 원
+                            </td>
+
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                <a class="table-detail-btn" th:href="@{/seller/reword/order/detail}">배송정보</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                            </td>
+                            <td  class="table-data-center">
+                                2023-10-20 00:00
+                            </td>
+                            <td class="table-data-center">
+                                신형만
+                            </td>
+                            <td >
+                                [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛 [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛
+                            </td>
+                            <td >
+                                [얼리버드 기념] 멋진 타블렛 + 타블렛 전용 클리너 500ml 사은품 500명 한정 증정
+                            </td>
+                            <td>
+                                공고중
+                            </td>
+
+                            <td  class="table-data-center">
+                                <span class="order-pay">35,000</span> 원
+                            </td>
+
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                <a class="table-detail-btn" th:href="@{/seller/reword/order/detail}">배송정보</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                            </td>
+                            <td  class="table-data-center">
+                                2023-10-20 00:00
+                            </td>
+                            <td class="table-data-center">
+                                신형만
+                            </td>
+                            <td >
+                                [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛 [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛
+                            </td>
+                            <td >
+                                [얼리버드 기념] 멋진 타블렛 + 타블렛 전용 클리너 500ml 사은품 500명 한정 증정
+                            </td>
+                            <td>
+                                공고중
+                            </td>
+
+                            <td  class="table-data-center">
+                                <span class="order-pay">35,000</span> 원
+                            </td>
+
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                <a class="table-detail-btn" th:href="@{/seller/reword/order/detail}">배송정보</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                            </td>
+                            <td  class="table-data-center">
+                                2023-10-20 00:00
+                            </td>
+                            <td class="table-data-center">
+                                신형만
+                            </td>
+                            <td >
+                                [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛 [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛
+                            </td>
+                            <td >
+                                [얼리버드 기념] 멋진 타블렛 + 타블렛 전용 클리너 500ml 사은품 500명 한정 증정
+                            </td>
+                            <td>
+                                공고중
+                            </td>
+
+                            <td  class="table-data-center">
+                                <span class="order-pay">35,000</span> 원
+                            </td>
+
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                <a class="table-detail-btn" th:href="@{/seller/reword/order/detail}">배송정보</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                            </td>
+                            <td  class="table-data-center">
+                                2023-10-20 00:00
+                            </td>
+                            <td class="table-data-center">
+                                신형만
+                            </td>
+                            <td >
+                                [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛 [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛
+                            </td>
+                            <td >
+                                [얼리버드 기념] 멋진 타블렛 + 타블렛 전용 클리너 500ml 사은품 500명 한정 증정
+                            </td>
+                            <td>
+                                공고중
+                            </td>
+
+                            <td  class="table-data-center">
+                                <span class="order-pay">35,000</span> 원
+                            </td>
+
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                <a class="table-detail-btn" th:href="@{/seller/reword/order/detail}">배송정보</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                            </td>
+                            <td  class="table-data-center">
+                                2023-10-20 00:00
+                            </td>
+                            <td class="table-data-center">
+                                신형만
+                            </td>
+                            <td >
+                                [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛 [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛
+                            </td>
+                            <td >
+                                [얼리버드 기념] 멋진 타블렛 + 타블렛 전용 클리너 500ml 사은품 500명 한정 증정
+                            </td>
+                            <td>
+                                공고중
+                            </td>
+
+                            <td  class="table-data-center">
+                                <span class="order-pay">35,000</span> 원
+                            </td>
+
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                <a class="table-detail-btn" th:href="@{/seller/reword/order/detail}">배송정보</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                            </td>
+                            <td  class="table-data-center">
+                                2023-10-20 00:00
+                            </td>
+                            <td class="table-data-center">
+                                신형만
+                            </td>
+                            <td >
+                                [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛 [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛
+                            </td>
+                            <td >
+                                [얼리버드 기념] 멋진 타블렛 + 타블렛 전용 클리너 500ml 사은품 500명 한정 증정
+                            </td>
+                            <td>
+                                공고중
+                            </td>
+
+                            <td  class="table-data-center">
+                                <span class="order-pay">35,000</span> 원
+                            </td>
+
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                <a class="table-detail-btn" th:href="@{/seller/reword/order/detail}">배송정보</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                            </td>
+                            <td  class="table-data-center">
+                                2023-10-20 00:00
+                            </td>
+                            <td class="table-data-center">
+                                신형만
+                            </td>
+                            <td >
+                                [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛 [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛
+                            </td>
+                            <td >
+                                [얼리버드 기념] 멋진 타블렛 + 타블렛 전용 클리너 500ml 사은품 500명 한정 증정
+                            </td>
+                            <td>
+                                공고중
+                            </td>
+
+                            <td  class="table-data-center">
+                                <span class="order-pay">35,000</span> 원
+                            </td>
+
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                <a class="table-detail-btn" th:href="@{/seller/reword/order/detail}">배송정보</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                            </td>
+                            <td  class="table-data-center">
+                                2023-10-20 00:00
+                            </td>
+                            <td class="table-data-center">
+                                신형만
+                            </td>
+                            <td >
+                                [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛 [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛
+                            </td>
+                            <td >
+                                [얼리버드 기념] 멋진 타블렛 + 타블렛 전용 클리너 500ml 사은품 500명 한정 증정
+                            </td>
+                            <td>
+                                공고중
+                            </td>
+
+                            <td  class="table-data-center">
+                                <span class="order-pay">35,000</span> 원
+                            </td>
+
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                <a class="table-detail-btn" th:href="@{/seller/reword/order/detail}">배송정보</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                            </td>
+                            <td  class="table-data-center">
+                                2023-10-20 00:00
+                            </td>
+                            <td class="table-data-center">
+                                신형만
+                            </td>
+                            <td >
+                                [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛 [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛
+                            </td>
+                            <td >
+                                [얼리버드 기념] 멋진 타블렛 + 타블렛 전용 클리너 500ml 사은품 500명 한정 증정
+                            </td>
+                            <td>
+                                공고중
+                            </td>
+
+                            <td  class="table-data-center">
+                                <span class="order-pay">35,000</span> 원
+                            </td>
+
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                <a class="table-detail-btn" th:href="@{/seller/reword/order/detail}">배송정보</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                            </td>
+                            <td  class="table-data-center">
+                                2023-10-20 00:00
+                            </td>
+                            <td class="table-data-center">
+                                신형만
+                            </td>
+                            <td >
+                                [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛 [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛
+                            </td>
+                            <td >
+                                [얼리버드 기념] 멋진 타블렛 + 타블렛 전용 클리너 500ml 사은품 500명 한정 증정
+                            </td>
+                            <td>
+                                공고중
+                            </td>
+
+                            <td  class="table-data-center">
+                                <span class="order-pay">35,000</span> 원
+                            </td>
+
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                <a class="table-detail-btn" th:href="@{/seller/reword/order/detail}">배송정보</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+                            </td>
+                            <td  class="table-data-center">
+                                2023-10-20 00:00
+                            </td>
+                            <td class="table-data-center">
+                                신형만
+                            </td>
+                            <td >
+                                [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛 [드디어 국내 상륙] 전문가 극찬한 매직패드 ! 멋진 타블렛
+                            </td>
+                            <td >
+                                [얼리버드 기념] 멋진 타블렛 + 타블렛 전용 클리너 500ml 사은품 500명 한정 증정
+                            </td>
+                            <td>
+                                공고중
+                            </td>
+
+                            <td  class="table-data-center">
+                                <span class="order-pay">35,000</span> 원
+                            </td>
+
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                -
+                            </td>
+                            <td class="table-data-center">
+                                <a class="table-detail-btn" th:href="@{/seller/reword/order/detail}">배송정보</a>
+                            </td>
+                        </tr>
+
+
+
+
+
+                    </tbody>
+                </table>
+            </form>
+            <!-- list pager -->
+            <div class="board-page-area">
+                <div class="list-controller-inner">
+                    <ul>
+                        <li class="link-active"><a th:href="@{#}">1</a></li>
+                        <li><a th:href="@{#}">2</a></li>
+                        <li><a th:href="@{#}">3</a></li>
+                        <li><a th:href="@{#}">4</a></li>
+                        <li><a th:href="@{#}">5</a></li>
+                        <li><a th:href="@{#}">6</a></li>
+                    </ul>
+                    <div class="list-btn-area">
+                        <button class="prev-transfer">
+                            <span>prev</span>
+                        </button>
+                        <button class="next-transfer">
+                            <span>next</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</th:block>
+</body>
+</html>

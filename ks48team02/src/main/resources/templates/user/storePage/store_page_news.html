@@ -1,0 +1,68 @@
+<!doctype html>
+
+<html xmlns:th="http://www.thymeleaf.org/" lang="ko">
+<body>
+
+<div th:fragment="news" class="tab-pane fade show active" id="news" role="tabpanel" aria-labelledby="news-tab" style="padding: 20px;">
+    <!-- tab 내부 타이틀 영역 -->
+    <h5 style="font-weight: bold;">스토어 소식</h5>
+
+    <!--  tab 내부 본문 영역 -->
+    <div style="display : flex;flex-direction: column; padding: 30px; align-items: center;">
+
+        <div class="bodyContainer">
+            <!-- 스토어 새소식 리스트 항목 -->
+            <div class="contentsContainer">
+                <div>
+                    <!-- 스토어 새소식 -->
+                    <div class="store-news" th:if="${newsList != null}" th:each="l : ${newsList}">
+                        <!-- 게시 날짜  -->
+                        <div>
+                            <p th:text="${l.createdDatetime}">1주일 전</p>
+                            <p th:text="${#strings.substring(l.createdDatetime, 0, 10)}">2023-10-10</p>
+                            <p th:text="${currentDate}"></p>
+                            <h5>daysAgoMap</h5>
+
+                            <div>
+                                <span th:text="${daysAgo}"></span>
+                                <span th:text="${daysAgoMap}"></span>
+                                <h5>---currentDaysAgo---</h5>
+                                <th:block th:with="currentDaysAgo = ${daysAgoMap[l]}">
+                                    <span th:text="${currentDaysAgo}"></span>
+                                    <pre th:utext="'currentDaysAgo: ' + ${currentDaysAgo}" />
+
+                                    <span th:if="${currentDaysAgo == 0}" th:text="오늘">오늘</span>
+                                    <span th:if="${currentDaysAgo == 1}" th:text="어제">어제</span>
+                                    <span th:if="${currentDaysAgo > 1}" th:text="${currentDaysAgo + '일 전'}"></span>
+                                </th:block>
+                            </div>
+
+                        </div>
+                        <!-- 이미지  -->
+                        <div style="display: flex; justify-content: center; margin-top: 10px; margin-bottom: 10px;">
+                            <img style="width: 250px; height: 250px;" src=""
+                                 alt="...">
+                        </div >
+                        <!-- 스토어 새소식 text -->
+                        <div>
+                            <div>
+                                <strong th:text="${l.storeNewsTitle}"></strong>
+                            </div>
+                            <div >
+                                <p th:text="${l.storeNewsContents}"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="store-news" th:if="${newsList == null}">
+                        <div style="display: flex; justify-content: center; align-items: center; margin-top: 40px; margin-bottom: 10px; ">
+                            <h5 style="color: dimgrey;" >새소식이 없습니다.</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

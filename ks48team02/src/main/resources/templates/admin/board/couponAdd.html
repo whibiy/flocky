@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/default}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>쿠폰 등록</title>
+    <link rel="stylesheet" th:href="@{/admin/css/couponAdd.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        .couponAdd{
+            font-size: 28px;
+        }
+        .banner{
+            width: 200px;
+            background: #e5dddd;
+        }
+        .count{
+            width: 200px;
+        }
+        .comment{
+            width: 700px;
+        }
+        .mainContent{
+            width: 900px;
+            margin: 0 auto;
+        }
+        .couponBtnArea{
+            text-align: right;
+        }
+        .CouponBtn{
+            margin-top: 20px;
+            background-color: black;
+            font-size: 18px;
+            color: #EEE;
+            padding: 8px;
+            border-radius: 20px 20px 20px 20px;
+        }
+        .discount-container {
+            display: flex;
+            gap: 8px;
+        }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+
+    <script>
+        window.onload = function() {
+            var discountTypeSelect = document.querySelector('.discountType');
+            var discountRateInput = document.querySelector('.discountRate');
+            var discountAmountInput = document.querySelector('.discountAmount');
+
+            discountTypeSelect.onchange = function() {
+                if(this.value === 'A') {
+                    discountRateInput.style.display = 'block';
+                    discountAmountInput.style.display = 'none';
+                } else if(this.value === 'B') {
+                    discountRateInput.style.display = 'none';
+                    discountAmountInput.style.display = 'block';
+                }
+            };
+        };
+
+        // 쿠폰 수정 기능
+            $(document).ready(function() {
+
+                $('.CouponBtn').on('click', function () {
+                    const formInputs = $('#modifyCouponForm input');
+
+                    const formDataObj = [...formInputs].reduce((acc, cur) => {
+                        let objKey = $(cur).attr('name');
+                        let objValue = $(cur).val();
+                        acc[objKey] = objValue;
+                        return acc
+                    }, {});
+                    console.log(formDataObj);
+
+
+                    // 숫자 필드가 빈 문자열인지 확인
+                    if (formDataObj.couponDiscountRate === "" || formDataObj.couponDiscountAmount === "") {
+                        alert("할인율과 할인금액 필드는 비워둘 수 없습니다.");
+                        return;
+                    }
+
+                    // 숫자 필드가 숫자로 변환할 수 있는지 확인
+                    if (isNaN(Number(formDataObj.couponDiscountRate)) || isNaN(Number(formDataObj.couponDiscountAmount))) {
+                        alert("할인율과 할인금액 필드는 숫자만 입력할 수 있습니다.");
+                        return;
+                    }
+
+                    /*
+                var formData = $(this).serialize();  // 폼 데이터를 serialize
+                console.log(formData);  // 콘솔에 출력하여 확인
+                */
+                    $.ajax({
+                        type: 'POST',
+                        url: '/admin/board/couponAdd',
+                        contentType: 'application/json',
+                        data: JSON.stringify(formDataObj),
+                        dataType: 'JSON',
+                        success: function (response) {
+                            console.log(response);
+                            alert('쿠폰이 성공적으로 수정되었습니다.');
+                            window.location.href = '/admin/board/coupon';  // 수정 후 원하는 페이지로 리다이렉트
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                            alert("쿠폰 수정에 실패 했습니다.");
+                        }
+                    });
+                });
+            });
+    </script>
+</head>
+<body>
+<th:block layout:fragment="customContents">
+    <div class="couponAdd">
+        <h1>쿠폰</h1>
+    </div>
+    <form id="modifyCouponForm" th:action="@{/admin/board/couponAdd}" method="post">
+        <div class="section">
+            <div class="title">
+                <h3>쿠폰 정보</h3>
+            </div>
+        </div>
+
+        <div class="mainContent">
+            <table border="1" >
+                <caption>발급 정보</caption>
+
+                <tbody class="contentForm">
+<!--                $ : each문에 해당 객체, *: each 문에서 전체 객체 -->
+                <tr class="row-1">
+                    <th class="banner" th:name="couponCode" scope="row" >쿠폰코드 <i class="bi bi-patch-check-fill"></i></th>
+                    <td><input type="text" class="comment" name="couponCode" th:value="${couponAdd.couponCode}" readonly/></td>
+                </tr>
+                <tr class="row-2">
+                    <th class="banner" th:name="couponSerialNumber" scope="row" >쿠폰고유번호 <i class="bi bi-patch-check-fill"></i></th>
+                    <td><input type="text" class="comment" name="couponSerialNumber" th:value="${couponAdd.couponSerialNumber}"/></td>
+                </tr>
+                <tr class="row-3">
+                    <th class="banner" th:name="couponName" scope="row" >쿠폰이름 <i class="bi bi-patch-check-fill"></i></th>
+                    <td><input type="text" class="comment" name="couponName" th:value="${couponAdd.couponName}"/></td>
+                </tr>
+                <tr class="row-4">
+                    <th class="banner" scope="row" >할인율</th>
+                    <td><input type="number" class="discountRate" name="couponDiscountRate" th:value="${couponAdd.couponDiscountRate}"/> %</td>
+                </tr>
+                <tr class="row-5">
+                    <th class="banner" scope="row" >할인금액</th>
+                    <td><input type="number" class="discountAmount" name="couponDiscountAmount" th:value="${couponAdd.couponDiscountAmount}"/> 원</td>
+                </tr>
+                <tr class="row-6">
+                    <th class="banner" th:name="couponStock" scope="row" >쿠폰 제한 수량</th>
+                    <td><input class="count" type="number" placeholder="쿠폰의 제한 수량을 입력해주세요." name="couponStock" th:value="${couponAdd.couponStock}"> 개</td>
+                </tr>
+
+                <tr class="row-7">
+                    <th class="banner" th:name="numberCouponRemaining" scope="row" >남은 쿠폰 갯수</th>
+                    <td>
+                        <input class="count" type="number" name="numberCouponsRemaining" th:value="${couponAdd.numberCouponsRemaining}"> 개
+                    </td>
+                </tr>
+
+                <tr class="row-8">
+                    <th class="banner" th:name="couponValidPeriod" scope="row">쿠폰 사용 가능 기간</th>
+                    <td><input type="text" class="commentDate1" name="couponValidPeriod" th:value="${couponAdd.couponValidPeriod}"/> 일
+                </tr>
+
+                <tr class="row-9">
+                    <th class="banner" th:name="couponTermsUse" scope="row">쿠폰 사용 조건</th>
+                    <td><input type="text" class="comment" name="couponTermsUse" th:value="${couponAdd.couponTermsUse}"/></td>
+                </tr>
+
+
+                </tbody>
+            </table>
+            <div class="couponBtnArea">
+                <button type="button" class="CouponBtn">수정</button>
+            </div>
+
+        </div>
+
+    </form>
+
+</th:block>
+
+<script>
+
+        // var dateInput1 = document.querySelector('.commentDate1');
+        // var dateInput2 = document.querySelector('.commentDate2');
+        //
+        // dateInput2.onchange = function() {
+        //     var date1 = new Date(dateInput1.value);
+        //     var date2 = new Date(this.value);
+        //
+        //     var diffInMs = Math.abs(date2 - date1);
+        //     var diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+        //
+        //     if(diffInDays > 30) {
+        //         alert("쿠폰 사용 가능 기간이 30일을 초과하였습니다. 다시 선택해주세요.");
+        //         this.value = "";
+        //     }
+        // };
+
+
+        $('.commentDate1').on('change', function(){
+            let selectDate = $(this).val();
+            const setDate = new Date(selectDate);
+            console.log(setDate, '<--?');
+            setDate.setDate(setDate.getDate() + 30);
+
+            // 날짜를 원하는 형식으로 포맷팅
+            var year = setDate.getFullYear();
+            var month = String(setDate.getMonth() + 1).padStart(2, '0');
+            var day = String(setDate.getDate()).padStart(2, '0');
+            var formattedDate = year + '-' + month + '-' + day;
+
+            $('.commentDate2').attr('max', formattedDate);
+        })
+
+        /*
+        * 실행 안됬던 이유
+        * 1. html 구조가 잘못되어있었음 (body태그 없었음)
+        * 2. 제이쿼리 연결 안되어있었음
+        * */
+</script>
+
+</body>
+
+
+</html>

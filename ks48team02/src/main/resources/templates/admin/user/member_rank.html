@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <style>
+
+        .btn.btn-light{
+            border: 1px solid lightgrey;
+            padding: 10px;
+            margin : 15px;
+            width: 110px;
+            border-radius: 0;
+        }
+        .btn.btn-light.active{
+            background-color: var(--maincolor);
+            color: white;
+            border: 1px solid var(--maincolor);
+        }
+    </style>
+
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <script th:src="@{/common/js/ajaxJs.js}"></script>
+    <script th:src="@{/common/js/admin-commonJs.js}"></script>
+</th:block>
+
+<!-- 사용자별 컨텐츠 -->
+<th:block layout:fragment="customContents">
+    <div class="admin-content-wrapper form-table">
+        <div class="partition-select">
+            <h4 style="font-weight: bold;">프로젝트 유형</h4>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons" >
+                <label class="btn btn-light active" style="font-size: 12px;" id="option1">
+                    <input class="radio-input" type="radio" name="options"  autocomplete="off" checked > 리워드 프로젝트
+                </label>
+                <label class="btn btn-light" style="font-size: 12px;" id="option2">
+                    <input class="radio-input" type="radio" name="options"  autocomplete="off"> 기부 프로젝트
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-------------------------- 검색 결과 ---------------------------------->
+    <div class="title-wrap">
+        <h4 class="admin-content-title">등급 이름 및 산정 기준</h4>
+    </div>
+    <div class="admin-content-wrapper" style="overflow-x: hidden;">
+        <div>
+            <!-- reward contents area -->
+            <table class="rank-detail" id="reward-area">
+                <thead>
+                <tr>
+                    <th style="width:10%;">리워드 등급 코드</th>
+                    <th style="width:10%;">등급 이름</th>
+                    <th style="width:10%;">할인율</th>
+                    <th style="width:10%;">승급 기준 구매 금액</th>
+                    <th style="width:10%;">적립금 적립률</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- 조회 결과 없음 -->
+                <tr th:if="${rewardRanks == null}">
+                    <td colspan="10" style="text-align: center; padding: 30px 0;">검색 결과가 없습니다.</td>
+                </tr>
+                <!-- 조회 결과 contents -->
+                <tr th:unless="${rewardRanks == null}"  th:each="r: ${rewardRanks}">
+                    <td class="table-data-center" th:text="${r.rewardRankCode}"></td>
+                    <td class="table-data-center" th:text="${r.rewardRankName}"></td>
+                    <td class="table-data-center" th:text="${r.discountRate}"></td>
+                    <td class="table-data-center" th:text="${r.rewardRankUpgradeAmount}"></td>
+                    <td class="table-data-center" th:text="${r.pointSavingRate}"></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- donation contents area -->
+            <!--<table class="rank-detail" id="donation-area">
+                <thead>
+                <tr>
+                    <th style="width:10%;">기부 등급 코드</th>
+                    <th style="width:10%;">등급 이름</th>
+                    <th style="width:10%;">승급 기준 구매 금액</th>
+                    <th style="width:10%;">플로버 적립률</th>
+                </tr>
+                </thead>
+                <tbody>
+                // 조회 결과 없음
+                <tr th:if="${donationRanks == null}">
+                    <td colspan="10" style="text-align: center; padding: 30px 0;">검색 결과가 없습니다.</td>
+                </tr>
+                // 조회 결과 contents
+                <tr th:unless="${donationRanks == null}" th:object="d = ${donationRanks}" >
+                    <td class="table-data-center" th:text="${d.}"></td>
+                    <td class="table-data-center" th:text="${d.}"></td>
+                    <td class="table-data-center" th:text="${d.}"></td>
+                    <td class="table-data-center" th:text="${d.}"></td>
+                </tr>
+                </tbody>
+            </table> -->
+
+            <div style="font-size: 12px; color: lightgrey; margin-top: 10px;">
+                *승급 기준 금액을 달성시 해당 등급으로 승급됩니다.
+            </div>
+        </div>
+    </div>
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+        // document.querySelectorAll('.radio-input').forEach(function (){
+        //     this.addEventListener('change',()=>{
+        //         if(document.getElementById('option1').classList.contains('active')){
+        //             console.log(document.getElementById('option1').classList.contains('active'));
+        //             document.getElementById('reward-area').style.display = 'block';
+        //             document.getElementById('donation-area').style.display = 'none';
+        //         }else if(document.getElementById('option2').classList.contains('active')){
+        //             document.getElementById('reward-area').style.display = 'none';
+        //             document.getElementById('donation-area').style.display = 'block';
+        //         }
+        //     })
+        // })
+
+    </script>
+</th:block>
+</html>

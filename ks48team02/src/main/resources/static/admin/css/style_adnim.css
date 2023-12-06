@@ -1,0 +1,243 @@
+* {
+  font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif !important;
+}
+
+body {
+  box-sizing: border-box;
+}
+
+.admin-right-area {
+  background: #fcfcfb;
+  min-height: 100vh;
+  padding-left: 270px;
+}
+
+.admin-top-area {
+  min-width: 1028px;
+  height: 88px;
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(224, 224, 219, 0.3333333333);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 3.0303%;
+}
+.admin-top-area h2 {
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 150%;
+  color: #141515;
+  /* identical to box height, or 27px */
+}
+.admin-top-area h2 .admin-session-name {
+  color: #29B360;
+  font-weight: bold;
+}
+.last-log {
+	color: #D9D9D9;
+	font-weight: 200;
+	font-size: 12px;
+	margin-left: 10px;
+}
+.admin-top-area > div {
+  display: flex;
+}
+
+.admin-top-icon {
+  display: flex;
+  gap: 10px;
+}
+.admin-top-icon a {
+  display: block;
+  width: 40px;
+  height: 40px;
+  font-size: 0;
+  text-indent: -9999px;
+  transition: all .4s;
+  position: relative;
+}
+.admin-top-icon a.new_message::after {
+	content:''; display: block;
+	width: 8px; height: 8px;
+	border-radius: 50%;
+	background: #FF4242;
+	position: absolute;
+	top: 4px; right: 4px;
+}
+.admin-alarm-icon {
+	background: url("../images/admin_alarm_icon.svg") no-repeat center center/ 100%;
+}
+.admin-alarm-icon:hover {
+	background: url("../images/admin_alarm_icon_o.svg") no-repeat center center/ 100%;
+}
+.admin-bookmark-icon {
+	background: url("../images/admin_bookmark_icon.svg") no-repeat center center/ 100%;
+}
+.admin-bookmark-icon:hover {
+	background: url("../images/admin_bookmark_icon_o.svg") no-repeat center center/ 100%;
+}
+.admin-top-btn {
+  margin-left: 28px;
+  display: flex;
+  gap: 17px;
+}
+.admin-top-btn a,
+.admin-top-btn .add-goods-btn {
+  display: inline-block;
+  height: 40px;
+  line-height: 40px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0 42px;
+  overflow: hidden;
+  outline: 1px solid #141515;
+  transition: all 0.4s;
+}
+.admin-top-btn .add-goods-btn {
+  background: #141515;
+  color: #fff;
+}
+.admin-top-btn .add-goods-btn:hover {
+  color: #141515;
+  background: transparent;
+}
+
+.admin-right-bt {
+  padding: 52px 50px;
+}
+
+.admin-sales-area {
+  width: 1028px;
+  margin-bottom: 54px;
+}
+
+.admin-title {
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 150%;
+  margin-bottom: 10px;
+  /* main_text */
+  color: #141515;
+  display: flex;
+  justify-content: space-between;
+}
+.admin-title a {
+  font-size: 12px;
+  font-weight: 200;
+  color: #a0a0a0;
+  padding-right: 20px;
+  position: relative;
+}
+.admin-title a::after {
+  content: "";
+  display: block;
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  margin-top: -1px;
+  transform: translateY(-50%);
+}
+.admin-title a:hover {
+  text-decoration: underline;
+}
+
+.admin-contents-area {
+  background: #fff;
+  padding: 18px 30px;
+  border: 1px solid #eee;
+  font-size: 12px;
+}
+.admin-contents-area > ul > li {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  height: 36px;
+}
+.admin-contents-area > ul > li > span {
+  font-size: 10px;
+  color: #bcbcbc;
+}
+.admin-contents-area > ul > li > div {
+  display: flex;
+  align-items: center;
+}
+.admin-contents-area > ul > li > div > span {
+  display: inline-block;
+  margin-right: 10px;
+}
+.admin-contents-area > ul > li > div a {
+  display: block;
+  width: 270px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.admin-contents-area > ul > li .qna-comment {
+  padding: 3px 5px;
+  color: #fff;
+  font-size: 10px;
+}
+.admin-contents-area > ul > li .wait-comment {
+  background: #dd5454;
+}
+.admin-contents-area > ul > li .success-comment {
+  background: #6855d5;
+}
+.admin-contents-area > ul > li:hover a {
+  text-decoration: underline;
+}
+
+.sales-graph {
+  height: 250px;
+}
+
+.admin-table {
+  background: #fff;
+}
+
+.admin-order-area,
+.admin-addgoods-area {
+  width: 1028px;
+  margin-bottom: 54px;
+}
+.admin-order-area table,
+.admin-addgoods-area table {
+  width: 100%;
+  text-indent: initial;
+}
+.admin-order-area td, .admin-order-area th,
+.admin-addgoods-area td,
+.admin-addgoods-area th {
+  text-align: center;
+  border-collapse: collapse;
+  border: 1px solid #eee;
+  vertical-align: middle;
+  padding: 10px 0;
+  font-size: 13px;
+}
+.admin-order-area td,
+.admin-addgoods-area td {
+  color: #29B360;
+  font-weight: 600;
+}
+.admin-order-area th,
+.admin-addgoods-area th {
+  background-color: #f8f9fb;
+  color: #232324;
+}
+
+.admin-news-area {
+  display: flex;
+  gap: 20px;
+  width: 1028px;
+  padding-bottom: 80px;
+}
+.admin-news-area > div {
+  width: 50%;
+}
+
+.admin-community-head {
+  color: #bababa;
+}

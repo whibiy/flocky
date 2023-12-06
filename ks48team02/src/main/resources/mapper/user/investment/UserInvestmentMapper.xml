@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksmart.ks48team02.user.mapper.investment.UserInvestmentMapper">
+
+    <!--투자 프로젝트-->
+    <resultMap id="InvestmentInfoResultMap" type="InvestmentInfo">
+        <id property="investmentCode" column="investment_code"/>
+        <result property="memberId" column="member_id"/>
+        <result property="storeCode" column="store_code"/>
+        <result property="investmentRequestJudgeCode" column="investment_request_judge_code"/>
+        <result property="totalCategoryCode" column="total_category_code"/>
+        <result property="memberIdSeller" column="member_id_seller"/>
+        <result property="investmentSubject" column="investment_subject"/>
+        <result property="investmentImage" column="investment_image"/>
+        <result property="investmentLike" column="investment_like"/>
+        <result property="investmentAmount" column="investment_amount"/>
+        <result property="investmentAchievementMoney" column="investment_achievement_money"/>
+        <result property="investAchievementPercent" column="invest_achievement_percent"/>
+        <result property="investmentCompany" column="investment_company"/>
+        <result property="searchCount" column="search_count"/>
+        <result property="investCount" column="invest_count"/>
+        <result property="securitiesClassification" column="securities_classification"/>
+        <result property="investmentDisplayDate" column="investment_display_date"/>
+        <result property="investmentRegDate" column="investment_reg_date"/>
+        <result property="investmentDeadline" column="investment_deadline"/>
+        <result property="investmentReport" column="investment_report"/>
+        <result property="basicFee" column="basic_fee"/>
+        <result property="contractFeeRate" column="contract_fee_rate"/>
+        <result property="contractFile" column="contract_file"/>
+        <result property="investJudgeSituation" column="invest_judge_situation"/>
+        <result property="investmentDeadlineCnt" column="investmentDeadlineCnt"/>
+    </resultMap>
+
+    <resultMap id="investmentContent" type="InvestmentContent">
+        <id property="investmentContentCode" column="investment_content_code"/>
+        <result property="memberId" column="member_id"/>
+        <result property="investmentCode" column="investment_code"/>
+        <result property="memberIdSeller" column="member_id_seller"/>
+        <result property="projectIntroduction" column="project_introduction"/>
+        <result property="marketAnalysis" column="market_analysis"/>
+        <result property="majorFinancialInformation" column="major_financial_information"/>
+        <result property="risk" column="risk"/>
+        <result property="majorManpower" column="major_manpower"/>
+        <result property="patentAwardDetails" column="patent_award_details"/>
+        <result property="etcInvestContent" column="etc_invest_content"/>
+        <result property="registrationDate" column="registration_date"/>
+    </resultMap>
+
+    <resultMap id="investmentJudge" type="InvestmentJudge">
+        <id property="investmentRequestJudgeCode" column="investment_request_judge_code"/>
+        <result property="memberId" column="member_id"/>
+        <result property="storeCode" column="store_code"/>
+        <result property="lawSatistifyCode" column="law_satistify_code"/>
+        <result property="incongruitySectorsCode" column="incongruity_sectors_code"/>
+        <result property="companyBusinessTypeCode" column="company_business_type_code"/>
+        <result property="corporateValueEvaluationCode" column="corporate_value_evaluation_code"/>
+        <result property="memberIdSeller" column="member_id_seller"/>
+        <result property="investmentRequestSubject" column="investment_request_subject"/>
+        <result property="investmentRequestContent" column="investment_request_content"/>
+        <result property="investmentCompany" column="investment_company"/>
+        <result property="investmentAchievementMoney" column="investment_achievement_money"/>
+        <result property="businessProfits" column="business_profits"/>
+        <result property="depreciation" column="depreciation"/>
+        <result property="netDebt" column="net_debt"/>
+        <result property="stockNumber" column="stock_number"/>
+        <result property="issueStockNumber" column="issue_stock_number"/>
+        <result property="cashReserves" column="cash_reserves"/>
+        <result property="investmentRequestDate" column="investment_request_date"/>
+        <result property="investJudgeDate" column="invest_judge_date"/>
+        <result property="investJudgeResult" column="invest_judge_result"/>
+    </resultMap>
+
+
+    <insert id="addInvestment" parameterType="InvestmentInfo">
+        /* 투자 프로젝트 등록 */
+        <selectKey keyProperty="investmentCode" resultType="String" order="BEFORE">
+            SELECT
+                (CASE
+                WHEN COUNT(i.investment_code) = 0 THEN CONCAT('inv_', CURDATE()+0, '_0001')
+                WHEN COUNT(i.investment_code) > 9999 THEN CONCAT('inv_', CURDATE()+0, '_', MAX(CAST(SUBSTRING_INDEX(i.investment_code,'_',-1) AS UNSIGNED))+1)
+                ELSE CONCAT('inv_', CURDATE()+0, '_', LPAD(MAX(CAST(SUBSTRING_INDEX(i.investment_code,'_',-1) AS UNSIGNED))+1, 4, '0'))
+                END) AS investmentCode
+            FROM
+                investment AS i
+            WHERE
+                SUBSTRING_INDEX(SUBSTRING_INDEX(i.investment_code, '_', 2), '_', -1) = CURDATE()+0;
+        </selectKey>
+        INSERT INTO investment
+            (investment_code, member_id, store_code, investment_request_judge_code, total_category_code, member_id_seller, investment_subject,
+            investment_image, investment_like, investment_amount, investment_achievement_money, invest_achievement_percent,
+            investment_company, search_count, invest_count, securities_classification, investment_display_date, investment_reg_date,
+            investment_deadline, investment_report, basic_fee, contract_fee_rate, contract_file, invest_judge_situation)
+        values
+            (#{investmentCode}, 'id100', 'sto_004', #{investmentRequestJudgeCode}, NULL, #{memberId}, #{investmentSubject},
+            #{investmentImage}, 0, 0, 0, 0, #{investmentCompany}, 0, 0, #{securitiesClassification}, CURDATE(), #{investmentRegDate}, #{investmentDeadline},
+            #{investmentReport}, 3000000, 0.04, #{contractFile}, '0');
+    </insert>
+
+    <insert id="addInvestmentContent" parameterType="investmentInfo">
+        /* 투자 프로젝트 상세내용 등록 */
+        <selectKey keyProperty="investmentContentCode" resultType="String" order="BEFORE">
+            SELECT
+                (CASE
+                WHEN COUNT(i.investment_content_code) = 0 THEN CONCAT('inv_con_', CURDATE()+0, '_0001')
+                WHEN COUNT(i.investment_content_code) > 9999 THEN CONCAT('inv_con_', CURDATE()+0, '_', MAX(CAST(SUBSTRING_INDEX(i.investment_content_code,'_',-1) AS UNSIGNED))+1)
+                ELSE CONCAT('inv_con_', CURDATE()+0, '_', LPAD(MAX(CAST(SUBSTRING_INDEX(i.investment_content_code,'_',-1) AS UNSIGNED))+1, 4, '0'))
+                END) AS investmentContentCode
+            FROM
+                investment_content AS i
+            WHERE
+                SUBSTRING_INDEX(SUBSTRING_INDEX(i.investment_content_code, '_', 3), '_', -1) = CURDATE()+0;
+        </selectKey>
+        INSERT INTO investment_content
+            (investment_content_code, member_id, investment_code, member_id_seller, project_introduction,
+            market_analysis, major_financial_information, risk, major_manpower,
+            patent_award_details, etc_invest_content, registration_date)
+        VALUES
+            (#{investmentContentCode}, 'id100', #{investmentCode}, #{memberId}, #{projectIntroduction},
+            #{marketAnalysis}, #{majorFinancialInformation}, #{risk}, #{majorManpower},
+            #{patentAwardDetails}, #{etcInvestContent}, CURDATE())
+    </insert>
+
+    <insert id="addInvestmentJudge" parameterType="investmentJudge">
+        /* 투자 심사요청 등록 */
+        <selectKey keyProperty="investmentRequestJudgeCode" resultType="String" order="BEFORE">
+            SELECT
+                (CASE
+                WHEN COUNT(i.investment_request_judge_code) = 0 THEN CONCAT('inv_rjd_', CURDATE()+0, '_0001')
+                WHEN COUNT(i.investment_request_judge_code) > 9999 THEN CONCAT('inv_rjd_', CURDATE()+0, '_', MAX(CAST(SUBSTRING_INDEX(i.investment_request_judge_code,'_',-1) AS UNSIGNED))+1)
+                ELSE CONCAT('inv_rjd_', CURDATE()+0, '_', LPAD(MAX(CAST(SUBSTRING_INDEX(i.investment_request_judge_code,'_',-1) AS UNSIGNED))+1, 4, '0'))
+                END) AS investmentRequestJudgeCode
+            FROM
+                investment_request_judge AS i
+            WHERE
+                SUBSTRING_INDEX(SUBSTRING_INDEX(i.investment_request_judge_code, '_', 3), '_', -1) = CURDATE()+0;
+        </selectKey>
+        INSERT INTO investment_request_judge
+            (investment_request_judge_code, member_id, store_code, law_satistify_code, incongruity_sectors_code
+            , company_business_type_code, corporate_value_evaluation_code, member_id_seller, investment_request_subject
+            , investment_request_content, investment_company, investment_achievement_money, business_profits
+            , depreciation, net_debt, stock_number, issue_stock_number, cash_reserves, investment_request_date
+            , invest_judge_date, invest_judge_result)
+        VALUES
+            (#{investmentRequestJudgeCode}, 'id100', 'sto_004', NULL, NULL,
+            #{companyBusinessTypeCode}, NULL, #{memberId}, #{investmentRequestSubject},
+            #{investmentRequestContent}, #{investmentCompany}, #{investmentAchievementMoney},
+            #{businessProfits}, #{depreciation}, #{netDebt}, #{stockNumber}, #{issueStockNumber}, #{cashReserves},
+            CURDATE(), NULL, '0')
+    </insert>
+
+    <select id="getInvestmentInfo" parameterType="String" resultMap="InvestmentInfoResultMap">
+        SELECT
+            i.investment_code,
+            i.member_id,
+            i.store_code,
+            i.investment_request_judge_code,
+            i.total_category_code,
+            i.member_id_seller,
+            i.investment_image,
+            i.investment_like,
+            i.investment_achievement_money,
+            i.search_count,
+            i.invest_count,
+            i.securities_classification,
+            i.investment_display_date,
+            i.investment_reg_date,
+            i.investment_report,
+            i.basic_fee,
+            i.contract_fee_rate,
+            i.contract_file,
+            i.invest_judge_situation,
+            i.invest_achievement_percent,
+            i.investment_subject,
+            i.investment_amount,
+            DATEDIFF(investment_deadline, CURDATE()) AS investmentDeadlineCnt,
+            i.investment_image,
+            i.investment_company
+        FROM
+            investment AS i
+    </select>
+
+    <select id="getInvPrjInfoByCode" parameterType="String" resultMap="InvestmentInfoResultMap">
+        SELECT
+            i.investment_code,
+            i.member_id,
+            i.store_code,
+            i.investment_request_judge_code,
+            i.total_category_code,
+            i.member_id_seller,
+            i.investment_image,
+            i.investment_like,
+            i.investment_achievement_money,
+            i.search_count,
+            i.invest_count,
+            i.securities_classification,
+            i.investment_display_date,
+            i.investment_reg_date,
+            i.investment_report,
+            i.basic_fee,
+            i.contract_fee_rate,
+            i.contract_file,
+            i.invest_judge_situation,
+            i.invest_achievement_percent,
+            i.investment_subject,
+            i.investment_amount,
+            i.investment_image,
+            i.investment_company
+        FROM
+            investment AS i
+        WHERE
+            i.investment_code = #{projectCode}
+    </select>
+
+    <select id="investmentProjectDetail" parameterType="String">
+        SELECT
+            i.investment_code AS investmentCode,
+            i.member_id_seller AS memberId,
+            i.investment_subject AS investmentSubject,
+            i.investment_image AS investmentImage,
+            i.investment_like AS investmentLike,
+            i.investment_amount AS investmentAmount,
+            i.investment_achievement_money AS investmentAchievementMoney,
+            i.invest_achievement_percent AS investAchievementPercent,
+            i.investment_company AS investmentCompany,
+            i.search_count AS searchCount,
+            i.invest_count AS investCount,
+            i.securities_classification AS securitiesClassification,
+            i.investment_reg_date AS investmentRegDate,
+            i.investment_deadline AS investmentDeadline,
+            i.investment_report AS investmentReport,
+            DATEDIFF(investment_deadline, CURDATE()) AS investmentDeadlineCnt,
+            ic.investment_content_code AS investmentContentCode,
+            ic.project_introduction AS projectIntroduction,
+            ic.market_analysis AS marketAnalysis,
+            ic.major_financial_information AS majorFinancialInformation,
+            ic.risk AS risk,
+            ic.major_manpower AS majorManpower,
+            ic.patent_award_details AS patentAwardDetails,
+            ic.etc_invest_content AS etcInvestContent,
+            ir.investment_request_judge_code AS investmentRequestJudgeCode,
+            ir.company_business_type_code AS companyBusinessTypeCode,
+            ir.stock_number AS stockNumber,
+            ir.issue_stock_number AS issueStockNumber,
+            ir.investment_request_content AS investmentRequestContent
+        FROM
+            investment AS i
+            INNER JOIN
+            investment_content AS ic
+            ON
+            i.investment_code = ic.investment_code
+            INNER JOIN
+            investment_request_judge AS ir
+            ON
+            i.investment_request_judge_code = ir.investment_request_judge_code
+        WHERE
+            i.investment_code = #{investmentCode}
+    </select>
+
+    <select id="getSortedList" parameterType="map" resultMap="InvestmentInfoResultMap">
+        SELECT
+            investment_code,
+            invest_achievement_percent,
+            investment_subject,
+            investment_amount,
+            investment_deadline,
+            DATEDIFF(investment_deadline, CURDATE()) AS investmentDeadlineCnt,
+            investment_image,
+            investment_company,
+            securities_classification,
+            invest_judge_situation
+        FROM
+            investment
+        <where>
+            <choose>
+                <when test='status == "ing"'>
+                    investment_deadline >= CURDATE()
+                </when>
+                <when test='status == "end"'>
+                    CURDATE() > investment_deadline
+                </when>
+            </choose>
+            <choose>
+                <when test='securities == "stock"'>
+                    AND securities_classification = '주식'
+                </when>
+                <when test='securities == "bond"'>
+                    AND securities_classification = '채권'
+                </when>
+            </choose>
+        </where>
+        <choose>
+            <when test='orderBy == "recommendation"'>
+                ORDER BY invest_achievement_percent DESC
+            </when>
+            <when test='orderBy == "latest"'>
+                ORDER BY investment_reg_date DESC
+            </when>
+            <when test='orderBy == "popularity"'>
+                ORDER BY investment_like DESC
+            </when>
+            <when test='orderBy == "recruitmentAmount"'>
+                ORDER BY investment_amount DESC
+            </when>
+            <when test='orderBy == "deadline"'>
+                ORDER BY investmentDeadlineCnt ASC
+            </when>
+            <otherwise>
+                ORDER BY invest_achievement_percent DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="getInvestmentContent" parameterType="String" resultType="InvestmentContent">
+        SELECT * FROM investment_content
+        WHERE investment_content_code = #{investmentContentCode}
+    </select>
+
+    <select id="getInvestmentJudge" parameterType="String" resultType="InvestmentJudge">
+        SELECT * FROM investment_request_judge
+        WHERE investment_request_judge_code = #{investmentRequestJudgeCode}
+    </select>
+
+    <!--업종 조회-->
+    <select id="getUserCompanyBusinessType" parameterType="String">
+        /* 업종 조회 */
+        SELECT
+            c.company_business_type_code AS companyBusinessTypeCode,
+            c.member_id AS memberId,
+            c.business_type AS businessType
+        FROM
+            company_business_type AS c
+    </select>
+
+    <!--자본시장법 범위충족기준 조회-->
+    <select id="getUserLawSatistifyReason" parameterType="String">
+        /* 자본시장법 범위충족기준 조회 */
+        SELECT
+            l.law_satistify_code AS lawSatistifyCode,
+            l.member_id AS memberId,
+            l.law_satistify_reason AS lawSatistifyReason,
+            l.law_satistify_whether AS lawSatistifyWhether,
+            l.code_reg_day AS codeRegDay
+        FROM
+            law_satistify_reason AS l
+    </select>
+
+    <!--공고 내 증권발행 조건(주식)-->
+    <select id="securitiesStock" parameterType="String">
+        /* 공고 내 증권발행 조건(주식) */
+        SELECT
+            s.securities_issuance_stock_code AS securitiesIssuanceStockCode,
+            s.member_id AS memberId,
+            s.investment_code AS investmentCode,
+            s.corp_value AS corpValue,
+            s.invest_min_cost AS investMinCost,
+            s.stock_price AS stockPrice,
+            s.securities_classification AS securitiesClassification,
+            s.face_value AS faceValue,
+            s.stock_number AS stockNumber,
+            s.issue_stock_number AS issueStockNumber,
+            s.issue_allotment_share_ratio AS issueAllotmentShareRatio,
+            s.subscription_allocation_ranking AS subscriptionAllocationRanking,
+            s.stock_type AS stockType,
+            s.subscription_date AS subscriptionDate,
+            s.subscription_deadline AS subscriptionDeadline,
+            s.payment_date AS paymentDate,
+            s.estimated_issue_date AS estimatedIssueDate,
+            s.allocation_confirmation_date AS allocationConfirmationDate,
+            s.receiving_date_of_securities AS receivingDateOfSecurities,
+            s.redemption_start_date AS redemptionStartDate,
+            s.redemption_end_date AS redemptionEndDate,
+            s.repayment_rate AS repaymentRate,
+            s.min_dividend_rate AS minDividendRate,
+            s.conversion_start_date AS conversionStartDate,
+            s.conversion_end_date AS conversionEndDate,
+            s.conversion_condition AS conversionCondition,
+            s.voting_right AS votingRight
+        FROM
+            securities_issuance_stock AS s
+        WHERE
+            s.investment_code = #{investmentCode};
+    </select>
+
+    <!--공고 내 증권발행 조건(채권)-->
+    <select id="securitiesBond" parameterType="String">
+        /* 공고 내 증권발행 조건(채권) */
+        SELECT
+            s.securities_issuance_bond_code AS securitiesIssuanceBondCode,
+            s.member_id AS memberId,
+            s.investment_code AS investmentCode,
+            s.interest_rate AS interestRate,
+            s.invest_min_cost AS investMinCost,
+            s.bond_price AS bondPrice,
+            s.securities_classification AS securitiesClassification,
+            s.maturity AS maturity,
+            s.subscription_allocation_ranking AS subscriptionAllocationRanking,
+            s.bond_type AS bondType,
+            s.subscription_date AS subscriptionDate,
+            s.subscription_deadline AS subscriptionDeadline,
+            s.maturity_date AS maturityDate,
+            s.estimated_issue_date AS estimatedIssueDate,
+            s.allocation_confirmation_date AS allocationConfirmationDate,
+            s.payment_date AS paymentDate,
+            s.account_to_be_issued AS accountToBeIssued
+        FROM
+            securities_issuance_bond AS s
+        WHERE
+            s.investment_code = #{investmentCode};
+    </select>
+
+    <!-- 뉴스 전체 리스트 가져오기 -->
+    <select id="getNewsList" parameterType="String" resultType="NewsList">
+        SELECT
+            news_code AS newsCode,
+            project_code AS projectCode,
+            news_subject AS newsSubject,
+            news_content AS newsContent,
+            news_datetime AS newsDatetime,
+            news_modify_datetime AS newsModifyDatetime,
+            news_delete_datetime AS newsDeleteDatetime,
+            news_display AS newsDisplay
+        FROM
+            news
+        WHERE
+            project_code = #{investmentCode};
+    </select>
+
+    <!--댓글 등록-->
+    <insert id="CommentAdd" parameterType="String">
+        <selectKey keyProperty="investCommentCode" resultType="String" order="BEFORE">
+            SELECT
+                (
+                CASE
+                WHEN COUNT(comment_datetime) = 0     THEN CONCAT('com_', CURDATE()+0, '_0001')
+                WHEN COUNT(comment_datetime) > 9999  THEN CONCAT('com_', CURDATE()+0, '_', COUNT(comment_datetime)+1)
+                ELSE CONCAT('com_', CURDATE()+0, '_', LPAD(COUNT(comment_datetime)+1, 4, '0'))
+                END
+                ) AS investCommentCode
+            FROM
+                invest_comment
+            WHERE
+                DATE_FORMAT(comment_datetime, '%Y-%m-%d') = CURDATE();
+        </selectKey>
+        INSERT INTO invest_comment
+            (invest_comment_code, member_id, investment_code, member_name, comment_content, comment_datetime,
+            comment_modify_datetime, comment_delete_datetime, comment_code, comment_class)
+        VALUE
+            (#{investCommentCode}, #{memberId}, #{investmentCode}, #{memberName}, #{commentContent}, NOW(), NULL, NULL, NULL, 'comment');
+    </insert>
+
+    <!--댓글 리스트-->
+    <select id="getCommentList" parameterType="String" resultType="InvestmentComment">
+        SELECT
+            i.invest_comment_code AS investCommentCode,
+            i.member_id AS memberId,
+            i.investment_code AS investmentCode,
+            i.member_name AS memberName,
+            i.comment_content AS commentContent,
+            i.comment_datetime AS commentDatetime,
+            i.comment_modify_datetime AS commentModifyDatetime,
+            i.comment_delete_datetime AS commentDeleteDatetime,
+            i.comment_code AS commentCode,
+            i.comment_class AS commentClass
+        FROM
+            invest_comment AS i
+        WHERE
+            i.investment_code = #{investmentCode};
+    </select>
+
+    <!-- 댓글 등록 -->
+    <insert id="replyAdd" parameterType="String">
+        <selectKey keyProperty="investCommentCode" resultType="String" order="BEFORE">
+            SELECT
+                (
+                CASE
+                WHEN COUNT(comment_datetime) = 0     THEN CONCAT('com_', CURDATE()+0, '_0001')
+                WHEN COUNT(comment_datetime) > 9999  THEN CONCAT('com_', CURDATE()+0, '_', COUNT(comment_datetime)+1)
+                ELSE CONCAT('com_', CURDATE()+0, '_', LPAD(COUNT(comment_datetime)+1, 4, '0'))
+                END
+                ) AS investCommentCode
+            FROM
+                invest_comment
+            WHERE
+                DATE_FORMAT(comment_datetime, '%Y-%m-%d') = CURDATE();
+        </selectKey>
+        INSERT INTO donation_comment
+            (invest_comment_code, member_id, investment_code, member_name, comment_content, comment_datetime, comment_modify_datetime, comment_delete_datetime,
+            comment_code, comment_class)
+        VALUES
+            (#{investCommentCode}, #{memberId}, #{investmentCode}, #{memberName}, #{reply}, NOW(), NULL, NULL, #{parentCommentCode}, 'reply');
+    </insert>
+
+    <!-- 멤버 정보 가져오기 -->
+    <select id="getMember" parameterType="String" resultType="CommentMember">
+        SELECT
+            member_id AS memberId,
+            member_type_code AS memberTypeCode,
+            member_name AS memberName,
+            member_pw AS memberPw,
+            member_reg_date AS memberRegDate,
+            member_email AS memberEmail,
+            contact_info AS contactInfo,
+            unreg_date AS unregDate,
+            unreg_status AS unregStatus
+        FROM
+            member
+        WHERE
+            member_id = #{memberId};
+    </select>
+
+</mapper>

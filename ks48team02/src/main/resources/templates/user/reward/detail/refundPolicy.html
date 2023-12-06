@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/reward/detail/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+    <style>
+        #commentBox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 99999;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .comment-box-content {
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-top: 15px;
+            padding-bottom: 10px;
+            width: 550px;
+            height: 500px;
+            background: #fff;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 20px;
+        }
+
+        /*버튼 눌리는 효과*/
+        #commentBtn:active, #commentAddBtn:active {
+            box-shadow: inset -.3rem -.1rem 1.4rem #FBFBFB, inset .3rem .4rem .8rem #BEC5D0;
+            cursor: pointer;
+        }
+
+        #commentBtn, #commentAddBtn {
+            /* 상자 디자인 큰틀*/
+            padding: 10px;
+            border: 0px;
+            background-color: #E4EBF5;
+
+            /* 그림자 */
+            border-radius: 5px;
+            box-shadow: .5rem .3rem 1.4rem #BEC5D0, -.1rem -.2rem .8rem #FBFBFB;
+            /* box-shadow:-.2rem -.2rem 1.8rem white, .8rem .8rem 1.4rem  #AAB7CB; */
+
+            /* 글씨 */
+            color: #333333;
+            font-weight: bold;
+
+            animation-name: keybtn-language;
+            animation-duration: .2s;
+        }
+
+        .comments-reply {
+            display: none;
+        }
+    </style>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+
+    <script>
+        var swiper = new Swiper(".mySwiper", {
+            spaceBetween: 30,    // 슬라이드 사이 여백
+            slidesPerView: 'auto', // 한 슬라이드에 보여줄 갯수
+            centeredSlides: true,    //센터모드
+            autoplay: {     //자동슬라이드 (false-비활성화)
+                delay: 2500, // 시간 설정
+                disableOnInteraction: false, // false-스와이프 후 자동 재생
+            },
+            loop: false,   // 슬라이드 반복 여부
+            loopAdditionalSlides: 1,
+            // 슬라이드 반복 시 마지막 슬라이드에서 다음 슬라이드가 보여지지 않는 현상 수정
+            pagination: { // 호출(pager) 여부
+                el: ".swiper-pagination", //버튼을 담을 태그 설정
+                clickable: true, // 버튼 클릭 여부
+            },
+            navigation: {   // 버튼
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+        });
+        let rewardProjectSwiperSlide = new Swiper("#rewardProject .contents-area", {
+            slidesPerView: 3,
+            spaceBetween: 12,
+            navigation: {
+                nextEl: "#rewardProject .swiper-button-next",
+                prevEl: "#rewardProject .swiper-button-prev",
+            },
+        });
+
+        const $writeButton = document.getElementById('commentBtn');
+        const $commentBox = document.getElementById('commentBox');
+        const $commentBoxClose = document.getElementById('commentBoxClose');
+
+        $writeButton.addEventListener('click', function () {
+            $commentBox.style.display = 'block'; // 버튼 클릭 시 댓글 창 열림
+        });
+
+        $commentBoxClose.addEventListener('click', function () {
+            $commentBox.style.display = 'none'; // 버튼 클릭 시 댓글 창 종료
+        })
+
+        $('.comment-text-box').keyup(function (e) {
+            const content = $(this).val();
+            if (content.length > 10) {
+                $('#commentCounter').html("(" + content.length + " / 최대 2000자 까지만 등록 가능합니다.)");
+            } else {
+                $('#commentCounter').html("(" + content.length + " / 최소 10글자 이상만 등록 가능합니다.)");
+            }
+        });
+
+        let replyCount = 0;
+        $('.reply').click(function () {
+            if (replyCount == 0) {
+                $('#replyArrow').text("△");
+                replyCount = 1;
+                $('.comments-reply').css('display', 'flex');
+            } else {
+                $('#replyArrow').text("▽");
+                replyCount = 0;
+                $('.comments-reply').css('display', 'none');
+            }
+        });
+    </script>
+
+    <script>
+        // 현재 프로젝트코드로 상세페이지 데이터를 가져오기 위한 코드
+        let rewardProjectCode = '[[${rewardProject.rewardProjectCode}]]';
+        // 썸네일 이미지 경로 지정
+        let thumbNailImageSrc = $('#thumbNailImage').attr('src');
+        $('#thumbNailImage').attr('src', '/summernoteImage/' + '[[${rewardProject.projectThumbnailImage}]]');
+
+        // 스토리에서 앞에 부분만 잘라서 공백포함 155글자만 가져옴 그뒤는 ... 으로 다자름
+        let storyBodyText = $('#storyBody').children('p:eq(0)').text();
+        $('#subContens').text(storyBodyText);
+        if (storyBodyText.length > 155) {
+            storyBodyText = storyBodyText.substring(0, 155) + '...';
+        }
+        // 가져온 텍스트를 subContens에 설정
+        $('#subContens').text(storyBodyText);
+
+        let currentDate = new Date();
+        // 비교 대상 날짜 설정
+        let targetDate = new Date($('#projectEndDate').val());
+        // 두 날짜 간의 차이 계산 (밀리초 단위)
+        let timeDifference = targetDate - currentDate;
+        // 차이를 일(day) 단위로 변환
+        let daysRemaining = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+        // 남은 일 수
+        $('#deadLine').text(daysRemaining + '일남음');
+
+        // 회사 이름 설정
+        $('#company').text('[[${rewardProject.regCompany}]]');
+        // 달성 금액 설정
+        $('#achievementMoney').text(`[[${rewardProject.projectAchievementMoney}]]`.replace(/\B(?=(\d{3})+(?!\d))/g, ","))
+    </script>
+
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+
+    <div class="text-dark">
+        <div class="FundingRefundContent_hear__1VIMH">
+            <h3 class="FundingRefundContent_title__2HnkV mt-lg-5 font-weight-bold">환불·정책</h3>
+            <br>
+        </div>
+        <div>
+            <dl class="FundingRefundContent_explanation__215qf">
+                <dt class="FundingRefundContent_endDate__2Kv0F">종료일 <strong id="rewardEndDate"
+                                                                            class="text-primary" th:text="${rewardProject.projectEndDate}"></strong>
+                    까지
+                </dt>
+                <dd>
+                    <p>&nbsp;· 배송지 변경 가능</p>
+                    <p>&nbsp;· 리워드 옵션 변경 가능</p>
+                    <p>&nbsp;· 결제 예약, 결제 취소 가능</p>
+                </dd>
+            </dl>
+            <hr class="FundingRefundContent_horizon__z-eQr">
+        </div>
+
+        <div class="content">
+            <div class="content">
+                <p class="title-header">
+                    프로젝트 스토리에서 소개한 내용과 실제 리워드가 다르거나 다른 제품・콘텐츠를 모방하는
+                    지적재산권 침해와 같은 문제가 있을 때, 혹은 메이커가 약속한 배송일에 참여한 리워드를 받지 못했을 때, 환불 신청할 수 있어요.
+                </p>
+                <hr class="FundingRefundContent_horizon__z-eQr">
+                <h3 class="title">환불 안내</h3>
+                <br>
+                <p class="title-desc">
+                    환불은
+                    <a th:href="@{#}" target="_blank">펀딩 참여 내역</a>
+                    에서 신청할 수 있습니다.
+                    <br>환불 신청 후 정책에 따라 확인 절차를 거쳐 진행되며, 참여한 결제 건을 취소하는 방식으로 진행됩니다.<br>
+                    자세한 내용은 메이커 문의하기 또는 플로키 고객센터 이용을 부탁드립니다.<br>
+                    <a th:href="@{#}" target="_blank" style="display: block;">플로키 고객센터 바로가기 &gt; </a>
+                </p>
+                <br>
+                <h4>1) 리워드가 지연될 경우</h4>
+                <p class="desc">
+                    <strong>메이커가 리워드 발송 시작 예정일까지 리워드를 발송하지 않을 경우, </strong>
+                    서포터는 환불 신청 할 수 있습니다.<br>리워드 별 발송 시작 예정일은 다를 수 있으니,
+                    <a th:href="@{#}" target="_blank" style="text-decoration: underline;">펀딩 참여 내역</a>
+                    에서 참여한 리워드의 발송 시작 예정일을 확인하세요.<br><br>
+                </p>
+                <h4>2) 리워드에 하자가 있을 경우</h4>
+                <p class="desc">
+                    <strong>서포터가 수령한 리워드가 아래 하자 기준에 해당할 경우,</strong>
+                    &nbsp; 배송 완료일로부터 14일 이내에 환불 신청 할 수 있습니다. 이때 메이커는 하자 판단을 위한 증빙자료, 리워드 반송을 서포터에게 요청할 수
+                    있습니다.
+                </p>
+                <div class="refundProblemList">
+                    <ul>
+                        <li>리워드의 품질에 아래와 같은 하자가 발생한 경우
+                            <div class="exampleWrap">
+                                <hr>
+                                <div class="itemList">
+                                    <div class="font-weight-bold">공산품, 공예품 등</div>
+                                    <div class="example">제품 흠집, 휨, 백화현상 및 도장 불량, 악취 등 자극성 냄새, 좀 등의 벌레 발생,
+                                        균열, 뒤틀림 또는 변색, 녹, 누수, 오염
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="itemList">
+                                    <div class="font-weight-bold">신발, 의류, 패션 잡화 등</div>
+                                    <div class="example">봉제 불량, 접착 불량, 염색 불량, 원단 불량(제직, 세탁 후 변색, 탈색, 수축 등),
+                                        부자재 불량(단추, 지퍼, 천조각, 실오라기 등), 치수(사이즈)의 부정확
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="itemList">
+                                    <div class="font-weight-bold">식품, 의약품, 의약외품, 생활위생용품, 화장품 등</div>
+                                    <div class="example">이물혼입, 함량 부적합, 변질, 부패, 성분이상</div>
+                                </div>
+                                <hr>
+                                <div class="itemList">
+                                    <div class="font-weight-bold">그 외 품목</div>
+                                    <div class="example">소비자분쟁해결 기준을 따름</div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>정상적인 사용상태에서 리워드의 기능/성능상 오작동 또는 미작동 되는 경우</li>
+                        <li>리워드로 인해 아래와 같은 피해를 입은 경우
+                            <ul>
+                                <li>부작용으로 인해 신체상의 피해가 발생한 경우</li>
+                                <li>용기 불량, 파손 등으로 인한 상해, 피해사고를 입은 경우</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="indent-box"><p class="desc">
+                    <strong class="my-lg-3">단, 아래 어느 하나에 해당될 경우 환불 불가합니다.</strong></p>
+                    <ul class="list not-refund-notice">
+                        <li>메이커가 프로젝트 페이지 내에 명시적으로 고지한 하자 불인정 사유에 해당하는 경우
+                            <br>(예) 공장 제작 과정상 벌어짐 방지를 위해 봉제되어 제공되는 포켓은 하자 사유가 되지 않습니다.
+                        </li>
+                        <li>서포터의 귀책 사유로 리워드의 일부 혹은 전체가 분실/파손/고장/오염/훼손이 발생된 경우</li>
+                        <li>모니터 해상도의 차이로 인해 색상이나 이미지가 실제와 다른 경우</li>
+                        <li>공연, 디지털컨텐츠, 여행 패키지 상품, 무형 서비스 및 컨텐츠의 제공이 완료되었을 경우</li>
+                    </ul>
+                </div>
+                <div class="indent-box">
+                    <p class="desc exception-case">
+                        <strong class="my-lg-3">다음과 같은 경우 하자에 해당하지 않아 환불 불가합니다</strong>
+                    <p>1) 리워드 하자가 아닌 경우
+                        <span><br>리워드의 특성상, 아래의 항목들이 발생할 수 있으며 이는 리워드의 하자/불량이 아닙니다.</span>
+                        <span><br>펀딩 시 이 점을 유의해 주세요.</span>
+                        <span><br></span>
+                        <span><br>- 사이즈 편차로 인한 불만족: 사이즈 편차 부분은 참고사항일 뿐입니다.</span>
+                        <span><br>제작 공정 및 디자인 형태에 따라 사이즈 부분이 조금씩 다릅니다.</span>
+                        <span><br>맞춤이 아니기에 개개인의 발 체형에 따라 오차 부분이 발생할 수 있습니다.</span>
+                        <span><br></span>
+                        <span><br>- 미세한 본드 오염, 미세한 스크래치, 미세한 실밥, 약간의 이염, 작은 점,</span>
+                        <span><br>작은 구멍, 미세한 펜 자국, 미세한 주름(대량 생산되는 제품의 제조공정상 발생할 수 있습니다.)</span>
+                        <span><br></span>
+                        <span><br>- 셀프 커팅이 충분히 가능한 경우</span>
+                        <span><br></span>
+                        <span><br>- 약간의 구김(박스 안에 담겨 있었기 때문에 약간의 구김이 있을 수 있습니다.)</span>
+                        <span><br></span>
+                        <span><br>- 리워드의 배송 과정에서 생길 수 있는 박스 파손</span>
+                        <span><br></span>
+                        <span><br>- 바닥에 닿는 밑창부분의 약간의 흠 or 안감(내피)부분의 약간의 흠</span>
+                        <span><br></span>
+                        <span><br>- 제조과정에서 패턴의 위치나 제봉선을 맞추기 위해 사용하는</span>
+                        <span><br>초크나 펜자국(드라이기의 뜨거운바람을 맞히거나 물파스를 천이나 티슈에 묻혀 문질러 지워주시면 됩니다)</span>
+                        <span><br></span>
+                        <span><br>- 공정상 발생 할 수 있는 약간의 냄새</span>
+                        <span><br></span>
+                        <span><br>- 대량 생산 공정상 발생 할 수 있는 로고 부분의 약간의 이염</span>
+                        <span><br></span>
+                        <span><br>- 손으로 충분히 지워지는 약간의 오염</span>
+                        <span><br></span>
+                        <span><br>- 제봉과정의 제봉땀수가 양쪽 다를 경우</span>
+                    </p>
+                </div>
+                <br>
+                <h4>3) 기타 주의 사항</h4>
+                <ul class="list etc-notice">
+                    <li>크라우드펀딩의 특성상 프로젝트 종료 후 서포터의 단순변심으로 인한 환불은 불가합니다.</li>
+                    <li>회사는 메이커와 상호 협의 하에 프로젝트를 취소할 수 있으며, 펀딩 종료 후 프로젝트가 취소될 경우에는 환불됩니다.</li>
+                    <li>하자가 있는 경우, 리워드 반송을 위한 배송비는 메이커가 부담하여야 하고 하자가 없는 경우에는 리워드 반송 및 재반송에 대한 배송비를 서포터에게 청구될
+                        수 있습니다.
+                    </li>
+                </ul>
+            </div>
+
+            <hr>
+            <h3 class="title">사용 중 발생한 하자에 대한 A/S 정책</h3>중
+            <br>
+            <p>
+                2) 리워드 A/S 정책
+                <span><br>리워드 수령 14일 이내 발생한 초기 하자에 대해서는 플로키 '환불' 정책이 우선 적용됩니다.</span>
+                <span><br>보증 기간 : 리워드 수령일로부터 3개월</span>
+                <span><br></span>
+                <span><br>A/S 규정 : </span>
+                <span><br>- 리워드 수령 14일 이내 제품 초기 하자로 인한 교환/수리 시 발생하는 비용은 전액 메이커가 부담합니다.</span>
+                <span><br>- 제품 초기 하자가 아닌 서포터님 부주의로 인한 제품 손상은 A/S가능 여부 판단 후 유상 수리해드리며, 보증기간 이내일지라도 A/S가 불가하다 판단되면, A/S가 불가합니다.</span>
+                <span><br>- 제품 손상 정도에 따라 공장에서 수선을 진행해야 할 경우에는 시간이 지연될 수 있음을 양해 부탁드립니다.</span>
+                <span><br></span>
+                <span><br>A/S가 불가한 경우 : 보증기간 이내일지라도, 사용자의 고의 또는 부주의로 인한 제품 손상으로 인하여 수리 및 재생이 불가능하다고 판단되는 경우</span>
+                <span><br></span>
+                <span><br>A/S 접수 방법 : 아래 접수처를 통해 구체적인 하자 내용과 함께 접수 해주시면, 정확한 소명 후 처리됩니다.</span>
+                <span><br></span>
+                <span><br>A/S 접수처 </span>
+                <span><br>1. 카카오톡 아이디 '@sistershu'</span>
+                <span><br>2. 고객센터 : 1660-4655</span>
+                <span><br></span>
+                <span><br>※ 교환/환불이 불가능한 경우</span>
+                <span><br>- 서포터의 책임 있는 사유로 리워드가 멸실/훼손된 경우</span>
+                <span><br>- 서포터의 사용/소비에 의해 리워드의 가치가 감소한 경우</span>
+                <span><br>- 시간 경과로 인해 재펀딩이 곤란할 정도로 리워드의 가치가 상실한 경우</span>
+                <span><br>- 메이커를 통한 교환/환불/AS 접수 절차 없이 임의로 반송한 경우</span>
+                <span><br>- 리워드의 포장을 훼손한 경우</span>
+                <span><br>- 리워드의 택 제거 또는 훼손</span>
+                <span><br>* 문제없이 리워드를 받으실 수 있도록, 직접 검수 후 보내드릴 예정입니다. 서포터님께서도 리워드를 수령하신 후, 바로 확인 부탁드립니다</span>
+            </p>
+        </div>
+    </div>
+
+</th:block>
+
+</html>
+

@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{seller/layout/default}">
+
+<head>
+  <!--  사용자별 css file 추가 부분 -->
+  <title th:text="${title}"></title>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+  <script th:src="@{/admin/js/settlement/adminCustomJs.js}"></script>
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+  <script>
+
+    // 기간 선택 min value setting
+    $('input[name="amDateSettStartDate"]').on('change', function(){
+      let startDate = $(this).val();
+      $('input[name="amDateSettEndDate"]').prop('min',startDate);
+    });
+
+
+
+
+    let startDateValue = startDate(nowDateSet);
+    let endDateValue = `${nowDateSet.getFullYear()}-${String(nowDateSet.getMonth() + 1).padStart(2, '0')}-${String(nowDateSet.getDate()).padStart(2, '0')}`;
+
+    console.log(startDateValue, '<-- start value');
+    console.log(endDateValue, '<-- end value');
+
+    $('input[name="amDateSettStartDate"]').val(startDateValue);
+    $('input[name="amDateSettEndDate"]').val(endDateValue);
+
+
+
+
+    // loaded category checkbox all checked
+    const $categoryEls = $('.order-category-select input');
+    $($categoryEls).prop('checked', true);
+
+
+  </script>
+
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+  <div class="admin-content-wrapper form-table">
+    <form id="amYearChartForm" method="get">
+      <table class="partition-select">
+        <tbody>
+          <tr>
+            <td>
+              기간
+            </td>
+            <td>
+              <input type="date" name="amDateSettStartDate" value="">
+              <span> - </span>
+              <input type="date" name="amDateSettEndDate" value="">
+            </td>
+          </tr>
+          <tr>
+            <td>
+              주문 상태
+            </td>
+            <td class="order-category-select">
+              <ul>
+                <li>
+                  <input id="swapping_r" type="checkbox" name="swapping_r">
+                  <label for="swapping_r">교환</label>
+                </li>
+                <li>
+                  <input id="refund_r" type="checkbox" name="refund_r">
+                  <label for="refund_r">환불</label>
+                </li>
+                <li>
+                  <input id="companion_r" type="checkbox" name="companion_r">
+                  <label for="companion_r">반려</label>
+                </li>
+                <li>
+                  <input id="progressing_r" type="checkbox" name="progressing_r">
+                  <label for="progressing_r">처리중</label>
+                </li>
+                <li>
+                  <input id="progressed_r" type="checkbox" name="progressed_r">
+                  <label for="progressed_r">처리완료</label>
+                </li>
+
+                </li>
+
+              </ul>
+
+            </td>
+          </tr>
+          <tr>
+            <td>
+              검색 키워드
+            </td>
+            <td class="order-category-select">
+              <select name="searchKey">
+                <option value="total">전체</option>
+                <option value="settlementCode">공고코드</option>
+                <option value="settlementId">신청아이디</option>
+                <option value="projectName">공고명</option>
+              </select>
+              <input type="search" name="searchValue">
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="btn-area">
+        <button type="button" class="submitBtn">검색</button>
+      </div>
+    </form>
+  </div>
+  <div class="title-wrap">
+    <h4 class="admin-content-title">신청 목록</h4>
+    <div class="btnArea">
+      <button type="button" class="printBtn"><span>액셀 다운로드</span></button>
+    </div>
+  </div>
+  <div class="admin-content-wrapper" style="overflow-x: hidden;">
+    <div>
+      <!-- select are -->
+      <div class="data-info">
+        <div class="list-count-area">
+          <ul>
+            <li>신청 정보 총 <span class="count-data total-list">0</span>건</li>
+            <li>선택 항목 총 <span class="count-data select-list-count">0</span>건</li>
+          </ul>
+        </div>
+        <div class="list-count-selector">
+          <select name="orderby">
+            <option value="application_d">신청일 역순</option>
+            <option value="application_a">신청일 순</option>
+            <option>-----------------</option>
+            <option value="order_name_d">주문자 역순</option>
+            <option value="order_name_a">주문자 순</option>
+            <option>-----------------</option>
+            <option value="swapping_o">교환</option>
+            <option value="refunding_o">환불</option>
+            <option value="refunding_o">반려</option>
+            <option value="progressing_o">처리중</option>
+            <option value="progressed_o">처리완료</option>
+          </select>
+          <select name="count-select">
+            <option value="15">15개씩 보기</option>
+            <option value="20">20개씩 보기</option>
+            <option value="30">30개씩 보기</option>
+          </select>
+        </div>
+      </div>
+      <!-- contents area -->
+      <form id="orderListForm">
+        <table class="settlement-log">
+          <thead>
+          <tr>
+            <th style="width:5%;">
+              <input type="checkbox" name="allSelect" id="allSelectBtn">
+            </th>
+            <th style="width:10%;">주문 코드</th>
+            <th style="width:10%;">교환 신청 코드</th>
+            <th style="width:10%;">환불 신청 코드</th>
+            <th style="width:5%;">주문 아이디</th>
+            <th style="width:8%;">신청 사유</th>
+            <th style="width:8%;">
+              신청 제목
+            </th>
+            <th style="width:20%;">신청 내용</th>
+
+            <th style="width:7%;">신청 시간</th>
+            <th style="width:7%;">처리 현황</th>
+            <th style="width:7%;">처리 완료일</th>
+          </tr>
+          </thead>
+          <tbody>
+            <!-- 조회 결과 없음 -->
+            <tr style="display:none;">
+              <td colspan="10" style="text-align: center; padding: 30px 0;">검색 결과가 없습니다.</td>
+            </tr>
+            <!-- 조회 결과 contents -->
+            <tr>
+              <td class="table-data-center">
+                <input type="checkbox" name="selectList">
+              </td>
+              <td class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+              </td>
+              <td  class="table-data-center">
+                <a>-</a>
+              </td>
+              <td class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/refund/detail}">ORD_20230922_000001</a>
+              </td>
+              <td class="table-data-center">
+                id100
+              </td>
+
+              <td class="table-data-center">
+                단순변심
+              </td>
+              <td class="table-data-center">
+                교환 원해요
+              </td>
+
+              <td  class="table-data-center">
+                생각보다 너무 커서 교환 원합니다
+              </td>
+
+              <td class="table-data-center">
+                2023-10-15
+              </td>
+              <td class="table-data-center">
+                처리 대기중
+              </td>
+              <td class="table-data-center">
+                -
+              </td>
+
+
+
+            </tr>
+            <tr>
+              <td class="table-data-center">
+                <input type="checkbox" name="selectList">
+              </td>
+              <td class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+              </td>
+              <td  class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/Swapping/detail}">ORD_20230922_000001</a>
+              </td>
+              <td class="table-data-center">
+                <a >-</a>
+              </td>
+              <td class="table-data-center">
+                id100
+              </td>
+
+              <td class="table-data-center">
+                단순변심
+              </td>
+              <td class="table-data-center">
+                교환 원해요
+              </td>
+
+              <td  class="table-data-center">
+                생각보다 너무 커서 교환 원합니다
+              </td>
+
+              <td class="table-data-center">
+                2023-10-15
+              </td>
+              <td class="table-data-center">
+                처리 대기중
+              </td>
+              <td class="table-data-center">
+                -
+              </td>
+
+
+
+            </tr>
+            <tr>
+              <td class="table-data-center">
+                <input type="checkbox" name="selectList">
+              </td>
+              <td class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+              </td>
+              <td  class="table-data-center">
+                <a>-</a>
+              </td>
+              <td class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/refund/detail}">ORD_20230922_000001</a>
+              </td>
+              <td class="table-data-center">
+                id100
+              </td>
+
+              <td class="table-data-center">
+                단순변심
+              </td>
+              <td class="table-data-center">
+                교환 원해요
+              </td>
+
+              <td  class="table-data-center">
+                생각보다 너무 커서 교환 원합니다
+              </td>
+
+              <td class="table-data-center">
+                2023-10-15
+              </td>
+              <td class="table-data-center">
+                처리 대기중
+              </td>
+              <td class="table-data-center">
+                -
+              </td>
+
+
+
+            </tr>
+            <tr>
+              <td class="table-data-center">
+                <input type="checkbox" name="selectList">
+              </td>
+              <td class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+              </td>
+              <td  class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/Swapping/detail}">ORD_20230922_000001</a>
+              </td>
+              <td class="table-data-center">
+                <a >-</a>
+              </td>
+              <td class="table-data-center">
+                id100
+              </td>
+
+              <td class="table-data-center">
+                단순변심
+              </td>
+              <td class="table-data-center">
+                교환 원해요
+              </td>
+
+              <td  class="table-data-center">
+                생각보다 너무 커서 교환 원합니다
+              </td>
+
+              <td class="table-data-center">
+                2023-10-15
+              </td>
+              <td class="table-data-center">
+                처리 대기중
+              </td>
+              <td class="table-data-center">
+                -
+              </td>
+
+
+
+            </tr>
+            <tr>
+              <td class="table-data-center">
+                <input type="checkbox" name="selectList">
+              </td>
+              <td class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+              </td>
+              <td  class="table-data-center">
+                <a>-</a>
+              </td>
+              <td class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/refund/detail}">ORD_20230922_000001</a>
+              </td>
+              <td class="table-data-center">
+                id100
+              </td>
+
+              <td class="table-data-center">
+                단순변심
+              </td>
+              <td class="table-data-center">
+                교환 원해요
+              </td>
+
+              <td  class="table-data-center">
+                생각보다 너무 커서 교환 원합니다
+              </td>
+
+              <td class="table-data-center">
+                2023-10-15
+              </td>
+              <td class="table-data-center">
+                처리 대기중
+              </td>
+              <td class="table-data-center">
+                -
+              </td>
+
+
+
+            </tr>
+            <tr>
+              <td class="table-data-center">
+                <input type="checkbox" name="selectList">
+              </td>
+              <td class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+              </td>
+              <td  class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/Swapping/detail}">ORD_20230922_000001</a>
+              </td>
+              <td class="table-data-center">
+                <a >-</a>
+              </td>
+              <td class="table-data-center">
+                id100
+              </td>
+
+              <td class="table-data-center">
+                단순변심
+              </td>
+              <td class="table-data-center">
+                교환 원해요
+              </td>
+
+              <td  class="table-data-center">
+                생각보다 너무 커서 교환 원합니다
+              </td>
+
+              <td class="table-data-center">
+                2023-10-15
+              </td>
+              <td class="table-data-center">
+                처리 대기중
+              </td>
+              <td class="table-data-center">
+                -
+              </td>
+
+
+
+            </tr>
+            <tr>
+              <td class="table-data-center">
+                <input type="checkbox" name="selectList">
+              </td>
+              <td class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+              </td>
+              <td  class="table-data-center">
+                <a>-</a>
+              </td>
+              <td class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/refund/detail}">ORD_20230922_000001</a>
+              </td>
+              <td class="table-data-center">
+                id100
+              </td>
+
+              <td class="table-data-center">
+                단순변심
+              </td>
+              <td class="table-data-center">
+                교환 원해요
+              </td>
+
+              <td  class="table-data-center">
+                생각보다 너무 커서 교환 원합니다
+              </td>
+
+              <td class="table-data-center">
+                2023-10-15
+              </td>
+              <td class="table-data-center">
+                처리 대기중
+              </td>
+              <td class="table-data-center">
+                -
+              </td>
+
+
+
+            </tr>
+            <tr>
+              <td class="table-data-center">
+                <input type="checkbox" name="selectList">
+              </td>
+              <td class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+              </td>
+              <td  class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/Swapping/detail}">ORD_20230922_000001</a>
+              </td>
+              <td class="table-data-center">
+                <a >-</a>
+              </td>
+              <td class="table-data-center">
+                id100
+              </td>
+
+              <td class="table-data-center">
+                단순변심
+              </td>
+              <td class="table-data-center">
+                교환 원해요
+              </td>
+
+              <td  class="table-data-center">
+                생각보다 너무 커서 교환 원합니다
+              </td>
+
+              <td class="table-data-center">
+                2023-10-15
+              </td>
+              <td class="table-data-center">
+                처리 대기중
+              </td>
+              <td class="table-data-center">
+                -
+              </td>
+
+
+
+            </tr>
+            <tr>
+              <td class="table-data-center">
+                <input type="checkbox" name="selectList">
+              </td>
+              <td class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+              </td>
+              <td  class="table-data-center">
+                <a>-</a>
+              </td>
+              <td class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/refund/detail}">ORD_20230922_000001</a>
+              </td>
+              <td class="table-data-center">
+                id100
+              </td>
+
+              <td class="table-data-center">
+                단순변심
+              </td>
+              <td class="table-data-center">
+                교환 원해요
+              </td>
+
+              <td  class="table-data-center">
+                생각보다 너무 커서 교환 원합니다
+              </td>
+
+              <td class="table-data-center">
+                2023-10-15
+              </td>
+              <td class="table-data-center">
+                처리 대기중
+              </td>
+              <td class="table-data-center">
+                -
+              </td>
+
+
+
+            </tr>
+            <tr>
+              <td class="table-data-center">
+                <input type="checkbox" name="selectList">
+              </td>
+              <td class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+              </td>
+              <td  class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/Swapping/detail}">ORD_20230922_000001</a>
+              </td>
+              <td class="table-data-center">
+                <a >-</a>
+              </td>
+              <td class="table-data-center">
+                id100
+              </td>
+
+              <td class="table-data-center">
+                단순변심
+              </td>
+              <td class="table-data-center">
+                교환 원해요
+              </td>
+
+              <td  class="table-data-center">
+                생각보다 너무 커서 교환 원합니다
+              </td>
+
+              <td class="table-data-center">
+                2023-10-15
+              </td>
+              <td class="table-data-center">
+                처리 대기중
+              </td>
+              <td class="table-data-center">
+                -
+              </td>
+
+
+
+            </tr>
+            <tr>
+              <td class="table-data-center">
+                <input type="checkbox" name="selectList">
+              </td>
+              <td class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+              </td>
+              <td  class="table-data-center">
+                <a>-</a>
+              </td>
+              <td class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/refund/detail}">ORD_20230922_000001</a>
+              </td>
+              <td class="table-data-center">
+                id100
+              </td>
+
+              <td class="table-data-center">
+                단순변심
+              </td>
+              <td class="table-data-center">
+                교환 원해요
+              </td>
+
+              <td  class="table-data-center">
+                생각보다 너무 커서 교환 원합니다
+              </td>
+
+              <td class="table-data-center">
+                2023-10-15
+              </td>
+              <td class="table-data-center">
+                처리 대기중
+              </td>
+              <td class="table-data-center">
+                -
+              </td>
+
+
+
+            </tr>
+            <tr>
+              <td class="table-data-center">
+                <input type="checkbox" name="selectList">
+              </td>
+              <td class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+              </td>
+              <td  class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/Swapping/detail}">ORD_20230922_000001</a>
+              </td>
+              <td class="table-data-center">
+                <a >-</a>
+              </td>
+              <td class="table-data-center">
+                id100
+              </td>
+
+              <td class="table-data-center">
+                단순변심
+              </td>
+              <td class="table-data-center">
+                교환 원해요
+              </td>
+
+              <td  class="table-data-center">
+                생각보다 너무 커서 교환 원합니다
+              </td>
+
+              <td class="table-data-center">
+                2023-10-15
+              </td>
+              <td class="table-data-center">
+                처리 대기중
+              </td>
+              <td class="table-data-center">
+                -
+              </td>
+
+
+
+            </tr>
+            <tr>
+              <td class="table-data-center">
+                <input type="checkbox" name="selectList">
+              </td>
+              <td class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+              </td>
+              <td  class="table-data-center">
+                <a>-</a>
+              </td>
+              <td class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/refund/detail}">ORD_20230922_000001</a>
+              </td>
+              <td class="table-data-center">
+                id100
+              </td>
+
+              <td class="table-data-center">
+                단순변심
+              </td>
+              <td class="table-data-center">
+                교환 원해요
+              </td>
+
+              <td  class="table-data-center">
+                생각보다 너무 커서 교환 원합니다
+              </td>
+
+              <td class="table-data-center">
+                2023-10-15
+              </td>
+              <td class="table-data-center">
+                처리 대기중
+              </td>
+              <td class="table-data-center">
+                -
+              </td>
+
+
+
+            </tr>
+            <tr>
+              <td class="table-data-center">
+                <input type="checkbox" name="selectList">
+              </td>
+              <td class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+              </td>
+              <td  class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/Swapping/detail}">ORD_20230922_000001</a>
+              </td>
+              <td class="table-data-center">
+                <a >-</a>
+              </td>
+              <td class="table-data-center">
+                id100
+              </td>
+
+              <td class="table-data-center">
+                단순변심
+              </td>
+              <td class="table-data-center">
+                교환 원해요
+              </td>
+
+              <td  class="table-data-center">
+                생각보다 너무 커서 교환 원합니다
+              </td>
+
+              <td class="table-data-center">
+                2023-10-15
+              </td>
+              <td class="table-data-center">
+                처리 대기중
+              </td>
+              <td class="table-data-center">
+                -
+              </td>
+
+
+
+            </tr>
+            <tr>
+              <td class="table-data-center">
+                <input type="checkbox" name="selectList">
+              </td>
+              <td class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/detail}">ORD_20230922_000001</a>
+              </td>
+              <td  class="table-data-center">
+                <a class="detail-link" th:href="@{/seller/reword/order/Swapping/detail}">ORD_20230922_000001</a>
+              </td>
+              <td class="table-data-center">
+                <a >-</a>
+              </td>
+              <td class="table-data-center">
+                id100
+              </td>
+
+              <td class="table-data-center">
+                단순변심
+              </td>
+              <td class="table-data-center">
+                교환 원해요
+              </td>
+
+              <td  class="table-data-center">
+                생각보다 너무 커서 교환 원합니다
+              </td>
+
+              <td class="table-data-center">
+                2023-10-15
+              </td>
+              <td class="table-data-center">
+                처리 대기중
+              </td>
+              <td class="table-data-center">
+                -
+              </td>
+
+
+
+            </tr>
+          </tbody>
+        </table>
+      </form>
+      <!-- list pager -->
+      <div class="board-page-area">
+        <div class="list-controller-inner">
+          <ul>
+            <li class="link-active"><a th:href="@{#}">1</a></li>
+            <li><a th:href="@{#}">2</a></li>
+            <li><a th:href="@{#}">3</a></li>
+            <li><a th:href="@{#}">4</a></li>
+            <li><a th:href="@{#}">5</a></li>
+            <li><a th:href="@{#}">6</a></li>
+          </ul>
+          <div class="list-btn-area">
+            <button class="prev-transfer">
+              <span>prev</span>
+            </button>
+            <button class="next-transfer">
+              <span>next</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</th:block>
+</body>
+</html>

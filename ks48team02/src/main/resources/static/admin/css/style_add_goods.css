@@ -1,0 +1,235 @@
+.admin-addgoods-area .admin-table {
+  margin-bottom: 50px;
+}
+.admin-addgoods-area .admin-table caption {
+  display: none;
+}
+.admin-addgoods-area .product {
+  width: 145px;
+}
+.admin-addgoods-area td, .admin-addgoods-area th {
+  text-align: left;
+  padding: 14px 16px;
+}
+.admin-addgoods-area td {
+  color: #141515;
+  font-weight: 500;
+}
+.admin-addgoods-area th {
+  color: #232324;
+  vertical-align: top;
+}
+.admin-addgoods-area label {
+  margin: 0 14px 0 0;
+  vertical-align: top;
+  font-weight: 400;
+  color: #b7b7b7;
+}
+.admin-addgoods-area .icoRequired {
+  background: #dd5454;
+  font-size: 7px;
+  padding: 1px 2px;
+  line-height: 1;
+  color: #ece6e6;
+  border-radius: 3px;
+  margin-left: 3px;
+}
+.admin-addgoods-area input[type=text],
+.admin-addgoods-area input[type=number],
+.admin-addgoods-area textarea {
+  width: 550px;
+  font-size: 12px;
+  padding: 8px 10px;
+  border: 1px solid #eee;
+}
+.admin-addgoods-area input[type=text]:focus,
+.admin-addgoods-area input[type=number]:focus,
+.admin-addgoods-area textarea:focus {
+  outline: 1px solid #29B260;
+  background: #f7faf7;
+}
+.admin-addgoods-area input[type=text] ~ span {
+  margin-left: 5px;
+  font-weight: 500;
+  color: #353737;
+}
+.admin-addgoods-area input[type=text] ~ span em {
+  padding: 0 3px;
+  color: #29B260;
+}
+
+.admin-comment {
+  color: #9d9d9d;
+  font-size: 11px;
+  padding: 5px 0 0;
+  margin-top: 5px;
+}
+
+.product-desc textarea {
+  width: 750px;
+}
+
+input {
+  margin: 0 3px 1px 0;
+}
+
+.goods-display #displaying:checked ~ .displaying,
+.goods-display #nondisplay:checked ~ .nondisplay {
+  color: #141515;
+  font-weight: 600;
+}
+
+.goods-table-caption th {
+  background: transparent;
+  color: #141515;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 20px;
+}
+
+.goods-category table {
+  width: 600px !important;
+}
+.goods-category table thead th {
+  font-weight: 300;
+  color: #a3a3a3;
+}
+.goods-category table td {
+  padding: 0;
+  vertical-align: middle;
+}
+.goods-category table tr {
+  border-collapse: collapse;
+  border: 1px solid #eee;
+}
+
+.category-list {
+  height: 220px;
+  overflow: auto;
+}
+.category-list li {
+  padding: 18px 20px;
+  cursor: pointer;
+  font-weight: 400;
+  position: relative;
+  border-bottom: 1px solid #eee;
+  border-collapse: collapse;
+}
+.category-list li::after {
+  content: "";
+  display: block;
+  width: 20px;
+  height: 20px;
+  background: #eee;
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.goods-rectrictions td {
+  display: flex;
+}
+
+#restrictions:checked ~ .restrictions,
+#non-restrictions:checked ~ .non-restrictions {
+  color: #141515;
+  font-weight: 600;
+}
+
+.product-price input[type=text],
+.product-percent input[type=text],
+.product-buy input[type=text],
+.product-delivery input[type=text] {
+  width: 130px;
+}
+
+#thumb-file ~ label {
+  font-size: 12px;
+  color: #57565a;
+  padding: 4px 10px;
+  background: #efeff2;
+  border: 1px solid #bbbbbb;
+  border-radius: 2px;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.product-img td {
+  display: flex;
+  align-items: center;
+}
+.product-img td label {
+  margin-right: 8px;
+}
+
+input[type=file] {
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+#file-url {
+  outline: none;
+  border: none;
+  height: 22px;
+  padding: 0;
+}
+
+input[type=number] {
+  padding: 8px 3px 8px 10px !important;
+}
+
+.category_title span {
+  color: #29B260;
+  font-weight: 600;
+  margin-right: 5px;
+}
+
+.admin-desc-icon:hover .comment-box {
+  display: block;
+}
+
+.comment-box {
+  display: none;
+  position: absolute;
+  width: 190px;
+  line-height: 1.4;
+  background: #fff;
+  outline: 1px solid #bbbbbb;
+  padding: 16px 20px;
+  box-shadow: 1px 1px 15px rgba(205, 204, 210, 0.458);
+  z-index: 50;
+  text-align: left;
+}
+
+.submit-btn-area {
+  display: flex;
+  justify-content: right;
+  gap: 10px;
+}
+.submit-btn-area button {
+  border: 1px solid #000;
+  background: #000;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.4s;
+  padding: 10px 15px;
+  font-size: 14px;
+}
+.submit-btn-area button:hover {
+  background: #29B260;
+  cursor: pointer;
+  border: 1px solid #29B260;
+  color: #fff;
+}
+.submit-btn-area .frm-save-btn {
+  background: transparent;
+  color: #141515;
+}
+.err_message {
+  font-family: "Pretendard";
+  font-size: 12px;
+  color: #FF4242;
+}

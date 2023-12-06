@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+
+
+    <nav class=" reward_nav navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar-detail" th:fragment="headerNavFragment" style="height: 50px;">
+        <div class="container">
+            <div class="top-left-conts">
+
+                <div style="margin-left: 350px;"></div>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav-detail" aria-controls="#ftco-nav-detail" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="oi oi-menu"></span> Menu
+                </button>
+
+                <div class="collapse navbar-collapse" id="ftco-nav-detail">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item" id="story">
+                            <a th:href="@{/user/reward/detail(rewardProjectCode=${rewardProject.rewardProjectCode})}" class="nav-link">스토리</a>
+                        </li>
+                        <li class="nav-item" id="news">
+                            <a th:href="@{/user/reward/detail/news(rewardProjectCode=${rewardProject.rewardProjectCode})}" class="nav-link">새소식</a>
+                        </li>
+                        <li class="nav-item" id="preReview">
+                            <a th:href="@{/user/reward/detail/preReview(rewardProjectCode=${rewardProject.rewardProjectCode})}" class="nav-link">사전체험 후기</a>
+                        </li>
+                        <li class="nav-item" id="comments">
+                            <a th:href="@{/user/reward/detail/comment(rewardProjectCode=${rewardProject.rewardProjectCode})}" class="nav-link">댓글</a>
+                        </li>
+                        <li class="nav-item" id="policy">
+                            <a th:href="@{/user/reward/detail/refundPolicy(rewardProjectCode=${rewardProject.rewardProjectCode})}" class="nav-link">환불.정책</a>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+
+        </div>
+    </nav>
+
+</html>

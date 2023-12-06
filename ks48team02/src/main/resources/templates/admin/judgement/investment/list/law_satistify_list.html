@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+        // 현재 URL 가져오기
+        let currentUrl = window.location.href;
+
+        // 특정 키와 값 설정
+        let searchKey = 'searchKey';
+        let searchValue = 'searchValue';
+        let amDateSettStartDate = 'amDateSettStartDate';
+        let amDateSettEndDate = 'amDateSettEndDate';
+        let searchSelectValue = 'searchSelectValue';
+        let currentPage = 'currentPage';
+        let lastPage = 'lastPage';
+        let startPageNum = 'startPageNum';
+        let endPageNum = 'endPageNum';
+
+        // URL 파싱하여 쿼리스트링 맵으로 변환
+        let urlParams = new URLSearchParams(window.location.search);
+
+        // 특정 키와 값 제거
+        urlParams.delete(searchKey);
+        urlParams.delete(searchValue);
+        urlParams.delete(amDateSettStartDate);
+        urlParams.delete(amDateSettEndDate);
+        urlParams.delete(searchSelectValue);
+        urlParams.delete(currentPage);
+        urlParams.delete(lastPage);
+        urlParams.delete(startPageNum);
+        urlParams.delete(endPageNum);
+
+        // 수정된 쿼리스트링을 URL에 반영
+        let newUrl = currentUrl.split('?')[0] + '?' + urlParams.toString();
+
+        if (window.location.href !== newUrl) {
+
+            // history.replaceState를 사용하여 주소창에서 쿼리스트링 숨기기
+            history.replaceState({}, document.title, newUrl);
+        }
+    </script>
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+
+    <div th:include="~{admin/judgement/investment/search/law_satistify_search :: searchFragment}"></div>
+    <br>
+
+    <h4 class="admin-content-title">자본시장법 범위충족기준 목록</h4>
+
+    <div class="admin-content-wrapper">
+
+        <div class="data-info">
+            <div class="list-count-area">
+                <ul>
+                    <li>충족기준 개수 총 <span class="count-data total-list">0</span>건</li>
+                    <li>선택 항목 총 <span class="count-data select-list-count">0</span>건</li>
+                </ul>
+            </div>
+        </div>
+
+        <table class="settlement-log">
+            <thead>
+            <tr>
+                <th>
+                    <input type="checkbox" name="allSelect" id="allSelectBtn">
+                </th>
+                <th>자본시장법 범위충족 코드</th>
+                <th>자본시장법 범위충족 사유</th>
+                <th>등록자 아이디</th>
+                <th>등록일시</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${lawSatistifyReasonList == null}">
+                <td>
+                    <input type="checkbox" name="selectList">
+                </td>
+                <td colspan="5">자본시장법 범위충족 목록이 없습니다.</td>
+            </tr>
+            <tr th:unless="${lawSatistifyReasonList == null}" th:each="l : ${lawSatistifyReasonList}">
+                <td>
+                    <input type="checkbox" name="selectList">
+                </td>
+                <td>
+                    <a class="detail-link"
+                       th:href="@{/admin/investment/view/law-satistify(lawSatistifyCode=${l.lawSatistifyCode})}"
+                       th:text="${l.lawSatistifyCode}"></a>
+                </td>
+                <td th:text="${l.lawSatistifyReason}"></td>
+                <td th:text="${l.memberId}"></td>
+                <td th:text="${l.codeRegDay}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+
+
+        <div class="board-page-area">
+            <div class="list-controller-inner">
+                <ul>
+                    <li><a th:href="@{/admin/investment/search/law-satistify(searchKey=${searchKey}, searchValue=${searchValue}, amDateSettStartDate=${amDateSettStartDate}, amDateSettEndDate=${amDateSettEndDate})}"><<</a></li>
+                    <li><a th:if="${currentPage > 1}"
+                           th:href="@{/admin/investment/search/judge(currentPage=${currentPage - 1}, searchKey=${searchKey}, searchValue=${searchValue}, amDateSettStartDate=${amDateSettStartDate}, amDateSettEndDate=${amDateSettEndDate})}">&lt;</a>
+                        <span th:unless="${currentPage > 1}">&lt;</span>
+                    </li>
+                    <th:block th:each="num : ${#numbers.sequence(startPageNum, endPageNum)}">
+                        <a th:if="${num != currentPage}"
+                           th:href="@{/admin/investment/search/law-satistify(currentPage=${num}, searchKey=${searchKey}, searchValue=${searchValue}, amDateSettStartDate=${amDateSettStartDate}, amDateSettEndDate=${amDateSettEndDate})}">[[${'[' + num + ']'}]]</a>
+                        <span th:unless="${num != currentPage}" th:text="|[${num}]|"></span>
+                    </th:block>
+                    <li><a th:if="${currentPage < lastPage}"
+                           th:href="@{/admin/investment/search/law-satistify(currentPage=${currentPage +1}, searchKey=${searchKey}, searchValue=${searchValue}, amDateSettStartDate=${amDateSettStartDate}, amDateSettEndDate=${amDateSettEndDate})}">></a>
+                        <span th:unless="${currentPage < lastPage}">></span>
+                    </li>
+                    <li><a th:href="@{/admin/investment/search/law-satistify(currentPage=${lastPage}, searchKey=${searchKey}, searchValue=${searchValue}, amDateSettStartDate=${amDateSettStartDate}, amDateSettEndDate=${amDateSettEndDate})}">>></a></li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="btn-area">
+        <ul>
+            <li>
+                <button type="button" class="submitBtn"
+                        th:onclick="|location.href='@{/admin/investment/insert/law-satistify}'|">
+                    등록하기
+                </button>
+            </li>
+        </ul>
+    </div>
+
+</th:block>
+</html>

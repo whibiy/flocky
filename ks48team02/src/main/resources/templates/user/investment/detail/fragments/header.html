@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+
+<th:block layout:fragment="customContents">
+    <nav class=" investment_nav navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar-detail" th:fragment="headerNavFragment" style="height: 50px;">
+        <div class="container">
+            <div class="top-left-conts">
+
+                <div style="margin-left: 400px;"></div>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav-detail" aria-controls="#ftco-nav-detail" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="oi oi-menu"></span> Menu
+                </button>
+
+                <div class="collapse navbar-collapse" id="ftco-nav-detail">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item" id="story">
+                            <a th:href="@{/user/investment/detail/main(investmentCode=${investmentInfo.investmentCode})}" class="nav-link">온라인IR</a>
+                        </li>
+                        <li class="nav-item" id="news">
+                            <a th:href="@{/user/investment/detail/news(investmentCode=${investmentInfo.investmentCode})}" class="nav-link">새소식</a>
+                        </li>
+                        <li class="nav-item" id="comments">
+                            <a th:href="@{/user/investment/detail/comment(investmentCode=${investmentInfo.investmentCode})}" class="nav-link">커뮤니티</a>
+                        </li>
+                        <li class="nav-item" id="investor">
+                            <a th:href="@{/user/investment/detail/investor(investmentCode=${investmentInfo.investmentCode})}" class="nav-link">투자위험고지</a>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+
+        </div>
+    </nav>
+
+
+</th:block>
+</html>

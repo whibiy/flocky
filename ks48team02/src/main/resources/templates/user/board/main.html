@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layout/default}">
+<head>
+    <meta charset="UTF-8">
+    <title>플로키 전체 공지 사항</title>
+    <link rel="stylesheet" th:href="@{/user/css/boardStyle.css}">
+</head>
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- html 사용자 조각 작성 -->
+<th:block layout:fragment="customContents">
+    <form id="fowardForm" method="get">
+        <input type="hidden" id="returnURL" name="returnURL" />
+    </form>
+    <input type="hidden" id="loginCheck" value="false">
+    <div class="ui-header">
+        <h2 class="title">전체</h2>
+    </div>
+
+    <div class="ui-taps">
+        <ul>
+            <li class="board">
+                <a th:href="@{/user/board}">전체</a>
+            </li>
+            <li class="board">
+                <a th:href="@{/user/board/board}">공지</a>
+            </li>
+            <li class="board">
+                <a th:href="@{/user/board/event}">이벤트</a>
+            </li>
+        </ul>
+    </div>
+
+    <ul class="noticeContentArea">
+        <li>
+            <a class="article " th:href="@{/user/board/event_1}">
+                <div class="info">
+                    <div>
+                        <em class="notice">이벤트</em>
+                        <em class="notice">BEST</em>
+                        <h3 class="title-1">[서비스 안내] 플로키 오픈 이벤트</h3>
+                        <span class="author">김플로 </span><span class="created-at">2023.10.19</span>
+                    </div>
+
+                    <div class="thumb" style="background : url('/user/images/board/rewardBoard.jpg') no-repeat center center / cover;"></div>
+                </div>
+            </a>
+        </li>
+    </ul>
+
+    <ul class="noticeContentArea">
+        <li>
+            <a class="article " th:href="@{/user/board/3}">
+
+                <div class="info">
+                    <div>
+                        <em class="notice">공지</em>
+                        <em class="notice">BEST</em>
+                        <h3 class="title-1">[서비스 안내] 플로키 서비스 투자 오픈</h3>
+                        <span class="author">김플로 </span><span class="created-at">2023.10.18</span>
+                    </div>
+
+                    <div class="thumb" style="background : url('/user/images/board/investmentBoard.jpeg') no-repeat center center / cover;"></div>
+                </div>
+            </a>
+        </li>
+    </ul>
+
+    <ul class="noticeContentArea">
+        <li>
+            <a class="article " th:href="@{/user/board/2}">
+
+                <div class="info">
+                    <div>
+                        <em class="notice">공지</em>
+                        <em class="notice">BEST</em>
+                        <h3 class="title-1">[서비스 안내] 플로키 서비스 리워드 오픈</h3>
+                        <span class="author">김플로 </span><span class="created-at">2023.10.18</span>
+                    </div>
+
+                    <div class="thumb" style="background : url('/user/images/board/rewardBoard.jpg') no-repeat center center / cover;"></div>
+                </div>
+            </a>
+        </li>
+    </ul>
+
+    <ul class="noticeContentArea">
+        <li>
+            <a class="article " th:href="@{/user/board/1}">
+
+                <div class="info">
+                    <div>
+                        <em class="notice">공지</em>
+                        <em class="notice">BEST</em>
+                        <h3 class="title-1">[서비스 안내] 플로키 서비스 오픈</h3>
+                        <span class="author">김플로 </span><span class="created-at">2023.10.18</span>
+                    </div>
+
+                    <div class="thumb" style="background: url('/user/images/board/congratulation.jpeg') no-repeat center center / cover;"></div>
+                </div>
+            </a>
+        </li>
+    </ul>
+
+    <div class="pageBtn">
+        <!--        <button class="prev-page icon-chevron-left" onclick="movePage(0)" disabled>-->
+        <button class="text-hidden"></button>
+
+
+        <a class="page1" href="#" onclick="movePage(1)">1</a>
+
+        <a class="page1" href="#" onclick="movePage(2)">2</a>
+
+        <a class="page1" href="#" onclick="movePage(3)">3</a>
+
+        <a class="page1" href="#" onclick="movePage(4)">4</a>
+
+        <a class="page1" href="#" onclick="movePage(5)">5</a>
+
+        <a class="page1" href="#" onclick="movePage(6)">6</a>
+
+        <!--        <button class="next-page icon-chevron-right" onclick="movePage(7)" >-->
+        <button class="text-hidden"></button>
+
+    </div>
+
+    <div class="search">
+        <!--        셀렉트박스-->
+        <select name="search-1">
+            <option value="title">제목+내용</option>
+            <option value="title1">제목</option>
+            <option value="content">내용</option>
+        </select>
+        <input id="searchTextBoard" name="searchText" class="search-form" type="text" placeholder="검색어를 입력해주세요"/>
+        <button class="btn-search" type="submit">검색</button>
+    </div>
+
+</th:block>
+
+</html>

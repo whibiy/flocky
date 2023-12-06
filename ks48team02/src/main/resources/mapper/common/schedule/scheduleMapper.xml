@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksmart.ks48team02.common.mapper.schedule.ScheduleMapper">
+    <select id="projectApproveCheck" resultType="OrderTableList">
+        SELECT
+            order_code AS orderCode,
+            member_id AS memberId,
+            order_category_code AS orderCategoryCode,
+            order_name AS orderName,
+            order_funding_name AS orderFundingName,
+            order_total_price AS orderTotalPrice,
+            order_category_detail AS orderCategoryDetail,
+            goods_code AS goodsCode,
+            order_application_date AS orderApplicationDate,
+            order_confirm_date AS orderConfirmDate,
+            order_cancell_date AS orderCancellDate
+        FROM
+            order_table
+        WHERE
+            order_category_code = 'ORDC_002';
+    </select>
+
+    <update id="projectApprove" parameterType="String">
+        UPDATE
+            order_table
+        SET
+            order_category_code = 'ORDC_007',
+            order_confirm_date = NOW()
+        WHERE
+            order_code = #{orderCode};
+    </update>
+
+    <insert id="orderConfirm" parameterType="String">
+        <selectKey keyProperty="orderConfirmationLogCode" resultType="String" order="BEFORE">
+            SELECT
+                (CASE
+                    WHEN
+                        COUNT(order_confirmation_log_code) = 0  THEN CONCAT('OLC_', CURDATE()+0, '_1')
+                    ELSE
+                        CONCAT('OLC_', CURDATE()+0 ,'_' ,MAX(CAST(substring_index(order_confirmation_log_code,'_',-1)AS UNSIGNED )+1))
+                END) AS orderConfirmationLogCode
+            FROM
+                order_confirmation_log
+            WHERE
+                SUBSTRING_INDEX(SUBSTRING_INDEX(order_confirmation_log_code ,'_',2),'_',-1) = CURDATE()+0;
+        </selectKey>
+        INSERT INTO order_confirmation_log
+            (order_confirmation_log_code, member_id, project_partition, order_code, project_code, order_confirmation_date,
+             order_price_total, add_reserve_price, add_flover, add_reserve_code, add_flover_code)
+        VALUES
+            (#{orderConfirmationLogCode}, #{memberId}, 'don', #{orderCode}, #{goodsCode}, NOW(), #{orderPriceTotal}, 0, 0, NULL, NULL)
+    </insert>
+
+    <select id="getDonationList">
+        SELECT
+            d.donation_code AS donationCode,
+            d.store_code AS storeCode,
+            d.member_id AS memberId,
+            d.donation_judgement_reason_code AS donationJudgementReasonCode,
+            d.admin_member_id AS adminMemberId,
+            d.total_category_code AS totalCategoryCode,
+            d.donation_subject AS donationSubject,
+            d.donation_like AS donationLike,
+            d.donation_contents AS donationContents,
+            d.donation_image AS donationImage,
+            d.donation_reg_date AS donationRegDate,
+            d.donation_start_date AS donationStartDate,
+            d.donation_end_date AS donationEndDate,
+            d.donation_achievement_money AS donationAchievementMoney,
+            d.donation_goal_money AS donationGoalMoney,
+            d.donation_achievement_percent AS donationAchievementPercent,
+            d.donation_judgment_reason_detail AS donationJudgmentReasonDetail,
+            d.donation_judgement_date AS donationJudgementDate,
+            d.search_count AS searchCount,
+            d.donation_condition AS donationCondition
+        FROM
+            donation AS d
+    </select>
+    
+    <update id="projectConditionUpdate" parameterType="String">
+        UPDATE
+            donation
+        SET
+            donation_condition = #{condition}
+        WHERE
+            donation_code = #{donationCode};
+    </update>
+
+    <select id="getOrderTableByGoodsCode" resultType="OrderTableList">
+        SELECT
+            order_code AS orderCode,
+            member_id AS memberId,
+            order_category_code AS orderCategoryCode,
+            order_name AS orderName,
+            order_funding_name AS orderFundingName,
+            order_total_price AS orderTotalPrice,
+            order_category_detail AS orderCategoryDetail,
+            goods_code AS goodsCode,
+            order_application_date AS orderApplicationDate,
+            order_confirm_date AS orderConfirmDate,
+            order_cancell_date AS orderCancellDate
+        FROM
+            order_table
+        WHERE
+            goods_code = #{donationCode};
+    </select>
+
+</mapper>

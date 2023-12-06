@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layout/default}">
+<head>
+    <meta charset="UTF-8">
+    <title>사용자 쿠폰 존</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <style>
+    .title{
+      margin-top: 30px;
+    }
+    .couponArea{
+      width: 900px;
+      margin: 0 auto;
+    }
+    .couponTitle{
+      margin-right: 20px;
+    }
+    .couponArea{
+      width: 900px;
+      margin: 0 auto;
+    }
+    ul.couponArea {
+      display: flex;
+      gap: 10px;
+    }
+    ul.couponArea li {
+      padding: 5px 0;
+      margin-bottom: 20px;
+    }
+    .couponAreas{
+      width: 900px;
+      margin: 0 auto;
+    }
+    .couponZone{
+      box-shadow: 0 2px 30px rgba(0,0,0,.15);
+      background: #fff;
+      padding: 16px;
+      line-height: 18px;
+      color: rgba(0,0,0,.84);
+      font-size: 14px;
+      margin-top: 30px;
+    }
+    .buttonDownload{
+      display: flex;
+      align-items: center;
+      background: none;
+      cursor: pointer;
+      line-height: 18px;
+      color: rgba(0,0,0,.54);
+      font-size: 13px;
+      font-weight: 400;
+      border: none;
+      margin-bottom: 10px;
+    }
+    .couponDiscount{
+      margin: 4px 0 8px;
+      line-height: 28px;
+      color: #3359cc;
+      font-size: 21px;
+      font-weight: 700;
+    }
+    .details{
+      display: none;
+    }
+    .couponTable{
+      padding-right: 11px;
+      font-size: 12px;
+      margin-top: 20px;
+      font-weight: 400;
+      color: #a6a6a6;
+    }
+    .couponTable th{
+      padding-right: 11px;
+    }
+    .couponPolicy{
+      width: 900px;
+      margin: 0 auto;
+    }
+    .couponPolicy ol,
+    .couponPolicy li {
+      list-style-type: decimal;
+    }
+    .couponPolicy ol {
+      margin-left: 30px;
+    }
+    .tab-btn-area{
+      border-bottom: 1px solid #EEE;
+    }
+    .couponIssued{
+      text-align: right;
+    }
+    .couponGood{
+      font-size: 20px;
+      padding: 5px;
+      background: #235FD9;
+      border: 1px solid #235FD9;
+      color: #fff;
+      border-radius: 30px;
+    }
+    .couponCount{
+      width: 900px;
+      margin: 0 auto;
+    }
+  </style>
+  <script>
+    window.onload = function() {
+      document.querySelector('.buttonDownload').addEventListener('click', function() {
+        var details = document.querySelector('.details');
+        if (details.style.display === 'none') {
+          details.style.display = 'block';
+        } else {
+          details.style.display = 'none';
+        }
+      });
+    };
+  </script>
+</head>
+<body>
+
+<th:block layout:fragment="customContents">
+
+  <div class="couponArea">
+    <h2 class="title">쿠폰존</h2>
+  </div>
+  <div class="tab-btn-area">
+    <ul class="couponArea">
+      <li>
+        <a class="couponTitle" th:href="@{/user/mypage}">나의 쿠폰</a>
+      </li>
+
+      <li>
+        <a class="couponTitle" th:href="@{'#'}">지난 쿠폰 내역</a>
+      </li>
+
+    </ul>
+  </div>
+  <div class="couponCount">
+    <strong>현재 발급 받을수 있는 쿠폰</strong>
+  </div>
+<div class="couponAreas">
+  <div class="couponZone" style="width: 500px;">
+    <br>
+    <aa class="couponComment">스토어 인기 급상승 20% 쿠폰</aa>
+    <br>
+    <aa class="couponDiscount">
+      <span>20%</span>
+    </aa>
+    <br><br>
+    <dd>
+      <p>발급후 30일 까지 사용가능</p>
+    </dd>
+
+    <button type="button" class="buttonDownload">
+      상세 조건
+      <i class="bi bi-chevron-double-down"></i>
+    </button>
+
+    <div class="details">
+      <table class="couponTable">
+        <tbody>
+        <tr>
+          <th class="couponDate" scope="row">발급기간</th>
+            <td>
+              발급 후 30일 까지 사용가능
+            </td>
+        </tr>
+        <tr>
+          <th scope="row">사용조건</th>
+          <td>30000원 이상 상품 구매시
+            <br>
+            최대 10000원 할인 가능
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="couponIssued">
+      <button class="couponGood" type="submit">발급</button>
+    </div>
+  </div>
+</div>
+
+
+  <br><br><br><br><br><br>
+<div class="couponPolicy">
+  <strong>쿠폰 이용안내</strong>
+    <ol>
+      <li>본 쿠폰은 다운(쿠폰 받기)후, 사용할 수 있습니다.</li>
+      <li>쿠폰은 펀딩, 리워드, 투자, 기부, 서비스 이용 시 사용할 수 있습니다.</li>
+      <li>쿠폰은 다른 쿠폰과 중복하여 사용할 수 없습니다.</li>
+      <li>쿠폰의 구체적인 사용 조건은 발행되는 쿠폰 별로 다를 수 있습니다.</li>
+      <li>쿠폰 이용에 대한 자세한 안내는 <a href="/user/inquiry">1:1 문의</a>를 이용해 주세요.</li>
+    </ol>
+</div>
+  <br><br>
+</th:block>
+
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layout/default}">
+<head>
+  <meta charset="UTF-8">
+  <title>플로키 1:1문의</title>
+  <link rel="stylesheet" th:href="@{/user/css/inquiryStyle.css}">
+</head>
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<th:block layout:fragment="customJsCode">
+  <script>
+    $('.inquiryCate').on('change', function(){
+      let selectData = $('.inquiryCate').val();
+
+      if(selectData === 'flocky'){
+        location.href= '/user/inquiry/add';
+      }
+    });
+  </script>
+</th:block>
+<!-- html 사용자 조각 작성 -->
+<th:block layout:fragment="customContents">
+  <form id="fowardForm" method="get">
+    <input type="hidden" id="returnURL" name="returnURL" />
+  </form>
+  <input type="hidden" id="loginCheck" value="false">
+
+  <div class="inquiryContentArea1">
+    <h2>스토어 문의 등록</h2>
+    <br>
+    <h5>문의 하실 내용을 선택해주세요 🥹</h5>
+    <br>
+
+    <select class="inquiryCate">
+      <option>------</option>
+      <option value="flocky">플로키 문의하기</option>
+      <option value="store">스토어 문의하기</option>
+    </select>
+    <div class="emailAddr">
+      <p>이메일 주소</p>
+      <input class="textlen" type="text" placeholder="이메일 주소를 입력해 주세요.">
+    </div>
+
+    <div class="InquiryCategory">
+      <p>문의 분류</p>
+      <select class="InquirerCate">
+        <option>------</option>
+        <option>스토어 문의</option>
+      </select>
+      <div class="InquiryCategory">
+        <p>문의 상세 분류</p>
+        <select class="InquirerCate">
+          <option>------</option>
+          <option>스토어 관련 문의</option>
+        </select>
+      </div>
+    </div>
+
+    <br><br><br>
+
+    <div class="detailComment">
+      <p>문의 하실 내용을 상세하게 적어주세요 🫶</p>
+      <div class="comment-1">
+        <textarea name="textarea" rows="5" cols="115" placeholder="세부 내용"></textarea>
+      </div>
+    </div>
+
+    <br>
+
+    <div class="InquiryCategory">
+      <p>희망 답변 경로를 선택해 주세요 ❣️</p>
+      <select class="InquiryRequest">
+        <option>------</option>
+        <option>문자</option>
+        <option>이메일</option>
+        <option>문자 + 이메일</option>
+      </select>
+    </div>
+
+    <br><br>
+
+    <div class="fileArea"></div>
+    <p>파일 추가</p>
+    <span>
+            <input class="form-control" id="detailImage" type="file" multiple />
+        </span>
+
+    <div class="inquiryBtnArea">
+      <input class="inquiryBtn3" type="submit" name="commit" value="제출">
+    </div>
+
+  </div>
+</th:block>
+
+</html>
+
+
+

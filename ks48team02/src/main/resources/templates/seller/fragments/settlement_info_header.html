@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+            <div class="sett-total-data admin-content-wrapper form-table" style="justify-content: space-between" th:fragment="settlementInfoHeader">
+                <div style="width:60%; display: flex;">
+                    <div class="sett-total-item" style="width:50%;">
+                        <h5>가장 임박한 정산 예정일</h5>
+                        <div class="sett-total-item-data"><span>2023-11-23</span></div>
+                    </div>
+                    <div class="sett-total-item" style="width:50%;">
+                        <h5>총 정산받은 금액</h5>
+                        <div class="sett-total-item-data"><a class="price-data" data-value="623503201">0</a>원</div>
+                    </div>
+                </div>
+
+                <div class="link-a-area" style="display: flex; width: 45%;">
+                    <div class="sett-total-item" style="width:30%;">
+                        <h5>처리전</h5>
+                        <div class="sett-total-item-data"><a th:href="@{#}" data-value="15">0</a>건</div>
+                    </div>
+                    <div class="sett-total-item" style="width:25%;">
+                        <h5>처리중</h5>
+                        <div class="sett-total-item-data"><a th:href="@{#}" data-value="1">0</a>건</div>
+                    </div>
+                    <div class="sett-total-item" style="width:45%;">
+                        <h5>처리완료</h5>
+                        <div class="sett-total-item-data"><a th:href="@{#}" data-value="13052">0</a>건</div>
+                    </div>
+                </div>
+
+            </div>
+
+</html>

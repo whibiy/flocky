@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <!-- Link Swiper's CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"/>
+    <link rel="stylesheet" th:href="@{/user/css/swiper-event-css.css}"/>
+    <link rel="stylesheet" th:href="@{/user/css/main_style.css}"/>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
+          integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+
+    <!-- include summernote css/js -->
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+
+    <style>
+        .info-contents-area {
+            display: none; /*진열안함*/
+        }
+
+        /* 탭 활성화 버튼 css control */
+        .list-group li.active {
+            background: var(--maincolor);
+        }
+    </style>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <!-- 	  	<script th:src="@{user/js/swiper-slide-event.js}"></script> -->
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/locales/bootstrap-datepicker.ko.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+
+</th:block>
+
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+
+    <script type="text/javascript">
+        $(function () {
+
+            //유효성 검사를 위한 validationCheck 함수.
+            function validationCheck(data) {
+                let isValid = true;
+
+                //1.인수 값이 객체일 경우
+                if (typeof data == 'object') {
+
+                    $.each(data, function (idx, item) {
+                        let checkValue = $(this).val();
+
+                        //summerNote일 경우
+                        if($(item).attr('id') == 'projectContents') {
+                            let noteIsEmpty = $('#projectContents').summernote('isEmpty');
+                            console.log(noteIsEmpty);
+                            if(noteIsEmpty){
+                                isValid = false;
+                                let eleId = $(this).attr('id');
+                                let cate = $(`label[for="${eleId}"]`).text();
+                                alert(`${cate} 필수 입력 항목입니다.`);
+                                $('#projectContents').summernote('focus');
+                                return isValid;
+                            }
+                        }
+                        else{
+                            if (checkValue === null || checkValue === '' || checkValue === 'undefined' ) {
+                                isValid = false;
+                                let eleId = $(this).attr('id');
+                                let cate = $(`label[for="${eleId}"]`).text();
+                                alert(`${cate} 필수 입력 항목입니다.`);
+                                $(this).focus();
+                                return isValid;
+                            }
+                        }
+                    });
+                    //2.인수 값이 객체가 아니고 String일 경우
+                } else{
+                    if (data === null || data === '' || data === 'undefined') {
+                        isValid = false;
+                    }
+                }
+                return isValid;
+            }
+
+            //Swiper 생성자 함수
+            let swiper = function () {
+
+                new Swiper(".contents-area", {
+                    slidesPerView: 3,
+                    spaceBetween: 20,
+                    navigation: {
+                        nextEl: ".swiper-button-next",
+                        prevEl: ".swiper-button-prev",
+                    },
+                });
+            }
+
+            //왼쪽 탭 선택 시 화면전환
+            $('.list-group li').click(function () {
+                $('.list-group li').removeClass('active');
+                $(this).addClass('active');
+                let clickBunDataTab = $(this).attr('data-tab');
+                $('.info-contents-area').hide();
+                $('#' + clickBunDataTab).show();
+            });
+
+            //다음 단계 버튼 클릭시 화면전환, 빈 값 있는지 유효성 검사.
+            $(document).on('click', '.nextBtn', function(){
+
+                //유효성 검사 진행할 객체 담기
+                let validCheck = $(this).parents('.info-contents-area').find('input, select, #projectContents').not('#modalSearchTagAdd').not('input[class*=note]').not('input[type="checkbox"]');
+                //유효성 검사 진행
+                let isValid = validationCheck(validCheck);
+
+                if(isValid) {
+                    let dataTab = $(this).parents('.info-contents-area').attr('id');
+                    let nextDataTab = $(this).parents('.info-contents-area').next().attr('id');
+                    $(`li[data-tab=${dataTab}]`).removeClass('active');
+                    $(`li[data-tab=${nextDataTab}]`).addClass('active');
+                    $(this).parents('.info-contents-area').hide();
+                    $(this).parents('.info-contents-area').next().show();
+                }
+            });
+
+            //이전 단계 버튼 클릭시 화면전환
+            $('.prevBtn').click(function () {
+                let dataTab = $(this).parents('.info-contents-area').attr('id');
+                let prevDataTab = $(this).parents('.info-contents-area').prev().attr('id');
+                $(`li[data-tab=${dataTab}]`).removeClass('active');
+                $(`li[data-tab=${prevDataTab}]`).addClass('active');
+                $(this).parents('.info-contents-area').hide();
+                $(this).parents('.info-contents-area').prev().show();
+            });
+
+            // 데이트피커 객체 생성
+            // 현재 날짜로 7일 후 부터 프로젝트 시작 할 수 있도록 프로젝트 시작 날짜 설정
+            let projectStartDate = new Date();
+            projectStartDate.setDate(projectStartDate.getDate() + 7)
+            $('#deliverStartDate, #projectEndDate').datepicker({
+                format: "yyyy-mm-dd",
+                startDate: projectStartDate,
+                language: "ko",
+                autoclose: true
+            });
+
+            //summerNote API 설정.
+            $('#projectContents').summernote({
+                height: 700,                 // 에디터 높이
+                minHeight: null,             // 최소 높이
+                maxHeight: null,             // 최대 높이
+                focus: true,                  // 에디터 로딩후 포커스를 맞출지 여부
+                lang: "ko-KR",					// 한글 설정
+                placeholder: '최대 2048자까지 쓸 수 있습니다',	//placeholder 설정
+                callbacks: {	//이미지 첨부 함수
+                    onImageUpload : function(files) {
+                        uploadSummernoteImageFile(files[0],this);
+                    },
+                    onPaste: function (e) {
+                        var clipboardData = e.originalEvent.clipboardData;
+                        if (clipboardData && clipboardData.items && clipboardData.items.length) {
+                            var item = clipboardData.items[0];
+                            if (item.kind === 'file' && item.type.indexOf('image/') !== -1) {
+                                e.preventDefault();
+                            }
+                        }
+                    }
+                }
+            });
+
+            /**
+             * 이미지 파일 업로드
+             */
+            function uploadSummernoteImageFile(file, editor) {
+                data = new FormData();
+                data.append("file", file);
+                $.ajax({
+                    data : data,
+                    type : "POST",
+                    url : "/user/projectRegistration/uploadSummernoteImageFile",
+                    contentType : false,
+                    processData : false,
+                    success : function(data) {
+                        //항상 업로드된 파일의 url이 있어야 한다.
+                        $(editor).summernote('insertImage', data.url);
+                    }
+                });
+            }
+
+            // summernote 드래그 & 드랍 구현
+            $("div.note-editable").on('drop',function(e){
+                for(i=0; i< e.originalEvent.dataTransfer.files.length; i++){
+                    uploadSummernoteImageFile(e.originalEvent.dataTransfer.files[i],$("#projectContents")[0]);
+                }
+                e.preventDefault();
+            })
+
+            // 썸네일 이미지 저장
+            $('#confirmBtn').click(function( ) {
+                if($('#thumbnailImage').val() == '' || typeof $('#thumbnailImage').val() == 'undefined' || $('#thumbnailImage').val() == null){
+                    alert('썸네일을 넣어주세요!');
+                    return;
+                }
+
+                $('#confirmBtn').css('display', 'none');
+                $('#confirmMessage').css('display', 'block');
+                $('#thumbnailImage').css('display', 'none');
+                let formData = new FormData();	//FormData 객체 생성
+                let inputFile = $("input[type='file']"); //input 태그의 type이 file인것을 찾아서 inputFile이라는 변수로 지정
+                let files = inputFile[0].files;
+                //files : 선택한 모든 파일을 나열하는 FileList 객체입니다.
+                //multiple 특성을 지정하지 않닸다면 두 개 이상의 파일을 포함하지 않습니다.
+                for (let i = 0; i < files.length; i++) {
+                    console.log(files[i]);
+                    formData.append("file", files[i]);//키,값으로 append
+                }
+
+                //실제 사진 파일 업로드
+                //upload ajax
+                $.ajax({
+                    url: '/user/projectRegistration/uploadSummernoteImageFile',	//경로
+                    processData: false,	//기본값은 true
+                    //ajax 통신을 통해 데이터를 전송할 때, 기본적으로 key와 value값을 Query String으로 변환해서 보냅니다.
+                    contentType: false,	// multipart/form-data타입을 사용하기위해 false 로 지정합니다.
+                    data: formData,
+                    type: 'POST',
+                    dataType:'json',
+                    success: function(result){
+                        console.log(result.fileName);
+                        $('#confirmThumbnailImage').val(result.fileName); // 이미지 이름 DB 에 저장
+                    },
+                    error: function(jqXHR, textStatus, errorThrown){	//오류 메시지 판정
+                        console.log(textStatus);
+                    }
+                }); //$.ajax
+            });
+
+            //리워드 옵션 추가 버튼 클릭 시 값이 비어있지 않다면 슬라이더 폼 추가
+            $('#rewardAddBtn').click(function () {
+                // 유효성 검사 진행 할 객체 담기
+                let validCheck = $('#rewardAddDiv').find('input, textarea').not('input[placeholder="무료배송"]');
+                // 유효성 검사 진행
+                let isValid = validationCheck(validCheck);
+
+                if(isValid) {
+                    let rewardSubject = $('#rewardSubject').val();
+                    let rewardPrice = $('#rewardPrice').val();
+                    let rewardContents = $('#rewardContents').val();
+                    let deliverStartDate = $('#deliverStartDate').val();
+                    let rewardLimitQuantity = $('#rewardLimitQuantity').val();
+                    let rewardDeliverSelect = $('#rewardDeliverSelect');
+                    let rewardDeliverPrice = $('#rewardDeliverPrice').val();
+
+                    let card = $(' <div class="rewardOption swiper-slide">\n' +
+                        '                    <div class="card border-primary mb-4 shadow-sm">\n' +
+                        '                      <div class="card-header ">\n' +
+                        '                       <span style="background: red; color: white; border-radius: 5px; padding: 2px;"><span class="rewardLimitQuantity">300</span>개</span><br>\n' +
+                        '                        <input name="optionLimitQuantity" class="rewardLimitQuantityHidden" hidden="hidden">\n' +
+                        '                       <span><h5 class="rewardSubject my-0 fw-normal"></h5></span>\n' +
+                        '                       <input name="optionName" class="rewardSubjectHidden" hidden="hidden">\n' +
+                        '                      </div>\n' +
+                        '                      <div class="card-body">\n' +
+                        '                        <p class="text-dark">리워드 내용</p>\n' +
+                        '                        <textarea name="optionContents" class="rewardContents" rows="3" readonly="readonly" style="width: 205px"></textarea>\n' +
+                        '                        <p class="text-dark">리워드 금액</p>\n' +
+                        '                        <input name="optionPrice" class="rewardPriceInput" type="text" readonly value="">\n' +
+                        '                        <p class="text-dark">예상 배송일</p>\n' +
+                        '                        <input name="optionEstimatedDeliveryDate" class="deliverStartDate" type="text" readonly value="">\n' +
+                        '                        <p class="text-dark">배송비</p>\n' +
+                        '                        <input name="optionDeliveryPrice" class="rewardDeliverPrice" type="text" readonly value="">\n' +
+                        '                        <br><br>\n' +
+                        '                        <button type="button" class="modifyBtn w-70 btn btn-sm btn-primary">수정</button>\n' +
+                        '                        <button type="button" class="delBtn w-70 btn btn-sm btn-danger">삭제</button>\n' +
+                        '                      </div>\n' +
+                        '                    </div>\n' +
+                        '                  </div>')
+
+                    $(card).find('.rewardLimitQuantity').text(rewardLimitQuantity);
+                    $(card).find('.rewardSubject').text(rewardSubject);
+                    $(card).find('.rewardLimitQuantityHidden').val(rewardLimitQuantity);
+                    $(card).find('.rewardSubjectHidden').val(rewardSubject);
+                    $(card).find('.rewardContents').text(rewardContents);
+                    $(card).find('.rewardPriceInput').val(`${Number(rewardPrice).toLocaleString('ko-KR')} 원`);
+                    $(card).find('.rewardPriceInput').data('price',rewardPrice);
+                    $(card).find('.deliverStartDate').val(deliverStartDate);
+
+                    if($(rewardDeliverSelect).val() == 1) {
+                        $(card).find('.rewardDeliverPrice').val(`${Number(rewardDeliverPrice).toLocaleString('ko-KR')} 원`);
+                        $(card).find('.rewardDeliverPrice').data('price',rewardDeliverPrice);
+                    } else{
+                        $(card).find('.rewardDeliverPrice').val('무료배송');
+                        $(card).find('.rewardDeliverPrice').data('price',0);
+                    }
+
+                    //리워드 옵션 미리보기 Swiper에 리워드 옵션 담기.
+                    $('.swiper-wrapper').append($(card));
+                    swiper();
+
+                    //리워드 옵션 추가 후 옵션 추가 폼 빈 값으로 대체.
+                    $(validCheck).each((idx,item) =>{
+                        $(item).val('');
+                    });
+                    $(rewardDeliverSelect).val(0);
+                    $(rewardDeliverSelect).change();
+                }
+            });
+
+            //썸네일 이미지 추가 시, 이미지 표시
+            $('#thumbnailImage').change(function(){
+                if($(this).val() != null) {
+                    $('.img-thumbnail').css('display','block');
+                    setImageFromFile(this, '.img-thumbnail');
+                }
+            });
+            function setImageFromFile(input, expression) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $(expression).attr('src', e.target.result);
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+            };
+
+            //초기화 버튼 클릭 시 추가된 슬라이더 폼 모두 삭제
+            $('#rewardInitializeBtn').click(function () {
+                $('.swiper-slide').remove();
+            });
+
+            // //검색 태그 추가 버튼 클릭시 모달 창 열기
+            // $('#modalOpenBtn').click(function (e) {
+            //     e.preventDefault();
+            //     $('#modalSearchTag').modal("show");
+            // });
+            //
+            // //모달 창 닫기
+            // $('#modalCloseBtn').click(function () {
+            //     $('#modalSearchTag').modal("hide");
+            // });
+
+            //모달 창 추가 버튼 누를 시 검색태그 추가
+            // $('#modalActionBtn').click(function () {
+            //     let addTag =$('#modalSearchTagAdd').val();
+            //
+            //     if(validationCheck(addTag)) {
+            //         let addTagVal = `#${addTag} `;
+            //         let searchTag = $('#searchTag').val() + addTagVal;
+            //         $('#searchTag').val(searchTag);
+            //         $('#modalSearchTagAdd').val('');
+            //     }
+            //     $('#modalSearchTag').modal("hide");
+            // });
+
+            //금액 입력하는 input 태그 0원 이하로 입력하지 못하게
+            $('input[type="number"]').change(function(){
+                let inputValue = $(this).val();
+                if(inputValue <= 0) {
+                    $(this).val(1);
+                }
+            });
+
+            //제출하기 버튼 클릭 시 이벤트 (동적바인딩)
+            $(document).on('click','.submitBtn',function(){
+                let option = $('.rewardOption');
+                let rewardOptionLength = option.length;
+                let validCheck = $('#projectRegistrationForm').not('.rewardOption').find('input, select, #projectContents')
+                    .not('#modalSearchTagAdd').not('input[class*=note]').not('input[type="checkbox"]').not('#rewardLimitQuantity')
+                    .not('#rewardPrice').not('#rewardSubject').not('#rewardContents').not('#deliverStartDate').not('#rewardDeliverPrice')
+                    .not('#rewardDeliverSelect');
+
+                let isValid = validationCheck(validCheck);
+
+                if(isValid) {
+                    if(rewardOptionLength < 1) {
+                        alert('리워드 옵션을 추가해주세요.');
+                    } else if(confirm('정말 프로젝트를 등록하시겠습니까?')){
+
+                        const optionList = [];
+                        $(option).each((idx, item)=>{
+                            const optionObj = {};
+
+                            $.each($(item).find('input, textarea'),(idx,item)=>{
+
+                                let key = $(item).attr('name');
+                                let value = $(item).val();
+
+                                if(key === 'optionPrice') {
+                                    value= Number($(item).data('price'));
+                                }
+                                if(key === 'optionDeliveryPrice') {
+                                        value = Number($(item).data('price'));
+                                }
+                                optionObj[key] = value;
+                            })
+                            optionList.push(optionObj);
+                        });
+
+                        const paramReward = {
+                            "rewardOptionList" : optionList
+                        };
+
+                        $(validCheck).each((idx,item)=>{
+                            let key = $(item).attr('name');
+                            let value = $(item).val();
+                            paramReward[key] = value;
+                        });
+                        console.log(paramReward);
+                        const request = $.ajax({
+                            type: 'POST',
+                            traditional : true,
+                            url: '/user/projectRegistration/reward',
+                            contentType: 'application/json',
+                            data: JSON.stringify(paramReward),
+                            dataType: 'text'
+                        });
+                        request.done(function(response){
+                            let redirectURI = response;
+                            parent.location.href = redirectURI;
+                        });
+                        request.fail(function(err){
+                            console.log(err);
+                        });
+                    }
+                }
+            });
+
+            //리워드 옵션배송비 선택 시 배송비 입력할 수 있게
+            $('#rewardDeliverSelect').change(function(){
+                let isDeliverPrice = $(this).val();
+
+                if(isDeliverPrice == 1) {
+                    $('#rewardDeliverPrice').attr('placeholder','배송비');
+                    $('#rewardDeliverPrice').prop('readonly',false);
+                } else{
+                    $('#rewardDeliverPrice').attr('placeholder','무료배송');
+                    $('#rewardDeliverPrice').val('');
+                    $('#rewardDeliverPrice').prop('readonly',true);
+                }
+            });
+
+        });
+
+        //리워드 옵션 미리보기 폼에서 삭제 버튼 클릭 시 폼 삭제
+        $(document).on('click', '.delBtn', function () {
+            $(this).parents('.swiper-slide').remove();
+        });
+
+        //리워드 옵션 미리보기 폼에서 수정 버튼 클릭 시 폼 삭제 후 리워드 추가 폼에 수정할 데이터 입력
+        $(document).on('click', '.modifyBtn', function () {
+            let rewardSubject = $(this).parent().prev().find('.rewardSubject').text();
+            let rewardPrice = $(this).siblings('.rewardPriceInput').data('price');
+            let deliverStartDate = $(this).siblings('.deliverStartDate').val();
+            let rewardContents = $(this).siblings('.rewardContents').val();
+            let rewardLimitQuantity =  $(this).parent().prev().find('.rewardLimitQuantity').text();
+            let rewardDeliverPrice = $(this).siblings('.rewardDeliverPrice').data('price');
+
+
+            $('#rewardSubject').val(rewardSubject);
+            $('#rewardPrice').val(Number(rewardPrice));
+            $('#deliverStartDate').val(deliverStartDate);
+            $('#rewardContents').val(rewardContents);
+            $('#rewardLimitQuantity').val(Number(rewardLimitQuantity));
+
+            let rewardDeliverSelect = $('#rewardDeliverSelect');
+            if(rewardDeliverPrice > 0) {
+                $(rewardDeliverSelect).val(1);
+                $(rewardDeliverSelect).change();
+                $('#rewardDeliverPrice').val(Number(rewardDeliverPrice));
+            } else {
+                $(rewardDeliverSelect).val(0);
+                $(rewardDeliverSelect).change();
+                $('#rewardDeliverPrice').val('무료 배송');
+            }
+
+            $(this).parents('.swiper-slide').remove();
+        });
+
+
+
+    </script>
+
+
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <!-- main swiper slide start -->
+
+    <div class="py-3 text-center bg-light">
+        <h2>리워드 프로젝트 등록</h2>
+    </div>
+    <br><br>
+
+    <div class="main-section container">
+        <div class="row">
+            <div class="col-lg-2 order-md-first">
+                <!--      <div class="col-md-5 col-lg-4 order-md-last">-->
+                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-primary">등록 목차</span>
+                </h4>
+                <ul class="list-group mb-3">
+                    <li data-tab="defaultInfo" class="active list-group-item d-flex justify-content-between lh-sm">
+                        <h6 class="my-0">1.기본정보</h6>
+                    </li>
+                    <li data-tab="storyInfo" class="list-group-item d-flex justify-content-between lh-sm">
+                        <h6 class="my-0">2.스토리</h6>
+                    </li>
+                    <li data-tab="rewardInfo" class="list-group-item d-flex justify-content-between lh-sm">
+                        <h6 class="my-0">3.리워드</h6>
+                    </li>
+                </ul>
+            </div>
+
+            <form id="projectRegistrationForm" class=" col-lg-10" th:action="@{/user/projectRegistration/reward}" method="post">
+                <!-- defaultInfo area -->
+                <div id="defaultInfo" class="info-contents-area" style="display: block;">
+                    <h5 class="mb-2 fw-bord">프로젝트의 성공 조건 & 수수료 안내</h5>
+                    <h6 class="mb-2">프로젝트 종료일 기준 모금액이 목표금액의 100% 이상인 경우에만 프로젝트가 성공하게 됩니다.<br>
+                        프로젝트가 성공한 경우, 크라우디는 모금액에서 수수료(12%, vat 별도)를 제한 금액을 정산해드립니다.</h6>
+                    <br><br>
+
+
+                    <div class="row">
+
+                        <div class="col-8">
+                            <input type="hidden" class="form-control" id="memberId" name="regMemberId" th:value="${session.SID}">
+                            <label for="projectCategory" class="form-label fw-bord text-dark">카테고리를 선택해 주세요</label>
+                            <br>
+                            <select id="projectCategory" name="rewardCategoryCode">
+                                <option value="">==선택==</option>
+                                <option th:if="${categoryList != null}" th:each="l : ${categoryList}" th:text="${l.categoryName}" th:value="${l.totalCategoryCode}"></option>
+                            </select>
+                            <br><br>
+
+                            <label for="projectSubject" class="form-label fw-bord text-dark">프로젝트의 제목을 적어주세요</label>
+                            <input name="projectSubject" type="text" class="form-control" id="projectSubject" placeholder="제목을 입력해 주세요.">
+                            <br>
+
+                            <label for="projectGoalMoney" class="form-label fw-bord text-dark">목표 금액을 적어주세요</label>
+                            <input name="projectGoalMoney" type="number" class="form-control" id="projectGoalMoney" placeholder="목표 금액을 입력해주세요.">
+                            <br>
+
+                            <div class="mb-3">
+                                <label for="thumbnailImage" class="form-label fw-bord text-dark">썸네일 이미지를 등록해주세요</label>
+                                <br>
+                                <div class="border border-secondary mb-lg-1" style="width: 355px; height: 205px;">
+                                    <img src="" class="img-thumbnail" alt="썸네일이미지" style="height: 200px; width: 350px; display: none;">
+                                </div>
+                                <input class="form-control" id="thumbnailImage" type="file" accept="image/*">
+                            </div>
+                            <label for="confirmThumbnailImage">썸네일 확정을 해주세요</label>
+                            <input id="confirmThumbnailImage" name="projectThumbnailImage" style="display: none">
+                            <div class="mb-3">
+                                <button id="confirmBtn" type="button" style="border-radius: 5px; background-color: #0b44d7; color: whitesmoke; padding: 5px">썸네일 확정</button>
+                            </div>
+                            <div id="confirmMessage" style="background: #ddfffc; border-radius: 5px; padding: 10px; font-size: 12px; color: black; display: none">
+                                <p>
+                                    <b>썸네일이 확정 되었습니다!</b><br>
+                                </p>
+                            </div>
+
+<!--                            <br>-->
+<!--                            <span  class="w-bord text-dark">-->
+<!--                            <label for="searchTag" class="form-label">프로젝트 검색 키워드를 입력해주세요.</label>-->
+<!--                            <br>제목 외에도 키워드 검색 시 검색 결과에 프로젝트가 나타납니다.-->
+<!--                            </span>-->
+
+<!--                            <div class="input-group input-group-sm mb-3">-->
+<!--                                <span class="input-group-text" style="background-color: #235fd9">-->
+<!--                                  &lt;!&ndash; 모달 진입 버튼 &ndash;&gt;-->
+<!--                                  <button id="modalOpenBtn" class="btn btn-primary">추가</button>-->
+<!--                                </span>-->
+<!--                                <input type="text" class="form-control font-weight-bold" id="searchTag" placeholder="검색 키워드를 입력해주세요.">-->
+<!--                            </div>-->
+
+<!--                            &lt;!&ndash; 검색태그 추가 Modal&ndash;&gt;-->
+<!--                            <div class="modal fade" id="modalSearchTag" tabindex="-1" role="dialog"-->
+<!--                                 aria-labelledby="exampleModalLabel" aria-hidden="true">-->
+<!--                                <div class="modal-dialog modal-dialog-centered" role="document">-->
+<!--                                    <div class="modal-content">-->
+<!--                                        <div class="modal-header">-->
+<!--                                            <h5 class="modal-title" id="exampleModalLabel">검색 키워드 추가</h5>-->
+<!--                                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">-->
+<!--                                                <span aria-hidden="true">X</span>-->
+<!--                                            </button>-->
+<!--                                        </div>-->
+<!--                                        <div class="modal-body">-->
+<!--                                            <label for="modalSearchTagAdd" class="text-danger"> 하나의 검색 태그씩 추가해-->
+<!--                                                주세요.</label>-->
+<!--                                            <div class="input-group input-group-sm mb-3">-->
+<!--                                                <span class="input-group-text" id="inputGroup-sizing-sm">태그</span>-->
+<!--                                                <input type="text" id="modalSearchTagAdd" class="form-control"-->
+<!--                                                       aria-label="Sizing example input"-->
+<!--                                                       aria-describedby="inputGroup-sizing-sm">-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                        <div class="modal-footer">-->
+<!--                                            <button type="button" class="btn btn-primary" id="modalActionBtn">추가-->
+<!--                                            </button>-->
+<!--                                            <button type="button" class="btn btn-secondary" id="modalCloseBtn">취소-->
+<!--                                            </button>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+                            <br>
+                        </div>
+
+                        <div class="col-8 text-dark">
+                            <label class="form-label fw-bord text-dark" for="projectEndDate">프로젝트 마감 날짜를 입력해주세요.</label>
+                            <p>프로젝트 심사부터 리워드 제작 기간 등 전체 일정을 고려해 설정해 주세요.</p>
+                            <br>
+                            <div style="background: #fff1f1; border-radius: 5px; padding: 10px; font-size: 12px">
+                                <p>
+                                    <b>⚠️프로젝트 심사(요건확인, 콘텐츠 확인)</b><br>
+                                    심사가 끝나면 프로젝트를 공개할 수 있어요. 프로젝트 특성이나 완성도에 따라 걸리는 시간은 달라져요.
+                                    <br>
+                                    <b>⚠️프로젝트 진행(공개~종료)</b><br>
+                                    공개부터 종료까지 보통 30일 정도 진행해요. 프로젝트 상황에 따라 자유롭게 선택할 수 있지만<br>
+                                    프로젝트가 승인되고 나면 바꿀 수 없어요.
+                                    <br>
+                                    <b>⚠️프로젝트 종료(리워드 준비~발송)</b><br>
+                                    프로젝트를 성공적으로 종료하면 약속한 날짜에 리워드 발송을 시작해야 해요.
+                                </p>
+                            </div>
+                            <br>
+                            <span>
+                                마감 일자 : <input name="projectEndDate" type="text" id="projectEndDate" readonly="readonly">
+                            </span>
+                            <br>
+
+                        </div>
+
+                        <div class="col-8">
+                            <br><br>
+                            <button class="nextBtn w-80 btn btn-primary btn-lg" type="button">다음단계</button>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+                </div>
+
+                <!-- storyInfo area -->
+
+                <div id="storyInfo" class="info-contents-area">
+
+                    <h5 class="mb-2 fw-bord">프로젝트 소개 영상과 이미지를 등록해주세요</h5>
+                    <h6 class="mb-2">영상과 이미지를 함께 등록할 경우, 영상이 먼저 보여집니다.</h6>
+                    <br><br>
+
+
+                    <div class="row g">
+                        <div class="col-10">
+<!--                            <div class="mb-3">-->
+<!--                                <label for="detailImage" class="form-label fw-bord text-dark">상세 이미지를 등록해주세요.</label>-->
+<!--                                <div class="banner-content" style="background-color: #7D7D7D">상세 이미지</div>-->
+<!--                                &lt;!&ndash;                <input type="file" accept="image/png, image/jpeg" multiple>&ndash;&gt;-->
+<!--                                <input class="form-control w-75" id="detailImage" type="file">-->
+<!--                            </div>-->
+
+<!--                            <label for="detailMovie" class="form-label fw-bord text-dark">동영상 주소를 적어주세요</label>-->
+<!--                            <input type="text" class="form-control w-75" id="detailMovie" placeholder="동영상 주소를 적어주세요."-->
+<!--                                   value="" required="">-->
+<!--                            <br>-->
+
+                            <div class="mb-3">
+                                <label for="projectContents" class="form-label">프로젝트 스토리를 적어주세요</label>
+                                <textarea id="projectContents" name="projectContents"></textarea>
+                            </div>
+
+                            <br><br>
+                            <button class="prevBtn w-80 btn btn-secondary btn-lg" type="button">이전단계</button>
+                            <button class="nextBtn w-80 btn btn-primary btn-lg" type="button">다음단계</button>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+
+                </div>
+
+                <!-- rewardInfo area -->
+                <div id="rewardInfo" class="info-contents-area">
+                    <h5 class="mb-2 fw-bord">프로젝트 리워드를 구성해주세요</h5>
+                    <h6 class="mb-2">프로젝트 시작을 위해서는 최소 1개 이상의 리워드가 있어야 합니다.<br>
+                        배송이 필요한 리워드는 배송비가 포함된 가격을 적어주세요.</h6>
+                    <br>
+
+
+                    <div id="rewardAddDiv" class="row bg-light border border-primary w-75" style="margin-left : 10px">
+
+                        <div class="col-8">
+                            <br>
+                            <label for="rewardPrice" class="form-label fw-bord text-dark">리워드 금액</label>
+                            <input type="number" class="form-control" id="rewardPrice" placeholder="리워드 금액을 입력해주세요.">
+                            <br>
+                        </div>
+
+                        <div class="col-8">
+                            <label for="rewardSubject" class="form-label fw-bord text-dark">리워드 제목</label>
+                            <input type="text" class="form-control" id="rewardSubject" placeholder="제목을 입력해 주세요.">
+                            <br>
+                        </div>
+
+                        <div class="col-10">
+                            <div class="mb-3">
+                                <label for="rewardContents" class="form-label">리워드 내용</label>
+                                <textarea class="form-control" id="rewardContents" rows="10" placeholder="리워드 내용을 입력해 주세요."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-8">
+                            <label for="rewardLimitQuantity" class="form-label fw-bord text-dark">제한 수량</label>
+                            <input type="number" class="form-control" id="rewardLimitQuantity" placeholder="제한 수량을 입력해주세요.">
+                            <br>
+                        </div>
+
+                        <div class="col-8">
+                            <label for="deliverStartDate" class="form-label fw-bord text-dark">예상 배송일</label><br>
+                            <input type="text" id="deliverStartDate" class="form-control-sm" readonly="readonly">
+                            <br>
+                        </div>
+                        <div class="col-8">
+                            <label for="rewardDeliverPrice" class="form-label fw-bord text-dark">배송비</label><br>
+                            <select id="rewardDeliverSelect">
+                                <option value="0">배송비 없음</option>
+                                <option value="1">배송비 있음</option>
+                            </select>
+                            <br>
+                            <input type="number" id="rewardDeliverPrice" class="form-control-sm" placeholder="무료배송" readonly="readonly">
+                            <br><br>
+                        </div>
+
+                        <div class="col-8">
+                            <button id="rewardAddBtn" class="w-80 btn btn-primary btn" type="button">리워드 추가하기</button>
+                            <button id="rewardInitializeBtn" class="w-80 btn btn-secondary btn" type="button">초기화</button>
+                            <br>
+                            <br>
+                        </div>
+                    </div>
+
+                    <div class="main-section container" style="width:790px; margin:0;">
+
+                        <div id="rewardPreview">
+                            <br>
+                            <h3 class="main-title">리워드 옵션<br>미리보기</h3>
+                            <!-- Swiper -->
+                            <div class="swiper contents-area">
+                                <div class="rewardOptionSwiper swiper-wrapper">
+                                </div>
+                            </div>
+                            <div class="swiper-button-next"></div>
+                            <div class="swiper-button-prev"></div>
+                        </div>
+                    </div>
+
+
+                    <div>
+
+                        <br><br>
+
+                        <button class="prevBtn w-80 btn btn-secondary btn-lg" type="button">이전단계</button>
+                        <button class="submitBtn w-80 btn btn-primary btn-lg" type="button">제출하기</button>
+
+                    </div>
+
+                    <hr class="my-4">
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <br><br><br><br><br><br>
+
+
+</th:block>
+</html>

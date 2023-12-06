@@ -1,0 +1,225 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layout/semi_default}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
+    <style>
+        #PageWrapper {
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+            align-items: center;
+        }
+
+        /* 박스 */
+        #AccountContainer {
+            margin-top:50px;
+            background-color: white;
+            display: flex;
+
+            width: 500px;
+
+
+            flex-direction: column;
+            justify-content: start;
+            padding: 20px;
+
+            margin-left: 0;
+        }
+
+        /* 네비게이션 */
+        #ftco-navbar {
+            background-color: white; !important;
+        }
+
+        .login-logo {
+            position: relative;
+        }
+        .login-logo .top-left-conts {
+            position: absolute;
+            left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        @media (max-width: 800px){
+            .navbar.navbar-expand-lg.ftco_navbar.ftco-navbar-light, .py-1.bg-primary {
+                display: none;
+
+            }
+        }
+        .login-logo .container {
+            justify-content: flex-end;
+        }
+        .login-logo .user-connection-menu {
+            margin-bottom: 0;
+        }
+
+        /* 회원가입 박스 안 컨텐츠 */
+        #login-title {
+            background-color: white;
+            padding: 10px;
+            font-weight: bold;
+        }
+
+        .user-type-menu {
+            display: flex;
+            text-align: center;
+            background-color: white;
+            list-style: none;
+            justify-content: space-evenly;
+
+            padding-left: 0;
+
+        }
+
+        .user-type-menu li {
+            text-align: center;
+        }
+
+        #customer-user {
+            text-align: center;
+            padding-bottom: 40px;
+
+            padding-left: 65px;
+            padding-right: 65px;
+            background-color: white;
+            border-radius: 2px;
+        }
+
+        .btn btn-primary{
+            color: var(--maincolor);
+        }
+
+        .join-form{
+            margin:0 20px 20px 10px;
+
+        }
+
+        .id-check{
+            display: flex;
+
+        }
+
+        label{
+            font-weight:750;
+            color: dimgrey;
+        }
+
+        .btn-dark {
+            width: 140px;
+        }
+
+        .join-form ::placeholder {
+            font-weight:550;
+            font-size: 13px;
+            color: darkgrey !important;
+        }
+
+        /*모달창 맨 앞으로 정렬*/
+        .modal{ z-index: 99999 !important }
+
+        #join-button{
+            margin: 10px 20px 20px 5px;
+            display: flex;
+            justify-content: center;
+        }
+
+    </style>
+</head>
+
+<body>
+<!-- 페이지별 컨텐츠-->
+<th:block layout:fragment="customContents">
+    <div id="PageWrapper">
+        <div id="AccountContainer">
+
+            <form id="loginForm" th:action="@{/user/account/login}" method="post">
+                <h1 id="login-title">로그인</h1>
+                <form class="join-form" >
+                    <div class="mb-3" id="id-check">
+                        <label for="memberId" class="form-label">ID</label>
+                        <input class="form-control" id="memberId" name="memberId" placeholder="아이디 입력" type="text" th:value="id004">
+                    </div>
+                    <div id="emailHelp" class="form-text"></div>
+                    <div class="mb-3">
+                        <label for="memberPw" class="form-label">비밀번호</label>
+                        <input class="form-control" id="memberPw" name="memberPw" placeholder="8자 이상의 비밀번호 입력 (영문, 숫자, 특수문자 혼합)"
+                               type="password" th:value="pw004">
+                    </div>
+                </form>
+                <div class="d-grid gap-2" >
+                    <button class="btn btn-primary btn-lg" type="button" id="loginBtn" style="border-radius: 0; margin-top: 10px;">로그인</button>
+                </div>
+            </form>
+
+
+        </div>
+    </div>
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script th:inline="javascript">
+
+        let msg = [[${msg}]];
+
+        if(msg) {
+            alert(msg);
+        }
+
+        $(function(){
+
+            //유효성 검사를 위한 validationCheck 메소드
+            function validationCheck(data){
+                let isValid = true;
+                if(typeof data == 'object'){
+
+                    $.each(data, function(){
+                        let checkValue = $(this).val();
+                        if(checkValue == null || checkValue === '' || typeof checkValue == 'undefined'){
+                            isValid = false;
+                            let eleId = $(this).attr('id');
+                            let cate = $(`label[for="${eleId}"]`).text();
+                            alert(`${cate} 필수 입력 항목입니다.`);
+                            $(this).focus();
+                            return isValid;
+                        }
+                    });
+                }else{
+                    if(data == null || data === '' || typeof data == 'undefined'){
+                        isValid = false;
+                    }
+                }
+                return isValid;
+            }
+
+            //로그인 버튼 클릭시 유효성 검사 + 로그인 기능 실행
+            $('#loginBtn').click(function(){
+                const inputEles = $('#loginForm input');
+
+                let isValid = validationCheck(inputEles);
+
+                if(isValid){
+                    $('#loginForm').submit();
+                }else{
+
+                }
+            });
+        });
+
+    </script>
+
+</th:block>
+
+<!-- 사용자별 스크립트 파일 -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+</body>

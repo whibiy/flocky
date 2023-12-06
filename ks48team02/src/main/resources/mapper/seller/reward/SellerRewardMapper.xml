@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksmart.ks48team02.seller.mapper.reward.SellerRewardMapper">
+
+    <resultMap id="RewardResultMap" type="RewardProject">
+    <id property="rewardProjectCode" column="reward_project_code"/>
+    <result property="rewardCategoryCode" column="total_cagegory_code"/>
+    <result property="projectJudgementReasonCode" column="project_judgement_reason_code"/>
+    <result property="regMemberId" column="member_id"/>
+    <result property="adminMemberId" column="admin_member_id"/>
+    <result property="storeCode" column="store_code"/>
+    <result property="projectSubject" column="project_subject"/>
+    <result property="projectContents" column="project_contents"/>
+    <result property="rewardLike" column="reward_like"/>
+    <result property="projectThumbnailImage" column="project_thumbnail_image"/>
+    <result property="projectAchievementMoney" column="project_achievement_money"/>
+    <result property="projectGoalMoney" column="project_goal_money"/>
+    <result property="projectAchievementPercent" column="project_achievement_percent"/>
+    <result property="regCompany" column="reg_company"/>
+    <result property="projectRegDate" column="project_reg_date"/>
+    <result property="searchCount" column="search_count"/>
+    <result property="projectJudgmentReason" column="project_judgment_reason_detail"/>
+    <result property="projectJudgementDate" column="project_judgment_date"/>
+    <result property="projectStartDate" column="project_start_date"/>
+    <result property="projectEndDate" column="project_end_date"/>
+    <result property="projectCondition" column="project_condition"/>
+    <result property="storeImage" column="store_image"/>
+    <result property="storeLike" column="like_count"/>
+    <result property="storeMobile" column="contact_info"/>
+    <result property="categoryName" column="category_name"/>
+
+        <collection property="newsLists" javaType="list" ofType="NewsList">
+            <id property="newsCode" column="news_code"/>
+            <result property="projectCode" column="project_code"/>
+            <result property="newsSubject" column="news_subject"/>
+            <result property="newsContent" column="news_content"/>
+            <result property="newsDatetime" column="news_datetime"/>
+            <result property="newsModifyDatetime" column="news_modify_datetime"/>
+            <result property="newsDeleteDatetime" column="news_delete_datetime"/>
+            <result property="newsDisplay" column="news_display"/>
+        </collection>
+    </resultMap>
+
+    <!-- reward project info by project code-->
+    <select id="getRwdPrjInfoByCode" parameterType="String" resultMap="RewardResultMap">
+        SELECT
+            r.reward_project_code,
+            r.total_cagegory_code,
+            r.project_judgement_reason_code,
+            r.member_id,
+            r.admin_member_id,
+            r.store_code,
+            r.project_subject,
+            r.project_contents,
+            r.reward_like,
+            r.project_thumbnail_image,
+            r.project_achievement_money,
+            r.project_goal_money,
+            r.project_achievement_percent,
+            r.reg_company,
+            r.project_reg_date,
+            r.search_count,
+            r.project_judgment_reason_detail,
+            r.project_judgment_date,
+            r.project_start_date,
+            r.project_end_date,
+            r.project_condition
+        FROM
+            reward_project AS r
+        WHERE
+            r.reward_project_code = #{projectCode}
+    </select>
+
+    <!--판매자 회원 등록 프로젝트 리스트-->
+    <select id="projectListBySellerID" resultMap="RewardResultMap" parameterType="hashmap">
+        SELECT
+            r.reward_project_code,
+            r.total_cagegory_code,
+            r.project_judgement_reason_code,
+            r.member_id,
+            r.admin_member_id,
+            r.store_code,
+            r.project_subject,
+            r.project_contents,
+            r.reward_like,
+            r.project_thumbnail_image,
+            r.project_achievement_money,
+            r.project_goal_money,
+            r.project_achievement_percent,
+            r.reg_company,
+            r.project_reg_date,
+            r.search_count,
+            r.project_judgment_reason_detail,
+            r.project_judgment_date,
+            r.project_start_date,
+            r.project_end_date,
+            r.project_condition
+        FROM
+            reward_project AS r
+        <where>
+                AND r.member_id = #{sellerId}
+            <if test="projectCondition != null and !projectCondition.equals('')">
+                AND r.project_condition = #{projectCondition}
+            </if>
+        </where>
+        ORDER BY
+            r.project_reg_date DESC
+        <if test="startRowNum > -1">
+            LIMIT #{startRowNum}, #{rowPerPage};
+        </if>
+    </select>
+
+    <!-- 프로젝트 전체 행의 갯수 -->
+    <select id="projectPageCnt" resultType="int" parameterType="hashmap">
+        SELECT
+            COUNT(1)
+        FROM
+            reward_project as r
+        <where>
+                AND r.member_id = #{sellerId}
+            <if test="projectCondition != null and !projectCondition.equals('')">
+                AND r.project_condition = #{projectCondition}
+            </if>
+        </where>
+    </select>
+
+    <!--판매자 회원 프로젝트 당 새소식 리스트 조회-->
+    <select id="getNewsListBySellerId" resultMap="RewardResultMap" parameterType="String">
+        SELECT
+            r.reward_project_code,
+            r.total_cagegory_code,
+            r.project_judgement_reason_code,
+            r.member_id,
+            r.admin_member_id,
+            r.store_code,
+            r.project_subject,
+            r.project_contents,
+            r.reward_like,
+            r.project_thumbnail_image,
+            r.project_achievement_money,
+            r.project_goal_money,
+            r.project_achievement_percent,
+            r.reg_company,
+            r.project_reg_date,
+            r.search_count,
+            r.project_judgment_reason_detail,
+            r.project_judgment_date,
+            r.project_start_date,
+            r.project_end_date,
+            r.project_condition,
+            n.news_code,
+            n.news_content,
+            n.news_datetime,
+            n.news_delete_datetime,
+            n.news_display,
+            n.news_modify_datetime,
+            n.news_subject
+        FROM
+            reward_project AS r
+        LEFT JOIN
+            news AS n
+        ON
+            r.reward_project_code = n.project_code
+        WHERE
+            r.member_id = #{sellerId};
+    </select>
+
+    <!--프로젝트 시작-->
+    <update id="startProject" parameterType="String">
+        UPDATE
+            reward_project
+        SET
+            project_start_date = NOW(),
+            project_condition = 3
+        WHERE
+            reward_project_code = #{rewardProjectCode};
+    </update>
+
+    <!--사전체험단 회원 등록 시 가입된 회원인지 검사-->
+    <select id="preMemberIdCheck" parameterType="String">
+        SELECT
+            COUNT(1)
+        FROM
+            customer AS c
+        WHERE
+            c.member_id = #{memberId};
+    </select>
+
+    <!--사전체험단 등록-->
+    <insert id="regPreMember" parameterType="String">
+        <selectKey keyProperty="preExperienceCode" resultType="String" order="BEFORE">
+            SELECT
+                (CASE
+                    WHEN
+                        COUNT(s.sotre_pre_experience_code) = 0  THEN CONCAT('PRE_', CURDATE()+0, '_1')
+                    ELSE
+                        CONCAT('PRE_', CURDATE()+0 ,'_' ,MAX(CAST(substring_index(s.sotre_pre_experience_code,'_',-1)AS UNSIGNED )+1))
+                END) AS preExperienceCode
+            FROM
+                store_pre_experience as s
+            WHERE
+                SUBSTRING_INDEX(SUBSTRING_INDEX(s.sotre_pre_experience_code,'_',2),'_',-1) = CURDATE()+0
+        </selectKey>
+        INSERT INTO store_pre_experience
+            (sotre_pre_experience_code, store_code, member_id, pre_reg_date, pre_unreg_date)
+        VALUES
+            (#{preExperienceCode},#{storeCode},#{memberId},#{startDate},#{endDate});
+    </insert>
+
+    <!--사전체험단 등록된 회원인지 검사-->
+    <select id="preMemberRegCheck" parameterType="String">
+        SELECT
+            COUNT(1)
+        FROM
+            store_pre_experience AS s
+        WHERE
+            s.member_id = #{memberId};
+    </select>
+
+    <!--사전체험단 취소-->
+    <delete id="delPreMember" parameterType="String">
+        DELETE
+            store_pre_experience
+        FROM
+            store_pre_experience
+        WHERE
+            member_id = #{memberId}
+    </delete>
+
+    <!--사전체험단 조회-->
+    <select id="preMemberList" parameterType="String" resultType="PreMember">
+        SELECT
+            s.member_id AS memberId,
+            s.pre_reg_date AS startDate,
+            s.pre_unreg_date AS endDate,
+            m.member_name AS memberName,
+            m.contact_info AS mobile,
+            c.customer_addr AS addr,
+            c.customer_addr_detail AS addrDetail
+        FROM
+            store_pre_experience AS s
+        INNER JOIN
+            member AS m
+        ON
+            s.member_id=m.member_id
+        INNER JOIN
+            customer AS c
+        ON
+            c.member_id = s.member_id
+        WHERE
+            s.store_code = #{storeCode};
+    </select>
+
+</mapper>

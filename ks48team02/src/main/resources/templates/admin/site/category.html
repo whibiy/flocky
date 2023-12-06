@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/default}">
+
+<head>
+  <!--  사용자별 css file 추가 부분 -->
+  <title>카테고리 관리</title>
+  <link rel="stylesheet" th:href="@{/admin/css/adminBoard.css}">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+  <!--    <script>-->
+  <!--        function popupOpen(){-->
+  <!--            console.log("a");-->
+  <!--            var url= "/admin/board/main";    //팝업창에 출력될 페이지 URL-->
+  <!--            var winWidth = 700;-->
+  <!--            var winHeight = 600;-->
+
+  <!--            var popupX = (document.body.offsetWidth / 2) - (winWidth / 2);-->
+  <!--            // 만들 팝업창 좌우 크기의 1/2 만큼 보정값으로 빼주었음-->
+
+  <!--            var popupY= (window.screen.height / 2) - (winHeight / 2);-->
+  <!--            // 만들 팝업창 상하 크기의 1/2 만큼 보정값으로 빼주었음-->
+  <!--            var popupOption= 'status=no, height='+winWidth+', width='+winHeight+', left='+ popupX + ', top='+ popupY;    //팝업창 옵션(optoin)-->
+
+  <!--            window.open(url,' target="_blank"',popupOption);-->
+  <!--    </script>-->
+
+</th:block>
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+  <script>
+    // 체크박스 전체 선택
+    $('#allCheck').on('click', function (){
+      let isChecked = $(this).prop('checked');
+      $('input[name="admin_board"]').prop('checked', isChecked);
+    });
+
+    // 개별 체크박스 선택 시 전체 체크박스 상태 확인
+    $('input[name="admin_board"]').on('click', function() {
+      let totalCheckboxes = $('input[name="admin_board"]').length;
+      let checkedCheckboxes = $('input[name="admin_board"]:checked').length;
+
+      if (totalCheckboxes === checkedCheckboxes) {
+        $('#allCheck').prop('checked', true);
+      } else {
+        $('#allCheck').prop('checked', false);
+      }
+    });
+
+    // 개별 체크박스 중 하나라도 체크를 해제할 때 전체 선택 체크박스도 해제
+    $('input[name="admin_board"]').on('click', function() {
+      let isChecked = $(this).prop('checked');
+
+      if (!isChecked) {
+        $('#allCheck').prop('checked', false);
+      }
+    });
+
+    // // 카테고리목록
+    // $('#cateSelect').change(function (){
+    //   $categorySelect = $(this).prop('categorySelect');
+    //
+    //   switch ($categorySelect){
+    //     case 0:
+    //       $('.rewardCate').css('display', 'block');
+    //       $('.donationCate').css('display', 'none');
+    //       break;
+    //     case 1:
+    //       $('.donationCate').css('display', 'block');
+    //       $('.rewardCate').css('display', 'none');
+    //       break;
+    //   }
+    // })
+
+    $('#cateSelect').change(function (){
+      var selectedCategory = $(this).val();
+      console.log(selectedCategory); // 여기를 추가합니다.
+
+      switch (selectedCategory){
+        case 'reward':
+          $('.rewardCate').closest('tr').show();
+          $('.donationCate').closest('tr').hide();
+          $('.investmentCate').closest('tr').hide();
+          break;
+        case 'donation':
+          $('.donationCate').closest('tr').show();
+          $('.rewardCate').closest('tr').hide();
+          $('.investmentCate').closest('tr').hide();
+          break;
+        case 'investment':
+          $('.investmentCate').closest('tr').show();
+          $('.rewardCate').closest('tr').hide();
+          $('.donationCate').closest('tr').hide();
+          break;
+        default:
+          $('.rewardCate, .donationCate, .investmentCate').closest('tr').show();
+          break;
+      }
+    });
+
+    function ajxaCateSelect(cateSelect, callback){
+      const request = $.ajax({
+        url: '/admin/site/ajaxCategory', // 요청을 보낼 URL 연결 완료
+        type: 'POST', // HTTP 메소드
+        data: { 'cateSelect': cateSelect}, // 서버에 전송할 데이터
+        dataType: 'json', // 서버에서 받을 데이터의 형식
+      })
+      // funciton 안에 있는 매개변수 리턴받은 값 쓰기
+      request.done(function (list){
+        // 쿼리 결과값이 list 객체로 반환
+        // 객체 안 데이터 가져올 떄 --> 객체명.키값
+        callback(list);
+      })
+      // 에러 발생할 때 나타나는 콘솔 로그
+      request.fail(function (err){
+        console.log(err);
+      })
+    }
+
+    // 카테고리 셀렉트 박스 클릭시
+    $('#cateSelect').on('change',function (){
+      let cateSelect = $(this).val();
+
+      ajxaCateSelect(cateSelect, function(list){
+        $('.center').remove();
+        $('.boardTable table').append(`<tbody class="center"></tbody>`);
+        $(list).each((idx, tc) => {
+          console.log(tc, '<--');
+          console.log(tc.totalCategoryCode, '<--');
+          $('.center').append(`<tr>
+                            <td>
+                              <input type="checkbox" name="admin_board">
+                            </td>
+                            <td>
+                                ${tc.totalCategoryCode}
+                            </td>
+                            <td>
+                                ${tc.memberId}
+                            </td>
+                            <td>
+                                ${tc.projectPatition}
+                            </td>
+                            <td>
+                                ${tc.categoryName}
+                            </td>
+                            <td>
+                                ${tc.categoryComment}
+                            </td>
+                            <td>
+                                ${tc.categoryUsageStatus}
+                            </td>
+                            <td>
+                                ${tc.categoryRegDate}
+                            </td>
+                            <td>
+                              <a class="modify" >수정</a>
+                              <a class="delete">삭제</a>
+                            </td>
+                          </tr>`);
+          })
+      });
+
+    });
+
+  </script>
+</th:block>
+
+<th:block layout:fragment="customContents">
+  <div class="boardMain" style="margin-bottom: 20px;">
+    <h3>카테고리 관리</h3>
+  </div>
+  <form>
+
+    <div class="section">
+      <div class="title"><h2>카테고리 목록</h2></div>
+      <div class="classiFication">
+        <select name="cateSelect" id="cateSelect">
+          <option value="total">전체</option>
+          <option value="reward">리워드</option>
+          <option value="donation">기부</option>
+          <option value="investment">투자</option>
+        </select>
+      </div>
+      <div class="addBtnArea">
+        <a th:href="@{/admin/site/categoryAdd}" class="addBtn">카테고리 등록</a>
+      </div>
+    </div>
+
+    <div class="boardTable">
+      <table border="1">
+        <thead class="top">
+        <tr>
+          <th><input type="checkbox" id="allCheck"></th>
+          <th>카테고리 코드</th>
+          <th>카테고리 등록 관리자</th>
+          <th>분류</th>
+          <th>카테고리 이름</th>
+          <th>분류 설명</th>
+          <th>사용 여부</th>
+          <th>등록 일시</th>
+          <th>게시물 관리</th>
+        </tr>
+        </thead>
+        <tbody class="center">
+          <tr th:unless="${categoryList == null}" th:each="tc : ${categoryList}">
+            <td>
+              <input type="checkbox" name="admin_board">
+            </td>
+            <td th:text="${tc.totalCategoryCode}"></td>
+            <td th:text="${tc.memberId}"></td>
+            <td th:text="${tc.projectPatition}"></td>
+            <td th:text="${tc.categoryName}"></td>
+            <td th:text="${tc.categoryComment}"></td>
+            <td th:text="${tc.categoryUsageStatus}"></td>
+            <td th:text="${tc.categoryRegDate}"></td>
+            <td>
+              <ul STYLE="display: flex; align-items: center; gap: 5px; height: 100%; margin: 0;">
+                <li><a class="modify" th:href="@{/admin/site/categoryModify(totalCategoryCode=${tc.totalCategoryCode})}">수정</a></li>
+                <li><a class="delete" th:href="@{#}">삭제</a></li>
+              </ul>
+            </td>
+          </tr>
+
+        </tbody>
+
+      </table>
+    </div>
+    <div class="board-page-area">
+      <div class="list-controller-inner">
+        <ul>
+          <li class="link-active"><a th:href="@{#}">1</a></li>
+          <li><a th:href="@{#}">2</a></li>
+          <li><a th:href="@{#}">3</a></li>
+          <li><a th:href="@{#}">4</a></li>
+          <li><a th:href="@{#}">5</a></li>
+          <li><a th:href="@{#}">6</a></li>
+        </ul>
+        <div class="list-btn-area">
+          <button class="prev-transfer">
+            <span>prev</span>
+          </button>
+          <button class="next-transfer">
+            <span>next</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </form>
+</th:block>
+</html>

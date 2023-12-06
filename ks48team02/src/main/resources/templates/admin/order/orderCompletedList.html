@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <title th:text="${title}"></title>
+
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <script th:src="@{/common/js/admin-commonJs.js}"></script>
+    <script th:src="@{/common/js/ajaxJs.js}"></script>
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script type="text/javascript">
+
+        /* ajax */
+        const queryString = {};
+
+        function admOrderCmplListAjax(queryString, callback){
+            const request = $.ajax({
+                url : '/admin/order/completedList/ajax',
+                method : 'POST',
+                contentType : 'application/json',
+                data : JSON.stringify(queryString),
+                dataType : 'json'
+            });
+            request.done(function(list){
+                console.log(list, '<-- list');
+               callback(list);
+            });
+            request.fail(function(err){
+                console.log(err);
+            });
+        }
+
+        // data setting
+        function dataSetting(list){
+            $('.settlement-log tbody tr').remove();
+            if(list.length == 0){
+                $('.settlement-log tbody').append(`
+                  <tr>
+                    <td colspan="12" style="text-align: center; padding: 30px 0;">검색 결과가 없습니다.</td>
+                  </tr>
+                 `);
+            }
+            $(list).each((idx, l) => {
+                let detailLink = '';
+                let partitionValue = '';
+                switch (l.projectPartition) {
+                    case 'rwd':
+                        detailLink = '<a class="detail-link" target="_blank" href="/user/reward/detail?rewardProjectCode=' + l.projectCode + '">';
+                        partitionValue = '리워드';
+                        break;
+                    case 'don':
+                        detailLink = '<a class="detail-link" target="_blank" href="/user/donation/detail?donationCode=' + l.projectCode + '">';
+                        partitionValue = '기부';
+                        break;
+                    case 'inv':
+                        detailLink = '<a class="detail-link" target="_blank" href="/user/investment/detail/main?investmentCode=' + l.projectCode + '">';
+                        partitionValue = '투자';
+                        break;
+                }
+                $('.settlement-log tbody').append(`
+                        <tr>
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                               ${l.orderConfirmationLogCode}
+                            </td>
+                            <td class="table-data-center">
+                                ${l.memberId}
+                            </td>
+                             <td class="table-data-center">
+                                ${l.orderTotal.orderName}
+                            </td>
+                            <td class="table-data-center">
+                                ${detailLink}
+                                ${l.projectCode}</a>
+                            </td>
+                            <td class="table-data-center">
+                                ${l.orderTotal.orderFundingName}
+                            </td>
+                            <td class="table-data-center">
+                                ${partitionValue}
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" href="/admin/order/detail?orderCode=${l.orderCode}&goodsPartition=${l.projectPartition}}">${l.orderCode}</a>
+                            </td>
+                            <td>
+                                <span>${l.orderPriceTotal}</span>원
+                            </td>
+                            <td >
+                                <span>${l.addReservePrice}</span>원
+                            </td>
+                            <td >
+                                <span>${l.addFlover}</span>개
+                            </td>
+                            <td  class="table-data-center">
+                                ${l.orderConfirmationDate}
+                            </td>
+                        </tr>
+                `);
+            });
+            let priceEls = $('input[name="orderPrice"]');
+            payFormat(priceEls);
+        }
+        // select 옵션 선택 ajax
+        $('select[name="orderby"], select[name="count-select"]').on('change',function(){
+            $('#allSelectBtn').prop('checked', false);
+            let orderbyValue = $('select[name="orderby"]').val();
+
+            $('.select-list-count').text('0');
+
+            // page value
+            let currentPage = 1;
+            let rowPerPage = $('select[name="count-select"]').val();
+
+            const searchObjectArr = searchObject();
+
+            queryString.dateSettStartDate = searchObjectArr.dateSettStartDate;
+            queryString.dateSettEndDate = searchObjectArr.dateSettEndDate;
+            queryString.searchKey = searchObjectArr.searchKey;
+            queryString.searchValue = searchObjectArr.searchValue;
+            queryString.projectPartition = searchObjectArr.projectPartition;
+            queryString.orderby = orderbyValue;
+            queryString.currentPage = currentPage;
+            queryString.rowPerPage = rowPerPage;
+
+
+            //ajax 호출
+            admOrderCmplListAjax(queryString, function(list) {
+
+                // list count
+                $('.total-list').text(list.confLogList.length);
+
+                dataSetting(list.confLogList);
+
+                // pager setting
+                const pageNumArr = Array((list.endPageNum - list.startPageNum) + 1).fill().map((item, idx) => list.startPageNum + idx);
+                setPagerData(pageNumArr, list.currentPage, list);
+
+            });
+        });
+
+
+        // 페이징 ajax
+        $(document).on('click', '.order-list-pager a',function(e){
+            let pageNumber = $(e.target).attr('data-value');
+            let orderbyValue = $('select[name="orderby"]').val();
+            let rowPerPage = $('select[name="count-select"]').val();
+
+            // const queryString = searchObject();
+            queryString.orderby = orderbyValue;
+            queryString.currentPage = pageNumber;
+            queryString.rowPerPage = rowPerPage;
+            console.log(queryString, '<-- queryString');
+
+            // ajax 호출
+            admOrderCmplListAjax(queryString, function(list){
+                // list count
+                $('.total-list').text(list.confLogList.length);
+                dataSetting(list.confLogList);
+
+                // pager setting
+                const pageNumArr = Array((list.endPageNum - list.startPageNum) + 1).fill().map((item, idx) => list.startPageNum + idx);
+                setPagerData(pageNumArr, list.currentPage, list);
+            });
+        });
+
+        // prev, next click ajax
+        $(document).on('click', '.list-btn-area button', function(e){
+            let validation = $(e.target).closest('button').hasClass('no-action');
+
+            if(validation){
+                let value = $(e.target).text();
+                alert(`${(value.replaceAll(/\s/g, '') == 'prev')? '첫 번째':'마지막' } 페이지 입니다.`);
+                return;
+            }
+
+            const $orderListLi = $('.order-list-pager li');
+            let currentPage;
+
+            // current Page Number Validation
+            $($orderListLi).each((idx, element) => {
+                let validation = $(element).hasClass('currentPage');
+                if(validation) {
+                    currentPage = $(element).text();
+                    return;
+                }
+            });
+
+            // ajax 호출
+            let orderbyValue = $('select[name="orderby"]').val();
+            let rowPerPage = $('select[name="count-select"]').val();
+
+            // page number array
+            const numberArr = $.map($orderListLi, function(element, idx){
+                return $(element).find('a').text();
+            });
+
+            const queryString = searchObject();
+
+            queryString.orderby = orderbyValue;
+            queryString.rowPerPage = rowPerPage;
+
+
+            if($(e.target).parent().hasClass('prev-transfer')){
+                currentPage--;
+            } else if($(e.target).parent().hasClass('next-transfer')){
+                currentPage++;
+            }
+            queryString.currentPage = currentPage;
+            console.log(queryString, '<-- queryString');
+
+            admOrderCmplListAjax(queryString, function(list) {
+                // list count
+                $('.total-list').text(list.confLogList.length);
+                dataSetting(list.confLogList);
+
+                // pager setting
+                setPagerData(numberArr, currentPage, list);
+            });
+        });
+
+        // 검색 버튼 click ajax
+        $('.orderSearchBtn').on('click', function(){
+            // orderby 초기화
+            orderbyDefaultSet();
+
+            let orderbyValue = $('select[name="orderby"]').val();
+            let rowPerPage = $('select[name="count-select"]').val();
+            let currentPage = 1;
+
+            const searchObjectArr = searchObject();
+
+            queryString.dateSettStartDate = searchObjectArr.dateSettStartDate;
+            queryString.dateSettEndDate = searchObjectArr.dateSettEndDate;
+            queryString.searchKey = searchObjectArr.searchKey;
+            queryString.searchValue = searchObjectArr.searchValue;
+            queryString.projectPartition = searchObjectArr.projectPartition;
+            queryString.orderby = orderbyValue;
+            queryString.currentPage = currentPage;
+            queryString.rowPerPage = rowPerPage;
+
+
+            //ajax 호출
+            admOrderCmplListAjax(queryString, function(list){
+                // list count
+                $('.total-list').text(list.confLogList.length);
+
+                dataSetting(list.confLogList);
+
+                // pager setting
+                const pageNumArr = Array((list.endPageNum - list.startPageNum) + 1).fill().map((item, idx) => list.startPageNum + idx);
+                setPagerData(pageNumArr, list.currentPage, list);
+            });
+        });
+    </script>
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+    <!-- search form fragments start -->
+    <th:block th:replace="~{common/fragments/searchFormFragments :: searchFormFragments}"></th:block>
+    <!-- search form fragments end -->
+    <div class="title-wrap">
+        <h4 class="admin-content-title">주문 목록</h4>
+        <div class="btnArea">
+            <button type="button" class="printBtn"><span>액셀 다운로드</span></button>
+        </div>
+    </div>
+    <div class="admin-content-wrapper" style="overflow-x: hidden;">
+        <div>
+            <!-- select are -->
+            <div class="data-info">
+                <div class="list-count-area">
+                    <ul>
+                        <li>주문 총 <span class="count-data total-list">0</span>건</li>
+                        <li>선택 항목 총 <span class="count-data select-list-count">0</span>건</li>
+                    </ul>
+                </div>
+                <div class="list-count-selector">
+                    <select name="orderby">
+                        <option value="order_d">확정일 역순</option>
+                        <option value="order_a">확정일 순</option>
+                    </select>
+                    <select name="count-select">
+                        <option value="15">15개씩 보기</option>
+                        <option value="20">20개씩 보기</option>
+                        <option value="30">30개씩 보기</option>
+                    </select>
+                </div>
+            </div>
+            <!-- contents area -->
+
+            <table class="settlement-log">
+                    <thead>
+                        <tr>
+                            <th style="width:5%;">
+                                <input type="checkbox" name="allSelect" id="allSelectBtn">
+                            </th>
+                            <th style="width:11%;">주문 로그코드</th>
+                            <th style="width:5%;">주문자 아이디</th>
+                            <th style="width:5%;">주문자명</th>
+                            <th style="width:11%;">공고 코드</th>
+                            <th style="width:11%;">공고명</th>
+                            <th style="width:5%;">공고 분류</th>
+                            <th style="width:11%;">주문 코드</th>
+                            <th style="width:11%;">최종 주문 금액</th>
+                            <th style="width:8%;">적립금액</th>
+                            <th style="width:8%;">획득 기부재화</th>
+                            <th style="width:12%;">주문 확정 일시</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 조회 결과 없음 -->
+                        <tr th:if="${confLogList == null || #arrays.length(confLogList) == 0}">
+                            <td colspan="12" style="text-align: center; padding: 30px 0;">검색 결과가 없습니다.</td>
+                        </tr>
+                        <!-- 조회 결과 contents -->
+                        <tr th:unless="${confLogList == null}" th:each="l : ${confLogList}">
+                            <td class="table-data-center">
+                                <input type="checkbox" name="selectList">
+                            </td>
+                            <td class="table-data-center">
+                                [[${l.orderConfirmationLogCode}]]
+                            </td>
+                            <td class="table-data-center">
+                                [[${l.memberId}]]
+                            </td>
+                            <td class="table-data-center">
+                                [[${l.orderTotal.orderName}]]
+                            </td>
+                            <td class="table-data-center" th:switch="${l.projectPartition}">
+                                <a class="detail-link" th:case="rwd" target="_blank" th:href="@{/user/reward/detail(rewardProjectCode=${l.projectCode})}">[[${l.projectCode}]]</a>
+                                <a class="detail-link" th:case="don" target="_blank" th:href="@{/user/donation/detail(donationCode=${l.projectCode})}">[[${l.projectCode}]]</a>
+                                <a class="detail-link" th:case="inv" target="_blank" th:href="@{/user/investment/detail/main(investmentCode=${l.projectCode})}">[[${l.projectCode}]]</a>
+                            </td>
+                            <td class="table-data-center">
+                                [[${l.orderTotal.orderFundingName}]]
+                            </td>
+                            <td class="table-data-center" th:switch="${l.projectPartition}">
+                                <span th:case="rwd">리워드</span>
+                                <span th:case="don">기부</span>
+                                <span th:case="inv">투자</span>
+
+                            </td>
+                            <td class="table-data-center">
+                                <a class="detail-link" th:href="@{/admin/order/detail(orderCode=${l.orderCode}, goodsPartition=${l.projectPartition})}">[[${l.orderCode}]]</a>
+                            </td>
+                            <td >
+                                <span>[[${l.orderPriceTotal}]]</span>원
+                            </td>
+                            <td >
+                                <span>[[${l.addReservePrice}]]</span>원
+                            </td>
+                            <td >
+                                <span>[[${l.addFlover}]]</span>개
+                            </td>
+                            <td  class="table-data-center">
+                                [[${l.orderConfirmationDate}]]
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+            <!-- list pager -->
+<!--             pagenation start -->
+            <th:block th:replace="~{common/fragments/adminPagenation :: adminPagenation}"></th:block>
+<!--             pagenation end -->
+        </div>
+
+    </div>
+
+</th:block>
+
+</html>

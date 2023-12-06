@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper  namespace="ksmart.ks48team02.admin.mapper.TotalCategoryMapper">
+
+    <resultMap id="categoryResultMap" type="TotalCategory">
+        <id property="totalCategoryCode" column="total_category_code"/>
+        <result property="regMemberId" column="member_id"/>
+        <result property="projectPatition" column="project_patition"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="categoryComment" column="category_comment"/>
+        <result property="CategoryUsageStatus" column="category_usage_status"/>
+        <result property="categoryRegDate" column="category_reg_date"/>
+    </resultMap>
+
+    <select id="categoryByPatition" resultMap="categoryResultMap" parameterType="String">
+        SELECT
+            t.total_category_code,
+            t.member_id,
+            t.project_patition,
+            t.category_name,
+            t.category_comment,
+            t.category_usage_status,
+            t.category_reg_date
+        FROM
+            total_category AS t
+        WHERE
+            t.project_patition = #{projectPatition};
+    </select>
+
+</mapper>

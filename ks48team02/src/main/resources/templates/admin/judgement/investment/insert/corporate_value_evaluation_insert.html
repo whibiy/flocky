@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <style>
+        .corp-result {
+            color: #0b44d7;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+
+</th:block>
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+    <script>
+
+        // 유효성 검사
+        function validationCheck(data) {
+            let isValid = true;
+
+            if (typeof data === 'object') {
+                $.each(data, function () {
+                    let elementType = $(this).attr('type');
+
+                    if (elementType === 'radio') {
+                        // Check if at least one radio button is checked
+                        if (!$(`input[name="${$(this).attr('name')}"]:checked`).val()) {
+                            isValid = false;
+                            alert(`심사 결과 필수 선택 항목입니다.`);
+                            return false;
+                        }
+                    } else {
+                        let checkValue = $(this).val();
+                        if (checkValue == null || checkValue == '' || typeof checkValue == 'undefined') {
+                            isValid = false;
+                            let eleId = $(this).attr('id');
+                            let cate = $(`label[for="${eleId}"]`).text();
+                            alert(`${cate} 필수 입력 항목입니다.`);
+                            $(this).focus();
+                            return false;
+                        }
+                    }
+                });
+            } else {
+                if (data == null || data == '' || typeof data == 'undefined') {
+                    isValid = false;
+                }
+            }
+            return isValid;
+        }
+
+        $('#settAddBtn').click(function () {
+            let check = true;
+
+            $('select').each(function () {
+                let selectedOption = $(this).val();
+                if (selectedOption === null || selectedOption === '' || typeof selectedOption == 'undefined') {
+                    check = false;
+                    alert(`심사요청 코드를 선택해주세요.`);
+                    $(this).focus();
+                    return false;
+                } else {
+                    const formEles = $('#addCorporateValueForm input, #addCorporateValueForm input:radio, #addCorporateValueForm select');
+
+                    let isValid = validationCheck(formEles);
+
+                    if (isValid) $('#addCorporateValueForm').submit();
+                }
+            });
+        });
+
+        // 입력 값이 변경될 때마다 계산 실행
+        $('.corp-value-calc').on('input', function () {
+            let businessProfits = parseInt($('#businessProfits').val()) || 0;
+            let depreciation = parseInt($('#depreciation').val()) || 0;
+            let evEbitda = parseFloat($('#evEbitda').val()) || 0;
+            let netDebt = parseInt($('#netDebt').val()) || 0;
+            let stockNumber = parseInt($('#stockNumber').val()) || 1;
+
+            // 수식 계산
+            let ebitaCalculate = Math.floor(businessProfits + depreciation);
+            let convertEvCalculate = Math.floor((businessProfits + depreciation) * evEbitda);
+            let corpCalculate = Math.floor((businessProfits + depreciation) * evEbitda - netDebt);
+            let stockPriceCalculate = Math.floor(((businessProfits + depreciation) * evEbitda - netDebt) / stockNumber);
+            let ebitaCalculateResult = (businessProfits + depreciation).toLocaleString('ko-kr') + ' 원';
+            let convertEvCalculateResult = ((businessProfits + depreciation) * evEbitda).toLocaleString('ko-kr') + ' 원';
+            let corpCalculateResult = ((businessProfits + depreciation) * evEbitda - netDebt).toLocaleString('ko-kr') + ' 원';
+            let stockPriceCalculateResult = (((businessProfits + depreciation) * evEbitda - netDebt) / stockNumber).toLocaleString('ko-kr') + ' 원';
+
+            // 계산 결과를 화면에 표시
+            $('#ebitdaCalculate').text(ebitaCalculateResult);
+            $('#convertEvCalculate').text(convertEvCalculateResult);
+            $('#evaluatedCorpCalculate').text(corpCalculateResult);
+            $('#stockPriceCalculate').text(stockPriceCalculateResult);
+
+            // 계산 결과를 input에 반영
+            $('#ebitda').val(ebitaCalculate);
+            $('#convertEv').val(convertEvCalculate);
+            $('#evaluatedCorpValue').val(corpCalculate);
+            $('#stockPrice').val(stockPriceCalculate);
+        });
+
+        $("#investmentRequestJudgeCode").change(function () {
+            const $investmentRequestJudgeCode = document.querySelector('#investmentRequestJudgeCode');
+            let selectedValue = $(this).val();
+            let inputData = $investmentRequestJudgeCode.value;
+
+            // Ajax 호출
+            $.ajax({
+                type: "GET",
+                url: '/admin/investment/check/' + inputData,
+                data: {selectedValue: selectedValue},
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data);
+                    $('#investmentRequestJudgeCodeInput').val(data.investmentRequestJudgeCode);
+                    $('#investmentRequestSubjectText').text(data.investmentRequestSubject);
+                    $('#investmentRequestContent').text(data.investmentRequestContent);
+                    $('#investmentRequestDate').text(data.investmentRequestDate);
+                    $('#investmentAchievementMoney').text(data.investmentAchievementMoney);
+                    $('#businessProfitsText').text(data.businessProfits);
+                    $('#depreciationText').text(data.depreciation);
+                    $('#netDebtText').text(data.netDebt);
+                    $('#issueStockNumber').text(data.issueStockNumber);
+                    $('#investmentRequestSubject').text(data.investmentRequestSubject);
+                    $('#memberIdSeller').text(data.memberIdSeller);
+                    $('#memberId').text(data.memberId);
+                    $('#businessProfits').val(data.businessProfits);
+                    $('#depreciation').val(data.depreciation);
+                    $('#netDebt').val(data.netDebt);
+                    $('#stockNumber').val(data.stockNumber);
+                },
+                error: function (error) {
+                    console.log("Error:", error);
+                }
+            });
+        });
+    </script>
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+
+    <div class="admin-content-wrapper form-table">
+        <div class="project-info-title-area">
+            <div class="project-info-title">
+                <h5>투자 심사요청 코드</h5>
+                <select id="investmentRequestJudgeCode" name="investmentRequestJudgeCode">
+                    <option value="">===투자 심사요청 코드를 선택해주세요===</option>
+                    <th:block th:unless="${investmentRequestJudgeList == null}"
+                              th:each="l : ${investmentRequestJudgeList}">
+                        <option th:value="${l.investmentRequestJudgeCode}"
+                                th:text="${l.investmentRequestJudgeCode}"></option>
+                    </th:block>
+                </select>
+            </div>
+            <div class="info-more-btn">
+                <a class="more-btn" style="padding: 7px 10px 9px 19px;">
+                    <span>요청 상세 보기</span>
+                </a>
+            </div>
+        </div>
+
+        <form class="projectInfoDetail" method="get">
+            <table class="settlement-log application-info-detail" style="border:none;">
+                <tbody>
+                <!-- contents -->
+                <tr>
+                    <td>
+                        카테고리
+                    </td>
+                    <td colspan="4">
+                        투자
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+                        심사요청 제목
+                    </td>
+                    <td colspan="4" id="investmentRequestSubjectText"></td>
+                </tr>
+                <tr>
+                    <td>
+                        심사요청 내용
+                    </td>
+                    <td colspan="4" id="investmentRequestContent"></td>
+                </tr>
+                <tr>
+                    <td>
+                        심사 요청일
+                    </td>
+                    <td colspan="4" id="investmentRequestDate"></td>
+                </tr>
+                <tr>
+                    <td colspan="5">
+                        상세
+                    </td>
+                </tr>
+                <tr class="sub-table-area sub-table sub-table-tr" style="height: auto;">
+                    <td style="height: 35px;">목표펀딩금액</td>
+                    <td style="height: 35px;">영업이익</td>
+                    <td style="height: 35px;">감가상각비</td>
+                    <td style="height: 35px;">순차입금</td>
+                    <td style="height: 35px;">발행예정주식수</td>
+                </tr>
+                <tr>
+                    <td id="investmentAchievementMoney" style="background: #fff;">0 원</td>
+                    <td id="businessProfitsText">0 원</td>
+                    <td id="depreciationText">0 원</td>
+                    <td id="netDebtText">0 원</td>
+                    <td id="issueStockNumber">0 주</td>
+                </tr>
+
+                </tbody>
+            </table>
+        </form>
+
+    </div>
+
+    <form id="addCorporateValueForm" th:action="@{/admin/investment/insert/corporate-value}" method="post">
+
+        <div class="admin-wrapper" th:object="${investmentRequestJudgeList}">
+
+            <!-- contents -->
+            <div class="admin-content-wrapper form-table" style="margin-top: 40px;">
+                <div class="project-info-title">
+                    <h5>기업가치 평가</h5>
+                    <p style="color: var(--maincolor);"></p>
+                </div>
+                <br>
+                <form class="projectInfoDetailBt" method="get">
+                    <table class="settlement-log application-info-detail" style="border:none;">
+                        <tbody>
+                        <!-- contents -->
+                        <tr>
+                            <td>
+                                프로젝트 분류
+                            </td>
+                            <td colspan="5">
+                                투자
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td>
+                                심사요청 제목
+                            </td>
+                            <td id="investmentRequestSubject" colspan="5"></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                심사요청한 아이디
+                            </td>
+                            <td id="memberIdSeller" colspan="5"></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                심사한 아이디
+                            </td>
+                            <td id="memberId" colspan="5"></td>
+                        </tr>
+
+                        <tr class="sub-table-area sub-table sub-table-tr" style="height: auto;">
+                            <td style="height: 35px; width: 17%;"><label for="businessProfits">영업이익</label></td>
+                            <td style="height: 35px; width: 17%;"><label for="depreciation">감가상각비</label></td>
+                            <td style="height: 35px;"><label for="ebitda">EBITA</label></td>
+                            <td style="height: 35px;"><label for="evEbitda">업종 평균 EV/EBITA</label></td>
+                            <td style="height: 35px;" colspan="2"><label for="convertEv">환산 EV</label></td>
+                        </tr>
+                        <tr>
+                            <td style="background: #fff;">
+                                <input type="number" name="operatingProfit" id="businessProfits" class="corp-value-calc"
+                                       placeholder="영업이익을 입력해주세요">
+                            </td>
+                            <td>
+                                <input type="number" name="depreciation" id="depreciation" class="corp-value-calc"
+                                       placeholder="감가상각비를 입력해주세요">
+                            </td>
+                            <td id="ebitdaCalculate" class="corp-result">0 원</td>
+                            <td>
+                                <input type="number" step="0.01" name="evEbitda" id="evEbitda" class="corp-value-calc"
+                                       placeholder="EV/EBITA를 입력해주세요">
+                            </td>
+                            <td colspan="2" id="convertEvCalculate" class="corp-result">0 원</td>
+                        </tr>
+                        <tr class="sub-table-area sub-table sub-table-tr" style="height: auto;">
+                            <td style="height: 35px;"><label for="netDebt">순차입금</label></td>
+                            <td style="height: 35px;"><label for="stockNumber">현재 발행주식</label></td>
+                            <td style="height: 35px;" colspan="2"><label for="evaluatedCorpValue">평가된 기업가치</label></td>
+                            <td style="height: 35px;" colspan="2"><label for="stockPrice">주당가격</label></td>
+                        </tr>
+                        <tr>
+                            <td style="background: #fff;">
+                                <input type="number" name="netDebt" id="netDebt" class="corp-value-calc"
+                                       placeholder="순차입금을 입력해주세요">
+                            </td>
+                            <td>
+                                <input type="number" name="stockNumber" id="stockNumber" class="corp-value-calc"
+                                       placeholder="현재 발행주식을 입력해주세요">
+                            </td>
+                            <td colspan="2" id="evaluatedCorpCalculate" class="corp-result">0 원</td>
+
+                            <td id="stockPriceCalculate" class="corp-result" colspan="2">0 원</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                심사 결과
+                            </td>
+                            <td id="corpValueFulfill" colspan="5" class="progress-radio-area">
+                                <ul>
+                                    <li>
+
+                                        <input id="preProgress" type="radio" name="corpValueFulfill"
+                                               value="0">
+                                        <label for="corpValueFulfill">심사 대기</label>
+                                    </li>
+                                    <li>
+                                        <input id="Progress" type="radio" name="corpValueFulfill"
+                                               value="1">
+                                        <label for="corpValueFulfill">심사 승인</label>
+                                    </li>
+                                    <li>
+                                        <input id="ProgressCompleted" type="radio" name="corpValueFulfill"
+                                               value="2">
+                                        <label for="corpValueFulfill">심사 반려</label>
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="btn-area">
+                        <ul>
+                            <li>
+                                <button id="settBackBtn" class="submitBtn" type="button" onclick="backLocationFn()">뒤로
+                                </button>
+                            </li>
+                            <li>
+                                <button id="settAddBtn" class="submitBtn" type="button">
+                                    확인
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+                <input type="text" name="memberId" id="memberIdInput" value="id100" hidden="hidden">
+                <input type="text" name="investmentRequestJudgeCode" id="investmentRequestJudgeCodeInput"
+                       hidden="hidden">
+                <input type="number" name="ebitda" id="ebitda"
+                       class="corp-value-result" placeholder="EBITA를 입력해주세요" readonly="readonly" hidden="hidden">
+                <input type="number" name="convertEv" id="convertEv"
+                       class="corp-value-result" placeholder="환산 EV를 입력해주세요" readonly="readonly" hidden="hidden">
+                <input type="number" name="evaluatedCorpValue" id="evaluatedCorpValue"
+                       class="corp-value-result" placeholder="평가된 기업가치를 입력해주세요" readonly="readonly" hidden="hidden">
+                <input type="number" name="stockPrice" id="stockPrice"
+                       class="corp-value-result" placeholder="주당 가격을 입력해주세요" readonly="readonly" hidden="hidden">
+            </div>
+        </div>
+    </form>
+
+
+</th:block>
+</html>

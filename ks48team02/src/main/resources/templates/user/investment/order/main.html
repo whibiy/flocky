@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layout/default}">
+
+<head>
+    <!--  사용자별 css file 추가 부분 -->
+    <!-- Link Swiper's CSS -->
+    <style>
+        .selected {
+            font-weight: bold;
+            color: black;
+        }
+        ul.d-flex li:hover {
+            cursor: pointer;
+        }
+        .total-price {
+            color: #0b44d7;
+        }
+
+    </style>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    <link rel="stylesheet" th:href="@{/user/css/swiper-event-css.css}" />
+    <link rel="stylesheet" th:href="@{/user/css/main_style.css}" />
+
+    <link rel="stylesheet" href="//t1.daumcdn.net/postcode/cssjs/guide/1695281969613/guide.v2.min.css">
+</head>
+
+
+<!-- 사용자 페이지별 javascript file -->
+<th:block layout:fragment="customJsFile">
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <!-- 	  	<script th:src="@{user/js/swiper-slide-event.js}"></script> -->
+
+    <!-- 다음 주소 api-->
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
+    <!-- common js -->
+    <script src="/common/js/common-custom.js"></script>
+
+    <!-- 토스페이 -->
+    <script src="https://js.tosspayments.com/v1/payment-widget"></script>
+
+
+</th:block>
+
+
+<!-- 사용자별 스크립트 작성 -->
+<th:block layout:fragment="customJsCode">
+
+    <script th:inline="javascript">
+
+        //토스 api CustomerKey를 랜덤 생성하기위한 generateUUID 함수
+        function generateUUID() { // Public Domain/MIT
+            var d = new Date().getTime();//Timestamp
+            var d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now()*1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16;//random number between 0 and 16
+                if(d > 0){//Use timestamp until depleted
+                    r = (d + r)%16 | 0;
+                    d = Math.floor(d/16);
+                } else {//Use microseconds since page-load if supported
+                    r = (d2 + r)%16 | 0;
+                    d2 = Math.floor(d2/16);
+                }
+                return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+            });
+        }
+
+
+        // 토스페이에 담을 투자 상품 정보
+        const products = [];
+        // 주문자 회원 정보
+
+
+        // 주소입력
+        function sample6_execDaumPostcode() {
+            new daum.Postcode({
+                oncomplete: function(data) {
+                    // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+                    // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+                    // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+                    var addr = ''; // 주소 변수
+                    var extraAddr = ''; // 참고항목 변수
+
+                    //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+                    if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                        addr = data.roadAddress;
+                    } else { // 사용자가 지번 주소를 선택했을 경우(J)
+                        addr = data.jibunAddress;
+                    }
+
+                    // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+                    if(data.userSelectedType === 'R'){
+                        // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+                        // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+                        if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                            extraAddr += data.bname;
+                        }
+                        // 건물명이 있고, 공동주택일 경우 추가한다.
+                        if(data.buildingName !== '' && data.apartment === 'Y'){
+                            extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                        }
+                        // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+                        if(extraAddr !== ''){
+                            extraAddr = ' (' + extraAddr + ')';
+                        }
+                        // 조합된 참고항목을 해당 필드에 넣는다.
+                        //document.getElementById("extraAddress").value = extraAddr;
+
+                    } else {
+                        //document.getElementById("extraAddress").value = '';
+                    }
+                    console.log(data)
+                    // 우편번호와 주소 정보를 해당 필드에 넣는다.
+                    document.getElementById('postcode').value = data.zonecode;
+                    document.getElementById("address").value = addr;
+                    // 커서를 상세주소 필드로 이동한다.
+                    document.getElementById("detailAddress").focus();
+                }
+            }).open();
+        }
+
+        $(function(){
+
+            // 다음 버튼 클릭시 페이지 이동
+            $('.nextBtn').click(function(){
+
+                const targetEls = $('#investOrderInfoForm input, #investOrderInfoForm select');
+                // 값 유효성 검사
+                if(!validationEmptyFn(targetEls)) {
+                    return;
+                }
+
+                // 청약 가능 수량 검사
+                let stockEls = parseInt($('#stockNumber').val());
+                if(stockEls < parseInt($('#minStock').text()) || stockEls > parseInt($('#maxStock').text())){
+                    alert('청약 가능 수량이 아닙니다.');
+                    return;
+                }
+
+                $(this).parents('.info-contents-area').hide();
+                $(this).parents('.info-contents-area').next().show();
+
+
+                /*const iframe = $(`iframe[title="토스페이먼츠 결제위젯"]`);
+                const btns = iframe.contents();
+                console.log(iframe);*/
+
+
+            });
+
+            // 이전 버튼 클릭시 페이지 이동
+            $('.prevBtn').click(function(){
+                $(this).parents('.info-contents-area').hide();
+                $(this).parents('.info-contents-area').prev().show();
+            });
+
+
+            //약관 체크 모두 될 시 모두 동의에 체크.
+            $('.essential').not('#agreeNews').click(function(){
+                let checkLength = $('.essential').not('#agreeNews').length;
+                let checkedLength = $('.essential:checked').not('#agreeNews').length;
+                let isAllCheck = checkLength === checkedLength;
+                $('#allCheck').prop('checked',isAllCheck);
+            });
+
+            //약관 모두 동의 체크시 모두 동의
+            $('#allCheck').click(function(){
+                $('.essential').not('#agreeNews').prop('checked',$(this).prop('checked'));
+            });
+
+
+            //결제하기 누를 시 필수 약관동의 모두 체크되었는지 확인
+            $('.paymentBtn').click(function(){
+                let isValid = true;
+                $('.essential').each(function(idx,item){
+                    if(!$(item).prop('checked')) {
+                        alert('필수 약관에 모두 동의해주세요');
+                        $(item).focus();
+                        isValid =false;
+                        return false;
+                    }
+                });
+                if(isValid){
+                    const paymentResult = {};
+
+                    paymentWidget.requestPayment({
+                        amount: 5000000,
+                        orderId: generateUUID(),
+                        orderName: "주식회사 라다하임",
+                        successUrl: window.location.origin + "/user/investment",
+                        failUrl: window.location.origin + "/user/investment",
+                        customerEmail: "customer123@gmail.com",
+                        customerName: "김토스",
+                        customerMobilePhone: "01012341234"
+                    })
+                }
+
+            });
+
+            // 주문 금액 계산해서 넣기
+            $('#stockNumber').on('input', function(){
+                let stockPrice = $('#stockPrice').data('stockPrice');
+                let stockAmount = $(this).val();
+                let result = (stockPrice*stockAmount).toLocaleString('ko-kr') + '원';
+                $('.total-price').text(result);
+                $('.stockNumber').text($('#stockNumber').val() + '주');
+            });
+
+
+
+
+        })
+
+        // 토스 결제
+        const clientKey = 'test_ck_P9BRQmyarY7j4lG4Oepv3J07KzLN' // 테스트용 클라이언트 키
+        const customerKey = generateUUID(); // 내 상점에서 고객을 구분하기 위해 발급한 고객의 고유 ID
+
+        // 2. 결제위젯 SDK 초기화
+        const paymentWidget = PaymentWidget(clientKey, customerKey) // 회원 결제
+        const paymentMethodsWidget = paymentWidget.renderPaymentMethods(
+            '#payment-method',
+            {
+                value: 5000000,
+                currency: 'KRW',
+                country: 'KR',
+            },
+            { variantKey: 'widgetA' }
+        )
+        const paymentMethods = paymentWidget.renderPaymentMethods('#payment-method', {
+            value: 5000000,
+        })
+
+        /*$('#payment-button').on("click", function () {
+            paymentWidget.requestPayment({
+                orderId: "ZnMXcbHhAnrQHkkyFvZj8",
+                orderName: "토스 티셔츠 외 2건",
+                successUrl: window.location.origin + "/success",
+                failUrl: window.location.origin + "/fail",
+                customerEmail: "customer123@gmail.com",
+                customerName: "김토스",
+                customerMobilePhone: "01012341234"
+            })
+        })*/
+
+
+    </script>
+
+
+
+
+
+
+</th:block>
+
+
+<!--/* layout:decorate : 파일에서 사용자 정의로 선언한 조각에 작성한 html 코드 삽입 */-->
+<th:block layout:fragment="customContents">
+
+    <section id="storeInnerGroup" class="content-wrap">
+
+        <div class="main-section container">
+
+
+
+
+            <div id="orderInfo" class="info-contents-area" style="display: block;">
+
+                <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
+                    <figure class="text-center">
+                        <blockquote class="blockquote">
+                            <br>
+                            <h3 style="font-weight: bold;">청약 정보 입력</h3><br>
+                        </blockquote>
+                    </figure>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2"></div>
+
+                    <div class="col-lg-8">
+
+                        <form id="investOrderInfoForm">
+                            <h5 style="font-weight: bold;">증권 계좌 입력</h5>
+                            <div style="color: black; font-size: 18px;">주식이 입고될 증권계좌를 입력해 주세요</div>
+                            <br>
+                            <div class="cal-12">
+                                <label for="memIvsSecurCode" class="mt20 mb4" style="color: black">증권사 선택</label>
+                                <select id="memIvsSecurCode" class="custom-select">
+                                    <option value="" disabled="disabled" selected="selected">증권사를 선택해 주세요</option>
+                                    <option value="1">교보증권</option>
+                                    <option value="2">신한금융투자</option>
+                                    <option value="3">한국투자증권</option>
+                                    <option value="4">대신증권</option>
+                                    <option value="5">미래에셋증권</option>
+                                    <option value="6">신영증권</option>
+                                    <option value="8">유진투자증권</option>
+                                    <option value="10">메리츠증권</option>
+                                    <option value="12">NH투자증권</option>
+                                    <option value="17">KB증권</option>
+                                    <option value="22">현대차증권</option>
+                                    <option value="24">유안타증권</option>
+                                    <option value="25">SK증권</option>
+                                    <option value="29">상상인증권</option>
+                                    <option value="30">삼성증권</option>
+                                    <option value="31">DB금융투자</option>
+                                    <option value="46">하이투자증권</option>
+                                    <option value="50">키움증권</option>
+                                    <option value="68">IBK투자증권</option>
+                                    <option value="71">다올투자증권</option>
+                                    <option value="753">코리아에셋투자증권</option>
+                                </select>
+                                <br><br>
+                                <label for="stockAccountNumber" class="mt20 mb4" style="color: black">증권 계좌 번호 입력</label><br>
+                                <input type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" class="d_form large" id="stockAccountNumber" name="stockAccountNumber" placeholder="'-'없이 숫자만 입력해주세요." value required>
+                            </div><br>
+                            <div class="mt30">
+                                투자자 본인 명의의 증권 계좌로 교부됩니다. 직접 주식거래가 가능한 증권 계좌번호를 입력해 주세요.&nbsp;
+                            </div><br>
+
+                            <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%"></div><br><br>
+
+                            <h5 style="font-weight: bold;">배송지</h5>
+                            <div style="color: black; font-size: 18px;">주소를 입력해 주세요.</div>
+                            <br>
+                            <label for="postcode" class="mt20 mb4" style="color: black">우편번호</label><br>
+                            <input type="text" id="postcode" class="d_form mini" placeholder="우편번호" />
+                            <input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기" class="d_btn"><br>
+                            <label for="address" class="mt20 mb4" style="color: black">주소</label><br>
+                            <input type="text" id="address" placeholder="주소" class="d_form large" /> <br>
+                            <label for="detailAddress" class="mt20 mb4" style="color: black">상세주소</label><br>
+                            <input type="text" id="detailAddress" placeholder="상세주소" class="d_form"/>
+                            <!--<input type="text" id="sample6_extraAddress" class="d_form" placeholder="참고항목">-->
+                            <br><br>
+
+                            <div class="ivs-pro-desc1 mt30">
+                                본 주소는 유상증자 등기 시, 투자자 혜택이 있는 경우 배송 주소지 등으로 사용되니, 상세주소를 포함한 정확한 주소를 입력해 주세요.
+                            </div><br>
+
+                            <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%"></div><br>
+
+                            <h5 style="font-weight: bold;">청약 주식 수</h5><br>
+
+                            <div class="row" style="color: black; font-size: 18px";>
+                                <div class="col-lg-5">
+                                    <ul class="tight">
+                                        <li>
+                                            <dl>
+                                                <dd>김플루님의 크라우드펀딩 투자 한도</dd>
+                                                <dt id="investLimit" th:text="${#numbers.formatInteger(25000000,3,'COMMA') + '원'}" th:data-invest-limit="${25000000}"></dt>
+                                            </dl>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-lg-3">
+                                    <ul class="tight">
+                                        <li>
+                                            <dl>
+                                                <dd>1주당 가격</dd>
+                                                <dt id="stockPrice" th:text="${#numbers.formatInteger(50000,3,'COMMA') + '원'}" th:data-stock-price="${50000}"></dt>
+                                            </dl>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-lg-4">
+                                    <ul class="tight">
+                                        <li>
+                                            <dl th:with="minStock=${100}, maxStock=${500}">
+                                                <dd>청약 가능 수량</dd>
+                                                <dt><span id="minStock" th:text="${minStock}"></span>~<span id="maxStock" th:text="${maxStock}"></span>주</dt>
+                                            </dl>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div><br>
+                            <div class="mt30">
+                                투자 한도 내에서 투자가 가능합니다.
+                            </div><br><br>
+
+                            <div style="color: black; font-size: 18px;">청약하실 주식 수를 입력해 주세요.</div><br>
+                            <div class="payments-form col-5">
+                                <label for="stockNumber" class="mt20 mb4" style="color: black">청약 주식 수</label>
+                                <input type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" class="d_form col-12" id="stockNumber" placeholder="청약 주식 수 입력" value required>
+                                <label class="form-text text-muted text-right col-12" style="font-size: 18px;"><span style="color: #0b44d7">주문금액</span> <span class="total-price">0<i></i>원</span></label>
+                            </div>
+                            <br>
+                            <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%"></div>
+
+
+                            <button class="nextBtn w-80 btn btn-primary btn-lg" type="button">다음단계</button>
+
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div id="paymentInfo" class="info-contents-area" style="display: none;">
+
+                <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
+                    <figure class="text-center">
+                        <blockquote class="blockquote">
+                            <br>
+                            <h3 style="font-weight: bold;">결제 정보</h3><br>
+                        </blockquote>
+                    </figure>
+                </div>
+
+                <div class="row text-dark">
+                    <div class="col-lg-2"></div>
+
+                    <div class="col-lg-8">
+
+                        <form>
+                            <h5 style="font-weight: bold;">결제 진행</h5>
+                            <br>
+                            <div style="color: black; font-size: 18px;">결제하실 금액만큼 결제를 진행해 주세요.</div><br><br>
+                            <label class="form-text text-muted col-12" style="font-size: 16px; color: black"><span>청약 신청 수량</span> <span class="stockNumber">0주</span></label>
+                            <label class="form-text text-muted col-12" style="font-size: 18px;"><span style="color: #0b44d7">결제하실 금액</span> <span style="font-weight: bold" class="total-price">0<i></i>원</span></label>
+                            <br><br>
+
+
+                            <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%"></div>
+
+                            <div id="payment-method" >토스결제하기</div>
+
+
+                            <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%"></div>
+
+                            <div class="ml-lg-2 mt-lg-5">
+                                <h5 style="font-weight: bold;">약관 동의</h5>
+                                <div class="ml-lg-3 mt-lg-4">
+
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="allCheck">
+                                        <label class="form-check-label" for="allCheck">
+                                            필수 약관 모두동의
+                                        </label>
+                                    </div>
+                                    <div style="border: 0.2px solid #f3f4f5; margin: 5px; width: 100%"></div>
+                                    <div class="form-check">
+                                        <input class="essential form-check-input" type="checkbox" value="" id="agree1">
+                                        <label class="form-check-label" for="agree1">
+                                            구매조건, 결제 진행 및 결제 대행 서비스 동의(필수)
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="essential form-check-input" type="checkbox" value="" id="agree2">
+                                        <label class="form-check-label" for="agree2">
+                                            개인정보 제3자 제공 동의 (필수)
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="essential form-check-input" type="checkbox" value="" id="agree3">
+                                        <label class="form-check-label" for="agree3">
+                                            책임 규정에 대한 동의 (필수)
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <br><br>
+
+                            <div style="border: 0.3px solid #f3f4f5; margin: 10px 0px; width: 100%"></div>
+
+                            <button class="prevBtn w-80 btn btn-secondary btn-lg" type="button">이전단계</button>
+                            <!--<button class="paymentBtn w-80 btn btn-primary  btn-lg" type="button">결제하기</button>-->
+                            <button id="payment-button" type="button" class="paymentBtn w-80 btn btn-primary  btn-lg">토스결제하기</button>
+
+
+                        </form>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+</th:block>
+</html>
